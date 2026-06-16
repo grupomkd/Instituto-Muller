@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Instituto Müller — CRM</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --v:#1a5c3a;--vm:#1d6b44;--vl:#e8f4ed;--vxl:#c8e6d4;--vb:#0f3d26;
+  --g50:#F1EFE8;--g100:#D3D1C7;--g200:#B4B2A9;--g400:#888780;--g600:#5F5E5A;--g800:#444441;--g900:#2C2C2A;
+  --b50:#E6F1FB;--b400:#378ADD;--b600:#185FA5;
+  --a50:#FAEEDA;--a400:#BA7517;--a600:#854F0B;
+  --c50:#FAECE7;--c400:#D85A30;--c600:#993C1D;
+  --r50:#FCEBEB;--r400:#E24B4A;
+  --p50:#EEEDFE;--p400:#7F77DD;--p600:#534AB7;
+}
+body{font-family:'Inter',sans-serif;font-size:14px;background:#f0f4f1;color:var(--g900);min-height:100vh}
+
+/* LOGIN */
+#login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:2rem;background:linear-gradient(135deg,var(--vb) 0%,var(--v) 100%)}
+.login-logo h1{font-size:26px;font-weight:600;color:#fff;text-align:center}
+.login-logo p{font-size:12px;color:rgba(255,255,255,.6);margin-top:4px;letter-spacing:.5px;text-transform:uppercase;text-align:center}
+.login-cards{display:flex;gap:16px;flex-wrap:wrap;justify-content:center}
+.login-card{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:16px;padding:28px 32px;width:190px;cursor:pointer;transition:all .2s;text-align:center;color:#fff}
+.login-card:hover{background:rgba(255,255,255,.2);transform:translateY(-3px)}
+.login-card .ci{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:24px;background:rgba(255,255,255,.15)}
+.login-card h3{font-size:14px;font-weight:600}
+.login-card p{font-size:12px;color:rgba(255,255,255,.6);margin-top:4px}
+
+/* APP */
+#app{display:none;min-height:100vh}
+.topbar{background:var(--v);padding:0 24px;height:54px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.topbar-logo{font-size:15px;font-weight:600;color:#fff;display:flex;align-items:center;gap:10px}
+.topbar-logo i{font-size:20px;color:rgba(255,255,255,.7)}
+.role-tag{font-size:11px;font-weight:500;padding:3px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:.4px;background:rgba(255,255,255,.2);color:#fff}
+.btn-logout{font-size:12px;color:rgba(255,255,255,.7);background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:4px}
+.btn-logout:hover{color:#fff}
+.main{display:flex;min-height:calc(100vh - 54px)}
+
+/* SIDEBAR */
+.sidebar{width:220px;min-width:220px;background:#fff;border-right:.5px solid var(--g100);padding:16px 10px;display:flex;flex-direction:column;gap:3px}
+.sidebar-label{font-size:10px;font-weight:600;color:var(--g400);text-transform:uppercase;letter-spacing:.6px;padding:10px 8px 4px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;font-size:13px;color:var(--g600);cursor:pointer;border:none;background:none;width:100%;text-align:left;transition:background .1s}
+.nav-item:hover{background:var(--g50);color:var(--g900)}
+.nav-item.active{background:var(--vl);color:var(--v);font-weight:500}
+.nav-item i{font-size:17px}
+.nav-badge{margin-left:auto;background:var(--c400);color:#fff;font-size:10px;font-weight:600;padding:1px 7px;border-radius:10px}
+
+/* CONTENT */
+.content{flex:1;padding:24px;overflow-y:auto;min-width:0}
+.ph{margin-bottom:20px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.ph h2{font-size:18px;font-weight:600}
+.ph p{font-size:13px;color:var(--g400);margin-top:2px}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:20px}
+.sc{background:#fff;border:.5px solid var(--g100);border-radius:10px;padding:14px 16px}
+.sc .lb{font-size:11px;color:var(--g400);font-weight:500;text-transform:uppercase;letter-spacing:.4px}
+.sc .vl{font-size:24px;font-weight:600;color:var(--g900);margin-top:4px}
+
+/* KANBAN */
+.kw{overflow-x:auto;padding-bottom:12px}
+.kb{display:flex;gap:12px;min-width:max-content}
+.kc{width:230px;background:#fff;border:.5px solid var(--g100);border-radius:12px;overflow:hidden;flex-shrink:0}
+.kch{padding:11px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:.5px solid var(--g100)}
+.kct{font-size:12px;font-weight:600;color:var(--g800);display:flex;align-items:center;gap:6px}
+.dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.kcc{font-size:11px;font-weight:600;background:var(--g50);color:var(--g400);padding:2px 8px;border-radius:10px}
+.btn-ec{background:none;border:none;cursor:pointer;color:var(--g400);font-size:14px;padding:2px 4px;border-radius:4px}
+.btn-ec:hover{color:var(--v);background:var(--vl)}
+.kcards{padding:10px;min-height:80px;display:flex;flex-direction:column;gap:8px}
+.kcard{background:#fff;border:.5px solid var(--g100);border-radius:10px;padding:12px;cursor:pointer;transition:border-color .15s}
+.kcard:hover{border-color:var(--vxl)}
+.kcard .kn{font-size:13px;font-weight:500;color:var(--g900)}
+.kcard .ks{font-size:11px;color:var(--g400);margin-top:3px}
+.kcard .ka{margin-top:8px;display:flex;gap:6px;flex-wrap:wrap}
+.kadd-col{width:160px;flex-shrink:0;border:1.5px dashed var(--g100);border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;color:var(--g400);font-size:13px;min-height:100px;transition:all .15s}
+.kadd-col:hover{border-color:var(--v);color:var(--v);background:var(--vl)}
+
+/* BADGES */
+.badge{display:inline-block;font-size:11px;font-weight:500;padding:2px 8px;border-radius:20px}
+.bv{background:var(--vl);color:var(--v)}
+.bb{background:var(--b50);color:var(--b600)}
+.ba{background:var(--a50);color:var(--a600)}
+.bc{background:var(--c50);color:var(--c600)}
+.br{background:var(--r50);color:var(--r400)}
+.bp{background:var(--p50);color:var(--p600)}
+.bg{background:var(--g50);color:var(--g600)}
+
+/* BTN */
+.btn{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:opacity .15s;white-space:nowrap}
+.btn:hover{opacity:.85}
+.btn-v{background:var(--v);color:#fff}
+.btn-b{background:var(--b400);color:#fff}
+.btn-a{background:var(--a400);color:#fff}
+.btn-p{background:var(--p400);color:#fff}
+.btn-r{background:var(--r400);color:#fff}
+.btn-sm{padding:5px 10px;font-size:12px}
+.btn-xs{padding:3px 8px;font-size:11px}
+.btn-ghost{background:var(--g50);color:var(--g800);border:.5px solid var(--g100)}
+.btn-wa{background:#25D366;color:#fff;border:none;border-radius:20px;padding:5px 12px;font-size:12px;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:5px}
+.btn-cancel{padding:8px 16px;border-radius:8px;font-size:13px;border:.5px solid var(--g100);background:none;cursor:pointer;color:var(--g600)}
+.btn-danger{background:var(--r50);color:var(--r400);border:.5px solid #f7c1c1}
+
+/* MODAL */
+.mo{display:none;position:fixed;inset:0;background:rgba(15,61,38,.5);z-index:200;align-items:center;justify-content:center}
+.mo.open{display:flex}
+.modal{background:#fff;border-radius:16px;width:500px;max-width:96vw;max-height:92vh;overflow-y:auto;padding:28px}
+.modal-lg{width:700px}
+.modal-sm{width:360px}
+.mh{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.mh h3{font-size:16px;font-weight:600}
+.mc{background:none;border:none;cursor:pointer;font-size:20px;color:var(--g400)}
+.fg{margin-bottom:14px}
+.fg label{display:block;font-size:12px;font-weight:500;color:var(--g600);margin-bottom:5px}
+.fg input,.fg select,.fg textarea{width:100%;border:.5px solid var(--g100);border-radius:8px;padding:9px 12px;font-size:13px;font-family:'Inter',sans-serif;color:var(--g900);background:#fff;outline:none;transition:border-color .15s}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--v)}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.mf{margin-top:20px;display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap}
+.ms{margin-top:16px;padding-top:16px;border-top:.5px solid var(--g100)}
+.ms-title{font-size:11px;font-weight:600;color:var(--g400);text-transform:uppercase;letter-spacing:.4px;margin-bottom:10px}
+
+/* CONTATOS */
+.cont-item{display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:.5px solid var(--g50);cursor:pointer;transition:background .1s}
+.cont-item:hover{background:var(--vl)}
+.cont-item.sel{background:var(--vl);border-left:3px solid var(--v)}
+.av{width:38px;height:38px;border-radius:50%;background:var(--vl);color:var(--v);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;flex-shrink:0}
+.ci-info .cn{font-size:13px;font-weight:500;color:var(--g900)}
+.ci-info .cw{font-size:11px;color:var(--g400)}
+.ci-info .ct{margin-top:3px;display:flex;gap:4px;flex-wrap:wrap}
+.cont-list{max-height:320px;overflow-y:auto;border:.5px solid var(--g100);border-radius:8px}
+
+/* TABLE */
+.tc{background:#fff;border:.5px solid var(--g100);border-radius:12px;overflow:hidden}
+.tt{padding:12px 16px;display:flex;align-items:center;gap:10px;border-bottom:.5px solid var(--g100)}
+.tt input{flex:1;border:.5px solid var(--g100);border-radius:8px;padding:7px 12px;font-size:13px;font-family:'Inter',sans-serif;outline:none;background:var(--g50);color:var(--g900)}
+.tt input:focus{border-color:var(--v)}
+table{width:100%;border-collapse:collapse}
+thead th{background:var(--g50);font-size:11px;font-weight:600;color:var(--g400);text-transform:uppercase;letter-spacing:.4px;padding:10px 16px;text-align:left}
+tbody td{padding:11px 16px;font-size:13px;border-top:.5px solid var(--g50);color:var(--g800);vertical-align:middle}
+tbody tr:hover{background:var(--g50)}
+
+/* PROTOCOLO */
+.ph-pac{background:var(--v);border-radius:12px;padding:18px 22px;margin-bottom:20px;color:#fff;display:flex;align-items:center;justify-content:space-between}
+.ph-pac .pn{font-size:17px;font-weight:600}
+.ph-pac .pm{font-size:12px;color:rgba(255,255,255,.7);margin-top:3px}
+.ph-pac .pd{font-size:32px;font-weight:700}
+.ph-pac .pdl{font-size:12px;color:rgba(255,255,255,.7)}
+
+/* DIAS */
+.dias-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.dc{background:#fff;border:.5px solid var(--g100);border-radius:10px;overflow:hidden}
+.dc.tem{border-color:var(--vxl)}
+.dch{padding:8px 12px;background:var(--g50);display:flex;align-items:center;justify-content:space-between;font-size:12px;font-weight:600;color:var(--g600)}
+.dcb{padding:8px 12px}
+.dpac{font-size:12px;color:var(--g800);padding:4px 0;border-bottom:.5px solid var(--g50);display:flex;align-items:center;gap:6px}
+.dpac:last-child{border-bottom:none}
+.dmsg{font-size:11px;color:var(--g400);margin-top:6px;font-style:italic;line-height:1.4}
+
+/* PB */
+.pb{background:var(--g100);border-radius:4px;height:6px;overflow:hidden;display:block;width:100%}
+.pf{height:100%;border-radius:4px;background:var(--v)}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--v);color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;z-index:999;opacity:0;transform:translateY(8px);transition:all .25s;max-width:300px}
+.toast.show{opacity:1;transform:translateY(0)}
+
+.loading{text-align:center;padding:40px;color:var(--g400);font-size:13px}
+.spin{animation:spin 1s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty{text-align:center;padding:40px 24px;color:var(--g400)}
+.empty i{font-size:32px;display:block;margin-bottom:8px}
+
+/* FLUXO EDITOR */
+.fe-item{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--g50);border-radius:8px;margin-bottom:6px}
+.fe-item input{flex:1;border:.5px solid var(--g100);border-radius:6px;padding:5px 8px;font-size:13px;font-family:'Inter',sans-serif;background:#fff;outline:none}
+.fe-item input:focus{border-color:var(--v)}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-logo">
+    <h1>Instituto Müller</h1>
+    <p>Sistema de atendimento interno</p>
+  </div>
+  <div class="login-cards">
+    <div class="login-card" onclick="login('atendente')">
+      <div class="ci"><i class="ti ti-headset"></i></div>
+      <h3>Atendente</h3><p>Qualificação e agendamentos</p>
+    </div>
+    <div class="login-card" onclick="login('vendas')">
+      <div class="ci"><i class="ti ti-target"></i></div>
+      <h3>Vendas</h3><p>Fechamento de propostas</p>
+    </div>
+    <div class="login-card" onclick="login('concierge')">
+      <div class="ci"><i class="ti ti-clipboard-heart"></i></div>
+      <h3>Concierge</h3><p>Acompanhamento do protocolo</p>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="topbar">
+    <div class="topbar-logo">
+      <i class="ti ti-leaf" aria-hidden="true"></i>
+      Instituto Müller
+      <span class="role-tag" id="role-badge"></span>
+    </div>
+    <button class="btn-logout" onclick="logout()"><i class="ti ti-logout"></i> Sair</button>
+  </div>
+  <div class="main">
+    <nav class="sidebar" id="sidebar"></nav>
+    <div class="content" id="content"></div>
+  </div>
+</div>
+
+<!-- MODAL LEAD/CONTATO -->
+<div class="mo" id="m-lead">
+  <div class="modal">
+    <div class="mh"><h3 id="ml-title">Novo lead</h3><button class="mc" onclick="closeM('m-lead')"><i class="ti ti-x"></i></button></div>
+    <div class="fg"><label>Buscar nos contatos</label>
+      <input type="text" id="ml-busca" placeholder="Nome ou número..." oninput="filtrarContatosM(this.value)">
+    </div>
+    <div class="cont-list" id="ml-cont-list" style="margin-bottom:12px">
+      <div class="loading"><i class="ti ti-loader spin"></i> Carregando...</div>
+    </div>
+    <div style="text-align:center;font-size:12px;color:var(--g400);margin-bottom:12px">— ou preencha manualmente —</div>
+    <div class="fr">
+      <div class="fg"><label>Nome</label><input id="ml-nome" placeholder="Nome completo"></div>
+      <div class="fg"><label>WhatsApp</label><input id="ml-wa" placeholder="51 9 9999-9999"></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>Origem</label>
+        <select id="ml-origem"><option>Instagram</option><option>Indicação</option><option>Google</option><option>WhatsApp direto</option><option>Outro</option></select>
+      </div>
+      <div class="fg"><label>Objetivo</label><input id="ml-obj" placeholder="Emagrecimento..."></div>
+    </div>
+    <div class="fg"><label>Etapa</label><select id="ml-etapa"></select></div>
+    <div class="mf">
+      <button class="btn-cancel" onclick="closeM('m-lead')">Cancelar</button>
+      <button class="btn btn-v" onclick="salvarLead()"><i class="ti ti-check"></i> Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL VER -->
+<div class="mo" id="m-ver">
+  <div class="modal">
+    <div class="mh"><h3 id="mv-title">Detalhes</h3><button class="mc" onclick="closeM('m-ver')"><i class="ti ti-x"></i></button></div>
+    <div id="mv-body"></div>
+    <div class="mf" id="mv-footer"><button class="btn-cancel" onclick="closeM('m-ver')">Fechar</button></div>
+  </div>
+</div>
+
+<!-- MODAL EDITAR COL -->
+<div class="mo" id="m-col">
+  <div class="modal modal-sm">
+    <div class="mh"><h3>Editar etapa</h3><button class="mc" onclick="closeM('m-col')"><i class="ti ti-x"></i></button></div>
+    <div class="fg"><label>Nome</label><input id="col-nome" placeholder="Ex: Aguardando retorno"></div>
+    <div class="fg"><label>Cor</label>
+      <select id="col-cor">
+        <option value="#1D9E75">Verde</option><option value="#378ADD">Azul</option>
+        <option value="#BA7517">Âmbar</option><option value="#D85A30">Coral</option>
+        <option value="#E24B4A">Vermelho</option><option value="#7F77DD">Roxo</option>
+        <option value="#888780">Cinza</option>
+      </select>
+    </div>
+    <div class="mf">
+      <button class="btn btn-danger btn-sm" onclick="deletarCol()"><i class="ti ti-trash"></i></button>
+      <button class="btn-cancel" onclick="closeM('m-col')">Cancelar</button>
+      <button class="btn btn-v" onclick="salvarCol()"><i class="ti ti-check"></i> Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL PROTOCOLO -->
+<div class="mo" id="m-pac">
+  <div class="modal modal-lg">
+    <div class="mh"><h3 id="mpac-title">Protocolo</h3><button class="mc" onclick="closeM('m-pac')"><i class="ti ti-x"></i></button></div>
+    <div id="mpac-body"></div>
+    <div class="mf">
+      <button class="btn-cancel" onclick="closeM('m-pac')">Fechar</button>
+      <button class="btn btn-v" onclick="salvarProtocolo()"><i class="ti ti-device-floppy"></i> Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL FLUXO EDITOR -->
+<div class="mo" id="m-fluxo">
+  <div class="modal">
+    <div class="mh"><h3 id="mf-title">Editar fluxo</h3><button class="mc" onclick="closeM('m-fluxo')"><i class="ti ti-x"></i></button></div>
+    <div id="mf-body"></div>
+    <div class="mf">
+      <button class="btn-cancel" onclick="closeM('m-fluxo')">Cancelar</button>
+      <button class="btn btn-v" onclick="salvarFluxo()"><i class="ti ti-device-floppy"></i> Salvar fluxo</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script>
+const _app = firebase.initializeApp({
+  apiKey:"AIzaSyDKpPgUwbN46Zg0wUsr392j92Z9H3RcNik",
+  authDomain:"instituto-muller-crm.firebaseapp.com",
+  projectId:"instituto-muller-crm",
+  storageBucket:"instituto-muller-crm.firebasestorage.app",
+  messagingSenderId:"966335138365",
+  appId:"1:966335138365:web:83fb57f77815dac7ee3854"
+});
+const _db = firebase.firestore();
+window.db = _db;
+window.FB = {
+  collection: (db, col) => db.collection(col),
+  addDoc: (ref, data) => ref.add(data),
+  doc: (db, col, id) => db.collection(col).doc(id),
+  updateDoc: (ref, data) => ref.update(data),
+  deleteDoc: (ref) => ref.delete(),
+  getDocs: (ref) => ref.get(),
+  onSnapshot: (ref, cb) => ref.onSnapshot(snap => cb(snap)),
+  query: (ref, ...args) => { let q = ref; args.forEach(a => { q = a(q); }); return q; },
+  orderBy: (field, dir='asc') => (ref) => ref.orderBy(field, dir),
+  where: (field, op, val) => (ref) => ref.where(field, op, val),
+  serverTimestamp: () => firebase.firestore.FieldValue.serverTimestamp(),
+};
+
+window.dispatchEvent(new Event('firebase-ready'));
+</script>
+
+<script>
+// ── STATE ──
+let role=null, paginaAtual='';
+let leadsCache=[], vendasCache=[], pacientesCache=[], contatosCache=[];
+let colsAt=[], colsV=[];
+let editColCtx={aba:null,idx:null};
+let pacAtivo=null;
+let _novoLeadAba='atendente';
+let fluxoEditTemp=[], fluxoEditAba='';
+
+const ETAPAS_AT_DEF=[
+  {nome:'Lead novo',cor:'#1D9E75'},{nome:'Qualificando',cor:'#378ADD'},
+  {nome:'Consulta ofertada',cor:'#BA7517'},{nome:'Aguardando decisão',cor:'#888780'},
+  {nome:'Pré-agendado',cor:'#7F77DD'},{nome:'Pix pendente',cor:'#D85A30'},
+  {nome:'Consulta confirmada',cor:'#1D9E75'},{nome:'Consulta realizada',cor:'#534AB7'},
+];
+const ETAPAS_V_DEF=[
+  {nome:'Proposta enviada',cor:'#378ADD'},{nome:'Em negociação',cor:'#BA7517'},
+  {nome:'Proposta de acomp.',cor:'#7F77DD'},{nome:'Acomp. fechado',cor:'#1D9E75'},
+  {nome:'Perdido',cor:'#E24B4A'},
+];
+
+// ── FB HELPERS ──
+async function fbAdd(col,data){return await window.db.collection(col).add({...data,criadoEm:firebase.firestore.FieldValue.serverTimestamp()})}
+async function fbUp(col,id,data){await window.db.collection(col).doc(id).update(data)}
+async function fbDel(col,id){await window.db.collection(col).doc(id).delete()}
+function fbListen(col,cb){
+  return window.db.collection(col).orderBy('criadoEm','desc')
+    .onSnapshot(snap=>cb(snap.docs.map(d=>({id:d.id,...d.data()}))));
+}
+async function fbGetCols(aba){
+  const snap=await window.db.collection('cfg_cols_'+aba).get();
+  if(snap.empty)return null;
+  return snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.ordem||0)-(b.ordem||0));
+}
+async function fbSaveCols(aba,cols){
+  const ref=window.db.collection('cfg_cols_'+aba);
+  const snap=await ref.get();
+  for(const d of snap.docs)await d.ref.delete();
+  for(let i=0;i<cols.length;i++)await ref.add({nome:cols[i].nome,cor:cols[i].cor,ordem:i});
+}
+
+// ── TOAST ──
+function toast(msg,dur=2500){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),dur)}
+
+// ── AUTH ──
+async function login(r){
+  role=r;
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app').style.display='block';
+  document.getElementById('role-badge').textContent={atendente:'Atendente',vendas:'Vendas',concierge:'Concierge'}[r];
+  renderSidebar();
+  colsAt=(await fbGetCols('atendente'))||ETAPAS_AT_DEF;
+  colsV=(await fbGetCols('vendas'))||ETAPAS_V_DEF;
+  window._u1=fbListen('leads',d=>{leadsCache=d;atualizarBadges();if(paginaAtual==='atendente')renderKanban('atendente')});
+  window._u2=fbListen('vendas',d=>{vendasCache=d;if(paginaAtual==='vendas')renderKanban('vendas')});
+  window._u3=fbListen('pacientes',d=>{pacientesCache=d;if(paginaAtual==='concierge')renderConcierge();if(paginaAtual==='dias')renderDias()});
+  window._u4=fbListen('contatos_wa',d=>{contatosCache=d;if(paginaAtual==='contatos')renderTabContatos()});
+  nav(r==='atendente'?'atendente':r==='vendas'?'vendas':'concierge');
+}
+function logout(){['_u1','_u2','_u3','_u4'].forEach(k=>{if(window[k])window[k]()});role=null;paginaAtual='';document.getElementById('login-screen').style.display='flex';document.getElementById('app').style.display='none'}
+
+// ── SIDEBAR ──
+const navMap={
+  atendente:[{id:'atendente',icon:'ti-users',label:'Leads & Qualificação',badge:true},{id:'contatos',icon:'ti-address-book',label:'Contatos WA'}],
+  vendas:[{id:'vendas',icon:'ti-target',label:'Pipeline de vendas'},{id:'contatos',icon:'ti-address-book',label:'Contatos WA'}],
+  concierge:[{id:'concierge',icon:'ti-clipboard-heart',label:'Pacientes'},{id:'dias',icon:'ti-calendar-stats',label:'Visão por dia'},{id:'contatos',icon:'ti-address-book',label:'Contatos WA'}]
+};
+function renderSidebar(){
+  document.getElementById('sidebar').innerHTML='<div class="sidebar-label">Menu</div>'+
+    navMap[role].map(it=>`<button class="nav-item" id="nav-${it.id}" onclick="nav('${it.id}')"><i class="ti ${it.icon}" aria-hidden="true"></i>${it.label}${it.badge?`<span class="nav-badge" id="badge-leads" style="display:none">0</span>`:''}</button>`).join('');
+}
+function setNav(id){document.querySelectorAll('.nav-item').forEach(e=>e.classList.remove('active'));const el=document.getElementById('nav-'+id);if(el)el.classList.add('active')}
+function atualizarBadges(){const n=leadsCache.filter(l=>l.etapa==='Lead novo').length;const el=document.getElementById('badge-leads');if(el){el.textContent=n;el.style.display=n>0?'inline':'none'}}
+
+// ── ROUTER ──
+function nav(id){
+  paginaAtual=id;setNav(id);
+  const c=document.getElementById('content');
+  if(id==='atendente'){c.innerHTML=pgKanban('atendente');renderKanban('atendente')}
+  else if(id==='vendas'){c.innerHTML=pgKanban('vendas');renderKanban('vendas')}
+  else if(id==='concierge'){c.innerHTML=pgConcierge();renderConcierge()}
+  else if(id==='dias'){c.innerHTML=pgDias();renderDias()}
+  else if(id==='contatos'){c.innerHTML=pgContatos();renderTabContatos()}
+}
+
+// ── KANBAN PAGE ──
+function pgKanban(aba){
+  const t={atendente:'Qualificação de leads',vendas:'Pipeline de vendas'};
+  const s={atendente:'Do primeiro contato até a consulta',vendas:'Fechamento e acompanhamentos'};
+  return`<div class="ph"><div><h2>${t[aba]}</h2><p>${s[aba]}</p></div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-ghost btn-sm" onclick="abrirFluxoEditor('${aba}')"><i class="ti ti-settings"></i> Editar fluxo</button>
+      <button class="btn btn-v btn-sm" onclick="abrirNovoLead('${aba}')"><i class="ti ti-plus"></i> Novo</button>
+    </div></div>
+  <div class="stats-row" id="stats-${aba}"></div>
+  <div class="kw"><div class="kb" id="kb-${aba}"><div class="loading"><i class="ti ti-loader spin"></i></div></div></div>`;
+}
+
+function renderKanban(aba){
+  const cols=aba==='atendente'?colsAt:colsV;
+  const dados=aba==='atendente'?leadsCache:vendasCache;
+  const stats=document.getElementById('stats-'+aba);
+  if(stats)stats.innerHTML=`<div class="sc"><div class="lb">Total</div><div class="vl">${dados.length}</div></div>`+
+    cols.slice(0,3).map(c=>`<div class="sc"><div class="lb">${c.nome}</div><div class="vl" style="color:${c.cor}">${dados.filter(d=>d.etapa===c.nome).length}</div></div>`).join('');
+  const board=document.getElementById('kb-'+aba);
+  if(!board)return;
+  board.innerHTML=cols.map((col,ci)=>{
+    const cards=dados.filter(d=>d.etapa===col.nome);
+    return`<div class="kc"><div class="kch">
+      <div class="kct"><div class="dot" style="background:${col.cor}"></div>${col.nome}</div>
+      <div style="display:flex;align-items:center;gap:4px">
+        <span class="kcc">${cards.length}</span>
+        <button class="btn-ec" onclick="editarCol('${aba}',${ci})"><i class="ti ti-pencil"></i></button>
+      </div></div>
+      <div class="kards" style="padding:10px;min-height:80px;display:flex;flex-direction:column;gap:8px">
+        ${cards.map(c=>mkCard(c,aba)).join('')}
+        ${!cards.length?`<div style="padding:16px;text-align:center;color:var(--g200);font-size:12px">Vazio</div>`:''}
+      </div></div>`;
+  }).join('')+`<div class="kadd-col" onclick="adicionarCol('${aba}')"><i class="ti ti-plus"></i><span>Nova etapa</span></div>`;
+}
+
+function mkCard(c,aba){
+  return`<div class="kcard" onclick="verContato('${c.id}','${aba}')">
+    <div class="kn">${c.nome||'Sem nome'}</div>
+    <div class="ks">${c.wa||'—'}${c.origem?' · '+c.origem:''}</div>
+    ${c.objetivo?`<div class="ks" style="margin-top:3px;color:var(--g500)">${c.objetivo.substring(0,50)}</div>`:''}
+    <div class="ka">
+      ${c.wa?`<button class="btn-wa btn-sm" onclick="event.stopPropagation();openWA('${c.wa}')"><i class="ti ti-brand-whatsapp"></i></button>`:''}
+      ${c.fluxos&&c.fluxos.length>1?`<span class="badge bg" style="font-size:10px">+${c.fluxos.length} fluxos</span>`:''}
+    </div></div>`;
+}
+
+// ── EDITAR FLUXO ──
+function abrirFluxoEditor(aba){
+  const cols=aba==='atendente'?colsAt:colsV;
+  fluxoEditAba=aba; fluxoEditTemp=JSON.parse(JSON.stringify(cols));
+  document.getElementById('mf-title').textContent='Editar fluxo — '+(aba==='atendente'?'Atendente':'Vendas');
+  renderFluxoEditor();
+  openM('m-fluxo');
+}
+function renderFluxoEditor(){
+  document.getElementById('mf-body').innerHTML=`
+    <p style="font-size:13px;color:var(--g400);margin-bottom:12px">Renomeie, adicione ou remova etapas.</p>
+    ${fluxoEditTemp.map((c,i)=>`<div class="fe-item">
+      <div class="dot" style="background:${c.cor};width:12px;height:12px;border-radius:50%;flex-shrink:0"></div>
+      <input type="text" value="${c.nome}" oninput="fluxoEditTemp[${i}].nome=this.value">
+      <select onchange="fluxoEditTemp[${i}].cor=this.value" style="border:.5px solid var(--g100);border-radius:6px;padding:5px;font-size:12px;font-family:Inter,sans-serif">
+        ${[['#1D9E75','Verde'],['#378ADD','Azul'],['#BA7517','Âmbar'],['#D85A30','Coral'],['#E24B4A','Vermelho'],['#7F77DD','Roxo'],['#888780','Cinza']]
+          .map(([v,l])=>`<option value="${v}"${c.cor===v?' selected':''}>${l}</option>`).join('')}
+      </select>
+      <button onclick="rmEtapa(${i})" style="background:none;border:none;cursor:pointer;color:var(--g400);font-size:16px"><i class="ti ti-x"></i></button>
+    </div>`).join('')}
+    <button class="btn btn-ghost btn-sm" style="margin-top:8px" onclick="addEtapa()"><i class="ti ti-plus"></i> Adicionar etapa</button>`;
+}
+function rmEtapa(i){fluxoEditTemp.splice(i,1);renderFluxoEditor()}
+function addEtapa(){fluxoEditTemp.push({nome:'Nova etapa',cor:'#888780'});renderFluxoEditor()}
+async function salvarFluxo(){
+  await fbSaveCols(fluxoEditAba,fluxoEditTemp);
+  if(fluxoEditAba==='atendente')colsAt=[...fluxoEditTemp];
+  else colsV=[...fluxoEditTemp];
+  closeM('m-fluxo');toast('✅ Fluxo salvo');
+  renderKanban(fluxoEditAba);
+}
+
+// ── EDITAR COL ──
+function editarCol(aba,idx){
+  const cols=aba==='atendente'?colsAt:colsV;
+  editColCtx={aba,idx};
+  document.getElementById('col-nome').value=cols[idx].nome;
+  document.getElementById('col-cor').value=cols[idx].cor;
+  openM('m-col');
+}
+async function salvarCol(){
+  const{aba,idx}=editColCtx;const cols=aba==='atendente'?colsAt:colsV;
+  cols[idx].nome=document.getElementById('col-nome').value;
+  cols[idx].cor=document.getElementById('col-cor').value;
+  await fbSaveCols(aba,cols);closeM('m-col');toast('✅ Etapa atualizada');renderKanban(aba);
+}
+async function deletarCol(){
+  if(!confirm('Excluir etapa?'))return;
+  const{aba,idx}=editColCtx;const cols=aba==='atendente'?colsAt:colsV;
+  cols.splice(idx,1);await fbSaveCols(aba,cols);closeM('m-col');toast('🗑️ Removida');renderKanban(aba);
+}
+async function adicionarCol(aba){
+  const cols=aba==='atendente'?colsAt:colsV;
+  cols.push({nome:'Nova etapa',cor:'#888780'});
+  await fbSaveCols(aba,cols);renderKanban(aba);
+}
+
+// ── NOVO LEAD ──
+function abrirNovoLead(aba){
+  _novoLeadAba=aba;
+  document.getElementById('ml-title').textContent=aba==='atendente'?'Novo lead':'Novo lead de vendas';
+  const cols=aba==='atendente'?colsAt:colsV;
+  document.getElementById('ml-etapa').innerHTML=cols.map(c=>`<option>${c.nome}</option>`).join('');
+  ['ml-nome','ml-wa','ml-obj'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=''});
+  renderContatosModal(contatosCache);
+  openM('m-lead');
+}
+
+async function salvarLead(){
+  const nome=document.getElementById('ml-nome').value.trim();
+  if(!nome){toast('⚠️ Informe o nome');return}
+  const col=_novoLeadAba==='atendente'?'leads':'vendas';
+  await fbAdd(col,{
+    nome,wa:document.getElementById('ml-wa').value,
+    origem:document.getElementById('ml-origem').value,
+    objetivo:document.getElementById('ml-obj').value,
+    etapa:document.getElementById('ml-etapa').value,
+    fluxos:[_novoLeadAba],
+  });
+  closeM('m-lead');toast('✅ Lead salvo!');
+}
+
+// ── VER CONTATO / LEAD ──
+function verContato(id,aba){
+  const dados=aba==='atendente'?leadsCache:vendasCache;
+  const c=dados.find(x=>x.id===id);if(!c)return;
+  const cols=aba==='atendente'?colsAt:colsV;
+  const isConsultaRealizada=c.etapa==='Consulta realizada';
+  const isAcompFechado=c.etapa==='Acomp. fechado';
+
+  document.getElementById('mv-title').textContent=c.nome||'Contato';
+  document.getElementById('mv-body').innerHTML=`
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div class="fr">
+        <div><span style="font-size:11px;color:var(--g400)">WhatsApp</span><div style="font-size:13px;margin-top:2px">${c.wa||'—'}</div></div>
+        <div><span style="font-size:11px;color:var(--g400)">Origem</span><div style="font-size:13px;margin-top:2px">${c.origem||'—'}</div></div>
+      </div>
+      ${c.objetivo?`<div style="padding:10px 12px;background:var(--g50);border-radius:8px;font-size:13px"><span style="color:var(--g400);font-size:11px;display:block;margin-bottom:3px">OBJETIVO</span>${c.objetivo}</div>`:''}
+      ${c.ultimaMensagem?`<div style="padding:10px 12px;background:var(--vl);border-radius:8px;font-size:12px;color:var(--v)"><i class="ti ti-brand-whatsapp"></i> Última msg: "${c.ultimaMensagem.substring(0,80)}"</div>`:''}
+      <div>
+        <label style="font-size:12px;color:var(--g400);display:block;margin-bottom:5px">Mover para etapa</label>
+        <select onchange="moverEtapa('${id}','${aba}',this.value)" style="width:100%;padding:8px 12px;border:.5px solid var(--g100);border-radius:8px;font-family:Inter,sans-serif;font-size:13px">
+          ${cols.map(col=>`<option${c.etapa===col.nome?' selected':''}>${col.nome}</option>`).join('')}
+        </select>
+      </div>
+      ${c.wa?`<button class="btn-wa" style="justify-content:center;width:100%" onclick="openWA('${c.wa}')"><i class="ti ti-brand-whatsapp"></i> Abrir WhatsApp</button>`:''}
+      ${aba==='atendente'?`
+        <div class="ms">
+          <div class="ms-title">Adicionar a outro fluxo</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn btn-a btn-sm" onclick="addFluxo('${id}','atendente','vendas')"><i class="ti ti-target"></i> Também em Vendas</button>
+            <button class="btn btn-v btn-sm" onclick="addFluxoConcierge('${id}','atendente')"><i class="ti ti-clipboard-heart"></i> Também em Concierge</button>
+          </div>
+        </div>
+        ${isConsultaRealizada?`
+        <div class="ms">
+          <div class="ms-title">Encaminhar lead para</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn btn-a btn-sm" onclick="enviarParaVendas('${id}')"><i class="ti ti-target"></i> Vendas</button>
+            <button class="btn btn-p btn-sm" onclick="abrirEnviarMarketing('${id}')"><i class="ti ti-speakerphone"></i> Marketing</button>
+            <button class="btn btn-v btn-sm" onclick="abrirEnviarConcierge('${id}','atendente')"><i class="ti ti-clipboard-heart"></i> Concierge</button>
+          </div>
+        </div>`:''}`:''}
+      ${aba==='vendas'?`
+        <div class="ms">
+          <div class="ms-title">Adicionar a outro fluxo</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn btn-v btn-sm" onclick="abrirEnviarConcierge('${id}','vendas')"><i class="ti ti-clipboard-heart"></i> Enviar para Concierge</button>
+          </div>
+        </div>`:''}`:''}
+    </div>`;
+  document.getElementById('mv-footer').innerHTML=`<button class="btn-cancel" onclick="closeM('m-ver')">Fechar</button>`;
+  openM('m-ver');
+}
+
+async function moverEtapa(id,aba,etapa){
+  await fbUp(aba==='atendente'?'leads':'vendas',id,{etapa});toast('✅ Etapa atualizada');
+}
+
+async function addFluxo(id,abaOrigem,abaDestino){
+  const dados=abaOrigem==='atendente'?leadsCache:vendasCache;
+  const c=dados.find(x=>x.id===id);if(!c)return;
+  const colDest=abaDestino==='vendas'?'vendas':'leads';
+  const colsDest=abaDestino==='vendas'?colsV:colsAt;
+  await fbAdd(colDest,{...c,etapa:colsDest[0]?.nome,fluxos:[abaOrigem,abaDestino],originId:id});
+  toast(`✅ Também adicionado em ${abaDestino}`);closeM('m-ver');
+}
+
+async function enviarParaVendas(id){
+  const c=leadsCache.find(x=>x.id===id);if(!c)return;
+  await fbAdd('vendas',{...c,etapa:colsV[0]?.nome||'Proposta enviada',fluxos:['atendente','vendas'],originId:id});
+  toast('✅ Enviado para Vendas!');closeM('m-ver');
+}
+
+function abrirEnviarMarketing(id){
+  toast('📢 Lead marcado para Marketing (em breve integração)');closeM('m-ver');
+}
+
+function abrirEnviarConcierge(id,aba){
+  const dados=aba==='atendente'?leadsCache:vendasCache;
+  const c=dados.find(x=>x.id===id);if(!c)return;
+  document.getElementById('mv-title').textContent='Enviar para Concierge';
+  document.getElementById('mv-body').innerHTML=`
+    <div style="padding:12px;background:var(--vl);border-radius:8px;margin-bottom:16px;font-size:13px">
+      <strong>${c.nome}</strong> ${c.wa?'· '+c.wa:''}
+    </div>
+    <div class="fg"><label>Duração do protocolo</label>
+      <select id="env-protocolo">
+        <option value="90">90 dias</option><option value="120" selected>120 dias</option><option value="365">365 dias</option>
+      </select>
+    </div>
+    <div class="fg"><label>Objetivo / anotação inicial</label>
+      <textarea id="env-nota" rows="2" placeholder="Emagrecimento, protocolo detox...">${c.objetivo||''}</textarea>
+    </div>`;
+  document.getElementById('mv-footer').innerHTML=`
+    <button class="btn-cancel" onclick="closeM('m-ver')">Cancelar</button>
+    <button class="btn btn-v" onclick="confirmarEnviarConcierge('${id}','${aba}')"><i class="ti ti-clipboard-heart"></i> Confirmar envio</button>`;
+}
+
+async function confirmarEnviarConcierge(id,aba){
+  const dados=aba==='atendente'?leadsCache:vendasCache;
+  const c=dados.find(x=>x.id===id);if(!c)return;
+  const protocolo=parseInt(document.getElementById('env-protocolo').value)||120;
+  const nota=document.getElementById('env-nota').value;
+  const hoje=new Date().toISOString().split('T')[0];
+  await fbAdd('pacientes',{nome:c.nome,wa:c.wa,objetivo:nota||c.objetivo||'',protocolo,diaAtual:1,inicio:hoje,nota:'',originId:id});
+  const colSrc=aba==='atendente'?'leads':'vendas';
+  await fbUp(colSrc,id,{transferidoConcierge:true});
+  closeM('m-ver');toast('✅ Paciente enviado para Concierge!');
+}
+
+async function addFluxoConcierge(id,aba){abrirEnviarConcierge(id,aba)}
+
+// ── CONTATOS PAGE ──
+function pgContatos(){
+  return`<div class="ph"><div><h2>Contatos do WhatsApp</h2><p>Todos os contatos capturados</p></div></div>
+  <div class="tc">
+    <div class="tt">
+      <input type="text" placeholder="Buscar por nome ou número..." oninput="filtrarContatos(this.value)">
+    </div>
+    <div id="cont-body"><div class="loading"><i class="ti ti-loader spin"></i></div></div>
+  </div>`;
+}
+
+function getFluxoContato(wa){
+  const tags=[];
+  if(leadsCache.find(l=>l.wa===wa))tags.push({label:'Atendente',cls:'bv'});
+  if(vendasCache.find(v=>v.wa===wa))tags.push({label:'Vendas',cls:'ba'});
+  if(pacientesCache.find(p=>p.wa===wa))tags.push({label:'Concierge',cls:'bb'});
+  return tags;
+}
+
+function renderTabContatos(lista){
+  if(!lista)lista=contatosCache;
+  const el=document.getElementById('cont-body');if(!el)return;
+  if(!lista.length){el.innerHTML=`<div class="empty"><i class="ti ti-address-book"></i><p>Nenhum contato ainda.<br><small>O conector sincroniza ao conectar.</small></p></div>`;return}
+  el.innerHTML=`<table><thead><tr><th>Nome</th><th>WhatsApp</th><th>No fluxo</th><th>Ações</th></tr></thead><tbody>
+    ${lista.map(c=>{
+      const tags=getFluxoContato(c.wa);
+      return`<tr>
+        <td><strong>${c.nome||'—'}</strong></td>
+        <td style="font-size:12px;color:var(--g600)">${c.wa||'—'}</td>
+        <td>${tags.map(t=>`<span class="badge ${t.cls}" style="margin-right:3px">${t.label}</span>`).join('')||'<span style="color:var(--g400);font-size:12px">—</span>'}</td>
+        <td><div style="display:flex;gap:6px;flex-wrap:wrap">
+          ${c.wa?`<button class="btn-wa btn-sm" onclick="openWA('${c.wa}')"><i class="ti ti-brand-whatsapp"></i></button>`:''}
+          <button class="btn btn-ghost btn-xs" onclick="adicionarContatoAoFluxo('${c.id}')"><i class="ti ti-plus"></i> Fluxo</button>
+        </div></td>
+      </tr>`;
+    }).join('')}
+  </tbody></table>`;
+}
+
+function filtrarContatos(q){
+  const lista=contatosCache.filter(c=>(c.nome||'').toLowerCase().includes(q.toLowerCase())||(c.wa||'').includes(q));
+  renderTabContatos(lista);
+}
+
+function adicionarContatoAoFluxo(id){
+  const c=contatosCache.find(x=>x.id===id);if(!c)return;
+  document.getElementById('mv-title').textContent='Adicionar ao fluxo';
+  document.getElementById('mv-body').innerHTML=`
+    <div style="padding:12px;background:var(--vl);border-radius:8px;margin-bottom:16px;font-size:13px">
+      <strong>${c.nome||'—'}</strong>${c.wa?' · '+c.wa:''}
+    </div>
+    <div class="fg"><label>Destino</label>
+      <select id="dest-fluxo">
+        <option value="atendente">Atendente — Qualificação</option>
+        <option value="vendas">Vendas — Pipeline</option>
+        <option value="concierge">Concierge — Protocolo</option>
+      </select>
+    </div>
+    <div class="fg"><label>Etapa inicial</label><select id="dest-etapa"></select></div>
+    <div class="fg"><label>Objetivo</label><input id="dest-obj" value="${c.objetivo||''}" placeholder="Emagrecimento..."></div>
+    <div class="fg"><label>Origem</label>
+      <select id="dest-origem"><option>WhatsApp direto</option><option>Instagram</option><option>Indicação</option><option>Outro</option></select>
+    </div>`;
+  document.getElementById('dest-fluxo').onchange=function(){atualizarEtapasDestino(this.value)};
+  atualizarEtapasDestino('atendente');
+  document.getElementById('mv-footer').innerHTML=`
+    <button class="btn-cancel" onclick="closeM('m-ver')">Cancelar</button>
+    <button class="btn btn-v" onclick="confirmarAdicionarFluxo('${id}')"><i class="ti ti-check"></i> Adicionar</button>`;
+  openM('m-ver');
+}
+
+function atualizarEtapasDestino(dest){
+  const cols=dest==='atendente'?colsAt:dest==='vendas'?colsV:[{nome:'Protocolo ativo',cor:'#1D9E75'}];
+  const sel=document.getElementById('dest-etapa');
+  if(sel)sel.innerHTML=cols.map(c=>`<option>${c.nome}</option>`).join('');
+}
+
+async function confirmarAdicionarFluxo(contId){
+  const c=contatosCache.find(x=>x.id===contId);if(!c)return;
+  const dest=document.getElementById('dest-fluxo').value;
+  const etapa=document.getElementById('dest-etapa').value;
+  const obj=document.getElementById('dest-obj').value;
+  const origem=document.getElementById('dest-origem').value;
+  if(dest==='concierge'){
+    const hoje=new Date().toISOString().split('T')[0];
+    await fbAdd('pacientes',{nome:c.nome,wa:c.wa,objetivo:obj,protocolo:120,diaAtual:1,inicio:hoje,nota:'',origem});
+  } else {
+    await fbAdd(dest==='atendente'?'leads':'vendas',{nome:c.nome,wa:c.wa,origem,objetivo:obj,etapa,fluxos:[dest]});
+  }
+  closeM('m-ver');toast('✅ Adicionado ao fluxo!');
+}
+
+// ── MODAL CONTATOS (para selecionar ao criar lead) ──
+function renderContatosModal(lista){
+  const el=document.getElementById('ml-cont-list');if(!el)return;
+  if(!lista||!lista.length){el.innerHTML=`<div class="empty" style="padding:20px"><i class="ti ti-inbox"></i><p>Nenhum contato ainda.</p></div>`;return}
+  el.innerHTML=lista.slice(0,80).map(c=>{
+    const ini=(c.nome||c.wa||'?').charAt(0).toUpperCase();
+    const tags=getFluxoContato(c.wa);
+    return`<div class="cont-item" onclick="selContato('${c.id}')">
+      <div class="av">${ini}</div>
+      <div class="ci-info">
+        <div class="cn">${c.nome||'Sem nome'}</div>
+        <div class="cw">${c.wa||'—'}</div>
+        ${tags.length?`<div class="ct">${tags.map(t=>`<span class="badge ${t.cls}" style="font-size:10px">${t.label}</span>`).join('')}</div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+function filtrarContatosM(q){
+  const lista=contatosCache.filter(c=>(c.nome||'').toLowerCase().includes(q.toLowerCase())||(c.wa||'').includes(q));
+  renderContatosModal(lista);
+}
+function selContato(id){
+  const c=contatosCache.find(x=>x.id===id);if(!c)return;
+  document.getElementById('ml-nome').value=c.nome||'';
+  document.getElementById('ml-wa').value=c.wa||'';
+  document.querySelectorAll('.cont-item').forEach(el=>el.classList.remove('sel'));
+  event.currentTarget.classList.add('sel');
+  toast('✓ Contato selecionado');
+}
+
+// ── CONCIERGE ──
+function pgConcierge(){
+  return`<div class="ph"><div><h2>Pacientes em protocolo</h2><p>Acompanhamento ativo</p></div>
+    <button class="btn btn-v btn-sm" onclick="abrirNovoPaciente()"><i class="ti ti-plus"></i> Novo paciente</button></div>
+  <div class="stats-row" id="pac-stats"></div>
+  <div class="tc"><div class="tt"><input type="text" placeholder="Buscar paciente..." oninput="filtrarPacientes(this.value)"></div>
+  <table><thead><tr><th>Paciente</th><th>Protocolo</th><th>Dia</th><th>Progresso</th><th>Ações</th></tr></thead>
+  <tbody id="pac-tbody"><tr><td colspan="5"><div class="loading"><i class="ti ti-loader spin"></i></div></td></tr></tbody>
+  </table></div>`;
+}
+
+function renderConcierge(lista){
+  if(!lista)lista=pacientesCache;
+  const stats=document.getElementById('pac-stats');
+  if(stats)stats.innerHTML=`
+    <div class="sc"><div class="lb">Ativos</div><div class="vl">${pacientesCache.length}</div></div>
+    <div class="sc"><div class="lb">90 dias</div><div class="vl" style="color:var(--v)">${pacientesCache.filter(p=>p.protocolo==90).length}</div></div>
+    <div class="sc"><div class="lb">120 dias</div><div class="vl" style="color:var(--b400)">${pacientesCache.filter(p=>p.protocolo==120).length}</div></div>
+    <div class="sc"><div class="lb">365 dias</div><div class="vl" style="color:var(--a400)">${pacientesCache.filter(p=>p.protocolo==365).length}</div></div>`;
+  const tbody=document.getElementById('pac-tbody');if(!tbody)return;
+  if(!lista.length){tbody.innerHTML=`<tr><td colspan="5"><div class="empty"><i class="ti ti-inbox"></i><p>Nenhum paciente ainda.</p></div></td></tr>`;return}
+  tbody.innerHTML=lista.map(p=>{
+    const tot=p.protocolo||120;const pct=Math.min(100,Math.round((p.diaAtual/tot)*100));
+    return`<tr>
+      <td><strong>${p.nome}</strong><br><span style="color:var(--g400);font-size:11px">${p.wa||'—'}</span></td>
+      <td><span class="badge bv">${tot}d</span></td>
+      <td><strong style="font-size:16px;color:var(--v)">Dia ${p.diaAtual}</strong></td>
+      <td style="min-width:100px"><div class="pb"><div class="pf" style="width:${pct}%"></div></div><span style="font-size:11px;color:var(--g400)">${pct}%</span></td>
+      <td><div style="display:flex;gap:6px">
+        <button class="btn btn-v btn-sm" onclick="abrirPaciente('${p.id}')"><i class="ti ti-chart-line"></i></button>
+        ${p.wa?`<button class="btn-wa" onclick="openWA('${p.wa}')"><i class="ti ti-brand-whatsapp"></i></button>`:''}
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+function filtrarPacientes(q){renderConcierge(pacientesCache.filter(p=>(p.nome||'').toLowerCase().includes(q.toLowerCase())))}
+
+function abrirNovoPaciente(){
+  document.getElementById('mv-title').textContent='Novo paciente';
+  renderContatosModal(contatosCache);
+  document.getElementById('mv-body').innerHTML=`
+    <div class="fg"><label>Buscar contato</label><input type="text" id="np-busca" placeholder="Nome ou número..." oninput="filtrarContatosNP(this.value)"></div>
+    <div class="cont-list" id="np-cont-list" style="margin-bottom:12px;max-height:200px;overflow-y:auto;border:.5px solid var(--g100);border-radius:8px">${contatosCache.slice(0,50).map(c=>`<div class="cont-item" onclick="selContatoNP('${c.id}')"><div class="av">${(c.nome||'?').charAt(0)}</div><div class="ci-info"><div class="cn">${c.nome||'—'}</div><div class="cw">${c.wa||'—'}</div></div></div>`).join('')}</div>
+    <div style="text-align:center;font-size:12px;color:var(--g400);margin-bottom:12px">— ou preencha manualmente —</div>
+    <div class="fr">
+      <div class="fg"><label>Nome</label><input id="np-nome" placeholder="Nome completo"></div>
+      <div class="fg"><label>WhatsApp</label><input id="np-wa" placeholder="51 9..."></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>Protocolo</label>
+        <select id="np-prot"><option value="90">90 dias</option><option value="120" selected>120 dias</option><option value="365">365 dias</option></select>
+      </div>
+      <div class="fg"><label>Dia atual</label><input id="np-dia" type="number" value="1" min="1"></div>
+    </div>
+    <div class="fg"><label>Objetivo</label><input id="np-obj" placeholder="Emagrecimento..."></div>
+    <div class="fg"><label>Início</label><input id="np-inicio" type="date" value="${new Date().toISOString().split('T')[0]}"></div>`;
+  document.getElementById('mv-footer').innerHTML=`
+    <button class="btn-cancel" onclick="closeM('m-ver')">Cancelar</button>
+    <button class="btn btn-v" onclick="salvarNovoPaciente()"><i class="ti ti-check"></i> Salvar</button>`;
+  openM('m-ver');
+}
+
+function filtrarContatosNP(q){
+  const lista=contatosCache.filter(c=>(c.nome||'').toLowerCase().includes(q.toLowerCase())||(c.wa||'').includes(q));
+  const el=document.getElementById('np-cont-list');
+  if(el)el.innerHTML=lista.slice(0,50).map(c=>`<div class="cont-item" onclick="selContatoNP('${c.id}')"><div class="av">${(c.nome||'?').charAt(0)}</div><div class="ci-info"><div class="cn">${c.nome||'—'}</div><div class="cw">${c.wa||'—'}</div></div></div>`).join('');
+}
+function selContatoNP(id){
+  const c=contatosCache.find(x=>x.id===id);if(!c)return;
+  document.getElementById('np-nome').value=c.nome||'';
+  document.getElementById('np-wa').value=c.wa||'';
+  toast('✓ Contato selecionado');
+}
+
+async function salvarNovoPaciente(){
+  const nome=document.getElementById('np-nome').value.trim();
+  if(!nome){toast('⚠️ Informe o nome');return}
+  await fbAdd('pacientes',{
+    nome,wa:document.getElementById('np-wa').value,
+    protocolo:parseInt(document.getElementById('np-prot').value)||120,
+    diaAtual:parseInt(document.getElementById('np-dia').value)||1,
+    objetivo:document.getElementById('np-obj').value,
+    inicio:document.getElementById('np-inicio').value,nota:''
+  });
+  closeM('m-ver');toast('✅ Paciente adicionado!');
+}
+
+// ── PROTOCOLO ──
+function abrirPaciente(id){
+  const p=pacientesCache.find(x=>x.id===id);if(!p)return;
+  pacAtivo=p;
+  const tot=p.protocolo||120;
+  const marcos=[[1,'Início','ti-rocket'],[Math.round(tot*.25),'25%','ti-award'],[Math.round(tot*.5),'50%','ti-award'],[Math.round(tot*.75),'75%','ti-award'],[tot,'Fim','ti-flag']];
+  document.getElementById('mpac-title').textContent=p.nome;
+  document.getElementById('mpac-body').innerHTML=`
+    <div class="ph-pac"><div>
+      <div class="pn">${p.nome}</div>
+      <div class="pm">Início: ${p.inicio||'—'} · ${p.objetivo||''}</div>
+    </div><div style="text-align:right">
+      <div class="pd">Dia ${p.diaAtual}</div>
+      <div class="pdl">${tot-p.diaAtual} dias restantes</div>
+    </div></div>
+    <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+      ${marcos.map(([dia,label,icon])=>{const done=p.diaAtual>dia,curr=Math.abs(p.diaAtual-dia)<=3&&!done;return`
+        <div style="background:${done?'var(--vl)':curr?'var(--a50)':'var(--g50)'};border:.5px solid ${done?'var(--vxl)':curr?'var(--a50)':'var(--g100)'};border-radius:8px;padding:8px 12px;text-align:center;flex:1;min-width:70px">
+          <i class="ti ${icon}" style="font-size:18px;color:${done?'var(--v)':curr?'var(--a400)':'var(--g200)'}"></i>
+          <div style="font-size:14px;font-weight:600;color:${done?'var(--v)':curr?'var(--a600)':'var(--g900)'}">${dia}</div>
+          <div style="font-size:10px;color:var(--g400)">${label}</div>
+        </div>`}).join('')}
+    </div>
+    <div class="fr" style="margin-bottom:12px">
+      <div class="fg"><label>Dia atual</label><input type="number" id="pac-dia" value="${p.diaAtual}" min="1" max="${tot}"></div>
+      <div class="fg"><label>Protocolo</label>
+        <select id="pac-prot">
+          <option value="90"${p.protocolo==90?' selected':''}>90 dias</option>
+          <option value="120"${p.protocolo==120?' selected':''}>120 dias</option>
+          <option value="365"${p.protocolo==365?' selected':''}>365 dias</option>
+        </select>
+      </div>
+    </div>
+    <div class="fg"><label>Mensagem / Anotação do dia</label>
+      <textarea id="pac-nota" rows="3" style="resize:vertical">${p.nota||''}</textarea>
+    </div>
+    ${p.wa?`<button class="btn-wa" style="width:100%;justify-content:center;margin-top:4px" onclick="openWA('${p.wa}')"><i class="ti ti-brand-whatsapp"></i> Enviar mensagem para ${p.nome.split(' ')[0]}</button>`:''}`;
+  openM('m-pac');
+}
+
+async function salvarProtocolo(){
+  if(!pacAtivo)return;
+  await fbUp('pacientes',pacAtivo.id,{
+    diaAtual:parseInt(document.getElementById('pac-dia').value)||1,
+    protocolo:parseInt(document.getElementById('pac-prot').value)||120,
+    nota:document.getElementById('pac-nota').value,
+  });
+  closeM('m-pac');toast('✅ Protocolo atualizado');
+}
+
+// ── VISÃO POR DIA ──
+function pgDias(){
+  return`<div class="ph"><div><h2>Visão por dia</h2><p>Pacientes agrupados pelo dia do protocolo</p></div></div>
+  <div id="dias-body"><div class="loading"><i class="ti ti-loader spin"></i></div></div>`;
+}
+function renderDias(){
+  const el=document.getElementById('dias-body');if(!el)return;
+  if(!pacientesCache.length){el.innerHTML=`<div class="empty"><i class="ti ti-calendar-off"></i><p>Nenhum paciente em protocolo.</p></div>`;return}
+  const porDia={};
+  pacientesCache.forEach(p=>{const d=p.diaAtual||1;if(!porDia[d])porDia[d]=[];porDia[d].push(p)});
+  const dias=Object.keys(porDia).map(Number).sort((a,b)=>a-b);
+  el.innerHTML=`<div class="dias-grid">${dias.map(dia=>{
+    const pacs=porDia[dia];
+    return`<div class="dc tem">
+      <div class="dch"><span>Dia ${dia}</span><span style="font-weight:400">${pacs.length} pac.</span></div>
+      <div class="dcb">
+        ${pacs.map(p=>`<div class="dpac">
+          <i class="ti ti-user" style="font-size:13px;color:var(--v);flex-shrink:0"></i>
+          <span style="flex:1">${p.nome.split(' ')[0]}</span>
+          ${p.wa?`<button class="btn-wa" style="padding:2px 7px;font-size:11px" onclick="openWA('${p.wa}')"><i class="ti ti-brand-whatsapp"></i></button>`:''}
+        </div>`).join('')}
+        ${pacs[0]?.nota?`<div class="dmsg">${pacs[0].nota.substring(0,80)}${pacs[0].nota.length>80?'...':''}</div>`:''}
+        <button class="btn btn-ghost btn-sm" style="width:100%;margin-top:8px;font-size:11px" onclick="abrirPaciente('${pacs[0].id}')"><i class="ti ti-pencil"></i> Editar dia</button>
+      </div></div>`;
+  }).join('')}</div>`;
+}
+
+// ── UTILS ──
+function openM(id){document.getElementById(id).classList.add('open')}
+function closeM(id){document.getElementById(id).classList.remove('open')}
+function openWA(n){const l=(n||'').replace(/\D/g,'');if(!l)return;window.open('https://wa.me/'+(l.startsWith('55')?l:'55'+l),'_blank')}
+document.querySelectorAll('.mo').forEach(el=>el.addEventListener('click',e=>{if(e.target===el)el.classList.remove('open')}));
+window.addEventListener('firebase-ready',()=>console.log('✅ Instituto Müller Firebase OK'));
+
+window.login=login; window.logout=logout; window.nav=nav;
+window.abrirNovoLead=abrirNovoLead; window.salvarLead=salvarLead;
+window.filtrarContatosM=filtrarContatosM; window.selContato=selContato;
+window.abrirFluxoEditor=abrirFluxoEditor; window.salvarFluxo=salvarFluxo;
+window.rmEtapa=rmEtapa; window.addEtapa=addEtapa;
+window.editarCol=editarCol; window.salvarCol=salvarCol; window.deletarCol=deletarCol; window.adicionarCol=adicionarCol;
+window.verContato=verContato; window.moverEtapa=moverEtapa;
+window.enviarParaVendas=enviarParaVendas; window.abrirEnviarMarketing=abrirEnviarMarketing;
+window.abrirEnviarConcierge=abrirEnviarConcierge; window.confirmarEnviarConcierge=confirmarEnviarConcierge;
+window.addFluxo=addFluxo; window.addFluxoConcierge=addFluxoConcierge;
+window.adicionarContatoAoFluxo=adicionarContatoAoFluxo; window.atualizarEtapasDestino=atualizarEtapasDestino;
+window.confirmarAdicionarFluxo=confirmarAdicionarFluxo; window.filtrarContatos=filtrarContatos;
+window.abrirNovoPaciente=abrirNovoPaciente; window.salvarNovoPaciente=salvarNovoPaciente;
+window.filtrarContatosNP=filtrarContatosNP; window.selContatoNP=selContatoNP;
+window.abrirPaciente=abrirPaciente; window.salvarProtocolo=salvarProtocolo;
+window.filtrarPacientes=filtrarPacientes; window.openWA=openWA;
+window.openM=openM; window.closeM=closeM;
+</script>
+</body>
+</html>
