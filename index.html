@@ -164,12 +164,6 @@ tbody tr:hover{background:var(--g50)}
 .pb{background:var(--g100);border-radius:4px;height:6px;overflow:hidden;display:block;width:100%}
 .pf{height:100%;border-radius:4px;background:var(--v)}
 
-/* DRAG AND DROP */
-.kcard.dragging{opacity:.4;transform:scale(.97);cursor:grabbing}
-.kcard{cursor:grab}
-.kards.drag-over{background:var(--vl);border-radius:8px;outline:2px dashed var(--v)}
-.kards.drag-over *{pointer-events:none}
-
 /* TOAST */
 .toast{position:fixed;bottom:24px;right:24px;background:var(--v);color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;z-index:999;opacity:0;transform:translateY(8px);transition:all .25s;max-width:300px}
 .toast.show{opacity:1;transform:translateY(0)}
@@ -353,11 +347,10 @@ let _novoLeadAba='atendente';
 let fluxoEditTemp=[], fluxoEditAba='';
 
 const ETAPAS_AT_DEF=[
-  {nome:'Contato salvo',cor:'#888780'},{nome:'Lead novo',cor:'#1D9E75'},
-  {nome:'Qualificando',cor:'#378ADD'},{nome:'Consulta ofertada',cor:'#BA7517'},
-  {nome:'Aguardando decisão',cor:'#888780'},{nome:'Pré-agendado',cor:'#7F77DD'},
-  {nome:'Pix pendente',cor:'#D85A30'},{nome:'Consulta confirmada',cor:'#1D9E75'},
-  {nome:'Consulta realizada',cor:'#534AB7'},
+  {nome:'Lead novo',cor:'#1D9E75'},{nome:'Qualificando',cor:'#378ADD'},
+  {nome:'Consulta ofertada',cor:'#BA7517'},{nome:'Aguardando decisão',cor:'#888780'},
+  {nome:'Pré-agendado',cor:'#7F77DD'},{nome:'Pix pendente',cor:'#D85A30'},
+  {nome:'Consulta confirmada',cor:'#1D9E75'},{nome:'Consulta realizada',cor:'#534AB7'},
 ];
 const ETAPAS_V_DEF=[
   {nome:'Proposta enviada',cor:'#378ADD'},{nome:'Em negociação',cor:'#BA7517'},
@@ -458,10 +451,7 @@ function renderKanban(aba){
         <span class="kcc">${cards.length}</span>
         <button class="btn-ec" onclick="editarCol('${aba}',${ci})"><i class="ti ti-pencil"></i></button>
       </div></div>
-      <div class="kards" data-etapa="${col.nome}" style="padding:10px;min-height:80px;display:flex;flex-direction:column;gap:8px"
-        ondragover="dragOver(event)"
-        ondragleave="dragLeave(event)"
-        ondrop="dropCard(event,'${col.nome}','${aba}')">
+      <div class="kards" style="padding:10px;min-height:80px;display:flex;flex-direction:column;gap:8px">
         ${cards.map(c=>mkCard(c,aba)).join('')}
         ${!cards.length?`<div style="padding:16px;text-align:center;color:var(--g200);font-size:12px">Vazio</div>`:''}
       </div></div>`;
@@ -469,11 +459,7 @@ function renderKanban(aba){
 }
 
 function mkCard(c,aba){
-  return`<div class="kcard" draggable="true"
-    data-id="${c.id}" data-aba="${aba}"
-    ondragstart="dragStart(event,'${c.id}','${aba}')"
-    ondragend="dragEnd(event)"
-    onclick="verContato('${c.id}','${aba}')">
+  return`<div class="kcard" onclick="verContato('${c.id}','${aba}')">
     <div class="kn">${c.nome||'Sem nome'}</div>
     <div class="ks">${c.wa||'—'}${c.origem?' · '+c.origem:''}</div>
     ${c.objetivo?`<div class="ks" style="margin-top:3px;color:var(--g500)">${c.objetivo.substring(0,50)}</div>`:''}
@@ -963,79 +949,12 @@ function renderDias(){
   }).join('')}</div>`;
 }
 
-// ── DRAG AND DROP ──
-let _dragId=null, _dragAba=null;
-
-function dragStart(e,id,aba){
-  _dragId=id; _dragAba=aba;
-  e.currentTarget.classList.add('dragging');
-  e.dataTransfer.effectAllowed='move';
-}
-function dragEnd(e){
-  e.currentTarget.classList.remove('dragging');
-  document.querySelectorAll('.kards').forEach(el=>el.classList.remove('drag-over'));
-}
-function dragOver(e){
-  e.preventDefault();
-  e.dataTransfer.dropEffect='move';
-  e.currentTarget.classList.add('drag-over');
-}
-function dragLeave(e){
-  e.currentTarget.classList.remove('drag-over');
-}
-async function dropCard(e,novaEtapa,aba){
-  e.preventDefault();
-  e.currentTarget.classList.remove('drag-over');
-  if(!_dragId||!_dragAba)return;
-  if(_dragAba!==aba)return;
-  await moverEtapa(_dragId,aba,novaEtapa);
-  _dragId=null; _dragAba=null;
-}
-
-// Touch drag support (mobile)
-let _touchCard=null,_touchClone=null,_touchAba=null,_touchId=null;
-function initTouchDrag(){
-  document.addEventListener('touchstart',e=>{
-    const card=e.target.closest('.kcard');
-    if(!card)return;
-    _touchCard=card;
-    _touchId=card.dataset.id;
-    _touchAba=card.dataset.aba;
-    _touchClone=card.cloneNode(true);
-    _touchClone.style.cssText='position:fixed;opacity:.7;pointer-events:none;z-index:9999;width:'+card.offsetWidth+'px;transform:scale(1.05)';
-    document.body.appendChild(_touchClone);
-  },{passive:true});
-  document.addEventListener('touchmove',e=>{
-    if(!_touchClone)return;
-    const t=e.touches[0];
-    _touchClone.style.left=(t.clientX-80)+'px';
-    _touchClone.style.top=(t.clientY-30)+'px';
-    document.querySelectorAll('.kards').forEach(el=>el.classList.remove('drag-over'));
-    const el=document.elementFromPoint(t.clientX,t.clientY);
-    const kards=el?.closest('.kards');
-    if(kards)kards.classList.add('drag-over');
-  },{passive:true});
-  document.addEventListener('touchend',async e=>{
-    if(!_touchClone)return;
-    const t=e.changedTouches[0];
-    const el=document.elementFromPoint(t.clientX,t.clientY);
-    const kards=el?.closest('.kards');
-    document.querySelectorAll('.kards').forEach(el=>el.classList.remove('drag-over'));
-    if(kards&&_touchId&&_touchAba){
-      const novaEtapa=kards.dataset.etapa;
-      if(novaEtapa)await moverEtapa(_touchId,_touchAba,novaEtapa);
-    }
-    _touchClone.remove();
-    _touchClone=null;_touchCard=null;_touchId=null;_touchAba=null;
-  });
-}
-
 // ── UTILS ──
 function openM(id){document.getElementById(id).classList.add('open')}
 function closeM(id){document.getElementById(id).classList.remove('open')}
-function openWA(n){if(!n)return;const clean=(n||'').replace(/@.*$/,'').replace(/\D/g,'');if(!clean||clean.length<8)return;window.open('https://wa.me/'+(clean.startsWith('55')?clean:'55'+clean),'_blank')}
+function openWA(n){const l=(n||'').replace(/\D/g,'');if(!l)return;window.open('https://wa.me/'+(l.startsWith('55')?l:'55'+l),'_blank')}
 document.querySelectorAll('.mo').forEach(el=>el.addEventListener('click',e=>{if(e.target===el)el.classList.remove('open')}));
-window.addEventListener('firebase-ready',()=>{console.log('✅ Instituto Müller Firebase OK');initTouchDrag();});
+window.addEventListener('firebase-ready',()=>console.log('✅ Instituto Müller Firebase OK'));
 
 window.login=login; window.logout=logout; window.nav=nav;
 window.abrirNovoLead=abrirNovoLead; window.salvarLead=salvarLead;
@@ -1053,7 +972,7 @@ window.abrirNovoPaciente=abrirNovoPaciente; window.salvarNovoPaciente=salvarNovo
 window.filtrarContatosNP=filtrarContatosNP; window.selContatoNP=selContatoNP;
 window.abrirPaciente=abrirPaciente; window.salvarProtocolo=salvarProtocolo;
 window.filtrarPacientes=filtrarPacientes; window.openWA=openWA;
-window.openM=openM; window.closeM=closeM; window.dragStart=dragStart; window.dragEnd=dragEnd; window.dragOver=dragOver; window.dragLeave=dragLeave; window.dropCard=dropCard;
+window.openM=openM; window.closeM=closeM;
 </script>
 </body>
 </html>
