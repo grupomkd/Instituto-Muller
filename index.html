@@ -164,12 +164,6 @@ tbody tr:hover{background:var(--g50)}
 .pb{background:var(--g100);border-radius:4px;height:6px;overflow:hidden;display:block;width:100%}
 .pf{height:100%;border-radius:4px;background:var(--v)}
 
-/* DRAG AND DROP */
-.kcard.dragging{opacity:.4;transform:scale(.97);cursor:grabbing}
-.kcard{cursor:grab}
-.kards.drag-over{background:var(--vl);border-radius:8px;outline:2px dashed var(--v)}
-.kards.drag-over *{pointer-events:none}
-
 /* TOAST */
 .toast{position:fixed;bottom:24px;right:24px;background:var(--v);color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;z-index:999;opacity:0;transform:translateY(8px);transition:all .25s;max-width:300px}
 .toast.show{opacity:1;transform:translateY(0)}
@@ -353,11 +347,10 @@ let _novoLeadAba='atendente';
 let fluxoEditTemp=[], fluxoEditAba='';
 
 const ETAPAS_AT_DEF=[
-  {nome:'Contato salvo',cor:'#888780'},{nome:'Lead novo',cor:'#1D9E75'},
-  {nome:'Qualificando',cor:'#378ADD'},{nome:'Consulta ofertada',cor:'#BA7517'},
-  {nome:'Aguardando decisão',cor:'#888780'},{nome:'Pré-agendado',cor:'#7F77DD'},
-  {nome:'Pix pendente',cor:'#D85A30'},{nome:'Consulta confirmada',cor:'#1D9E75'},
-  {nome:'Consulta realizada',cor:'#534AB7'},
+  {nome:'Lead novo',cor:'#1D9E75'},{nome:'Qualificando',cor:'#378ADD'},
+  {nome:'Consulta ofertada',cor:'#BA7517'},{nome:'Aguardando decisão',cor:'#888780'},
+  {nome:'Pré-agendado',cor:'#7F77DD'},{nome:'Pix pendente',cor:'#D85A30'},
+  {nome:'Consulta confirmada',cor:'#1D9E75'},{nome:'Consulta realizada',cor:'#534AB7'},
 ];
 const ETAPAS_V_DEF=[
   {nome:'Proposta enviada',cor:'#378ADD'},{nome:'Em negociação',cor:'#BA7517'},
@@ -401,14 +394,13 @@ async function login(r){
   window._u2=fbListen('vendas',d=>{vendasCache=d;if(paginaAtual==='vendas')renderKanban('vendas')});
   window._u3=fbListen('pacientes',d=>{pacientesCache=d;if(paginaAtual==='concierge')renderConcierge();if(paginaAtual==='dias')renderDias()});
   window._u4=fbListen('contatos_wa',d=>{contatosCache=d;if(paginaAtual==='contatos')renderTabContatos()});
-  carregarMsgsDia();
   nav(r==='atendente'?'atendente':r==='vendas'?'vendas':'concierge');
 }
 function logout(){['_u1','_u2','_u3','_u4'].forEach(k=>{if(window[k])window[k]()});role=null;paginaAtual='';document.getElementById('login-screen').style.display='flex';document.getElementById('app').style.display='none'}
 
 // ── SIDEBAR ──
 const navMap={
-  atendente:[{id:'atendente',icon:'ti-users',label:'Leads & Qualificação',badge:true},{id:'outros',icon:'ti-users-group',label:'Outros contatos'},{id:'contatos',icon:'ti-address-book',label:'Contatos WA'}],
+  atendente:[{id:'atendente',icon:'ti-users',label:'Leads & Qualificação',badge:true},{id:'contatos',icon:'ti-address-book',label:'Contatos WA'}],
   vendas:[{id:'vendas',icon:'ti-target',label:'Pipeline de vendas'},{id:'contatos',icon:'ti-address-book',label:'Contatos WA'}],
   concierge:[{id:'concierge',icon:'ti-clipboard-heart',label:'Pacientes'},{id:'dias',icon:'ti-calendar-stats',label:'Visão por dia'},{id:'contatos',icon:'ti-address-book',label:'Contatos WA'}]
 };
@@ -426,8 +418,7 @@ function nav(id){
   if(id==='atendente'){c.innerHTML=pgKanban('atendente');renderKanban('atendente')}
   else if(id==='vendas'){c.innerHTML=pgKanban('vendas');renderKanban('vendas')}
   else if(id==='concierge'){c.innerHTML=pgConcierge();renderConcierge()}
-  else if(id==='dias'){c.innerHTML=pgDias();setTimeout(()=>{setDiasFiltro(120);renderDias();},50)}
-  else if(id==='outros'){c.innerHTML=pgOutros();renderOutros()}
+  else if(id==='dias'){c.innerHTML=pgDias();renderDias()}
   else if(id==='contatos'){c.innerHTML=pgContatos();renderTabContatos()}
 }
 
@@ -460,10 +451,7 @@ function renderKanban(aba){
         <span class="kcc">${cards.length}</span>
         <button class="btn-ec" onclick="editarCol('${aba}',${ci})"><i class="ti ti-pencil"></i></button>
       </div></div>
-      <div class="kards" data-etapa="${col.nome}" style="padding:10px;min-height:80px;display:flex;flex-direction:column;gap:8px"
-        ondragover="dragOver(event)"
-        ondragleave="dragLeave(event)"
-        ondrop="dropCard(event,'${col.nome}','${aba}')">
+      <div class="kards" style="padding:10px;min-height:80px;display:flex;flex-direction:column;gap:8px">
         ${cards.map(c=>mkCard(c,aba)).join('')}
         ${!cards.length?`<div style="padding:16px;text-align:center;color:var(--g200);font-size:12px">Vazio</div>`:''}
       </div></div>`;
@@ -471,11 +459,7 @@ function renderKanban(aba){
 }
 
 function mkCard(c,aba){
-  return`<div class="kcard" draggable="true"
-    data-id="${c.id}" data-aba="${aba}"
-    ondragstart="dragStart(event,'${c.id}','${aba}')"
-    ondragend="dragEnd(event)"
-    onclick="verContato('${c.id}','${aba}')">
+  return`<div class="kcard" onclick="verContato('${c.id}','${aba}')">
     <div class="kn">${c.nome||'Sem nome'}</div>
     <div class="ks">${c.wa||'—'}${c.origem?' · '+c.origem:''}</div>
     ${c.objetivo?`<div class="ks" style="margin-top:3px;color:var(--g500)">${c.objetivo.substring(0,50)}</div>`:''}
@@ -616,18 +600,8 @@ function verContato(id,aba){
           </div>
         </div>`:''}
     </div>`;
-  document.getElementById('mv-footer').innerHTML=`
-    <button class="btn btn-danger btn-sm" onclick="removerDoFluxo('${id}','${aba}')"><i class="ti ti-trash"></i> Remover do fluxo</button>
-    <button class="btn-cancel" onclick="closeM('m-ver')">Fechar</button>`;
+  document.getElementById('mv-footer').innerHTML=`<button class="btn-cancel" onclick="closeM('m-ver')">Fechar</button>`;
   openM('m-ver');
-}
-
-async function removerDoFluxo(id,aba){
-  if(!confirm('Remover do fluxo? O contato continua em Contatos WA.'))return;
-  const col=aba==='atendente'?'leads':'vendas';
-  await fbDel(col,id);
-  closeM('m-ver');
-  toast('✅ Removido do fluxo');
 }
 
 async function moverEtapa(id,aba,etapa){
@@ -811,37 +785,14 @@ function selContato(id){
 }
 
 // ── CONCIERGE ──
-// ── PROTOCOLOS DATA ──
-const PROTO = {
-  90: [[0,"D0 Aplicação + Consulta Nutri + Peso + Foto + Bioimpedância"],[1,"D1 Follow-up aplicação"],[4,"D4 Reforço hidratação"],[7,"D7 Reforço alimentação"],[9,"D9 Confirmação aplicação"],[10,"D10 2ª Aplicação"],[11,"D11 Follow-up aplicação"],[14,"D14 Exercício"],[17,"D17 Monitoramento sintomas"],[19,"D19 Confirmação aplicação"],[20,"D20 3ª Aplicação"],[21,"D21 Follow-up aplicação"],[24,"D24 Motivacional"],[27,"D27 Reforço hidratação"],[29,"D29 Preparação consulta"],[30,"D30 4ª Aplicação + Consulta Dr Sérgio + Peso + Foto + Bioimpedância"],[31,"D31 Follow-up consulta"],[39,"D39 Confirmação aplicação"],[40,"D40 5ª Aplicação"],[41,"D41 Follow-up aplicação"],[44,"D44 Reforço alimentação"],[47,"D47 Exercício"],[49,"D49 Confirmação aplicação"],[50,"D50 5ª Aplicação + Bioimpedância rápida"],[51,"D51 Follow-up aplicação"],[54,"D54 Monitoramento sintomas"],[57,"D57 Motivacional"],[59,"D59 Preparação consulta"],[60,"D60 6ª Aplicação + Consulta Dr Sérgio + Peso + Foto + Bioimpedância"],[61,"D61 Follow-up consulta"],[69,"D69 Confirmação aplicação"],[70,"D70 Aplicação"],[71,"D71 Follow-up aplicação"],[74,"D74 Reforço hidratação"],[77,"D77 Alimentação"],[79,"D79 Confirmação aplicação"],[80,"D80 Aplicação + Bioimpedância rápida"],[81,"D81 Follow-up aplicação"],[84,"D84 Monitoramento sintomas"],[87,"D87 Motivacional"],[89,"D89 Preparação encerramento"],[90,"D90 Consulta Dr Sérgio + Consulta Nutri + Peso + Foto + Bioimpedância + Comparativo + Planejamento"],[91,"D91 Follow-up consulta"]],
-  120: [[0,"D0 Orientação + Consulta paga"],[1,"D1 Confirmação pré-consulta"],[2,"D2 Pré-consulta"],[4,"D4 Reforço exames"],[6,"D6 Confirmação consulta"],[7,"D7 Consulta inicial + Peso + Foto + Bioimpedância"],[8,"D8 Pós-consulta"],[9,"D9 Negociação / Fechamento"],[10,"D10 Follow-up + Consulta Nutri"],[11,"D11 Monitoramento interno"],[12,"D12 Confirmação aplicação"],[13,"D13 1ª Aplicação"],[14,"D14 Follow-up aplicação"],[17,"D17 Reforço adesão alimentar"],[19,"D19 Monitoramento sintomas"],[20,"D20 2ª Aplicação"],[21,"D21 Follow-up aplicação"],[23,"D23 Hidratação + Proteína"],[26,"D26 Confirmação aplicação"],[27,"D27 3ª Aplicação"],[28,"D28 Follow-up aplicação"],[29,"D29 Confirmação D34"],[31,"D31 Reforço evolução"],[33,"D33 Confirmação aplicação"],[34,"D34 4ª Aplicação + Peso + Foto + Bioimpedância"],[37,"D37 Reforço adesão"],[40,"D40 Monitoramento sintomas"],[41,"D41 5ª Aplicação"],[42,"D42 Preparação consulta"],[43,"D43 Confirmação consulta"],[45,"D45 Consulta Ajuste Dr Sérgio + Peso + Foto + Bioimpedância"],[46,"D46 Follow-up consulta"],[47,"D47 Confirmação aplicação"],[48,"D48 6ª Aplicação + Bioimpedância rápida + Checkpoint Nutri"],[49,"D49 Follow-up aplicação"],[50,"D50 Consulta Nutri"],[51,"D51 Reforço alimentar"],[54,"D54 Monitoramento sintomas"],[55,"D55 7ª Aplicação"],[56,"D56 Follow-up aplicação"],[58,"D58 Confirmação aplicação"],[59,"D59 Hidratação"],[60,"D60 Checkpoint motivacional"],[61,"D61 Monitoramento interno"],[62,"D62 8ª Aplicação + Bioimpedância rápida"],[63,"D63 Follow-up aplicação"],[67,"D67 Reforço exames"],[69,"D69 9ª Aplicação + Reforço realização exames"],[70,"D70 Follow-up aplicação"],[71,"D71 Agendar consulta D75"],[75,"D75 Consulta robusta Dr Sérgio + Peso + Foto + Bioimpedância"],[76,"D76 10ª Aplicação + Bioimpedância rápida + Follow-up consulta"],[77,"D77 Follow-up aplicação"],[79,"D79 Conversa continuidade"],[82,"D82 Confirmação aplicação"],[83,"D83 11ª Aplicação"],[84,"D84 Follow-up aplicação"],[89,"D89 Confirmação consulta + aplicação se houver"],[90,"D90 Consulta encerramento + Peso + Foto + Bioimpedância + Comparativo + Renovação"],[91,"D91 Follow-up aplicação"],[94,"D94 Reforço Hidratação"],[96,"D96 Confirmação aplicação"],[97,"D97 13ª Aplicação"],[98,"D98 Follow-up aplicação"],[101,"D101 Reforço Alimentação"],[103,"D103 Confirmação aplicação"],[104,"D104 14ª Aplicação + Bioimpedância rápida"],[105,"D105 Follow-up aplicação"],[108,"D108 Exercício"],[110,"D110 Confirmação aplicação"],[111,"D111 15ª Aplicação"],[112,"D112 Follow-up aplicação + Monitoramento sintomas"],[115,"D115 Motivacional"],[117,"D117 Confirmação aplicação"],[118,"D118 16ª Aplicação"],[119,"D119 Consulta Dr Sérgio + Peso + Foto + Bioimpedância"],[120,"D120 Follow-up consulta"]],
-  365: [[0,"D0 Orientação + Consulta paga"],[1,"D1 Confirmação pré-consulta"],[7,"D7 Consulta inicial + Peso + Foto + Bioimpedância"],[13,"D13 1ª Aplicação"],[20,"D20 2ª Aplicação"],[27,"D27 3ª Aplicação"],[34,"D34 4ª Aplicação + Peso + Foto + Bioimpedância"],[45,"D45 Consulta Ajuste Dr Sérgio + Peso + Foto + Bioimpedância"],[55,"D55 7ª Aplicação"],[75,"D75 Consulta robusta Dr Sérgio + Peso + Foto + Bioimpedância"],[90,"D90 Consulta encerramento 1º ciclo + Renovação"],[120,"D120 Follow-up consulta"],[149,"D149 Consulta Dr Sérgio + Peso + Foto + Bioimpedância"],[179,"D179 Consulta Dr Sérgio + Revisão exames"],[209,"D209 29ª Aplicação + Consulta Dr Sérgio + Peso + Foto + Bioimpedância"],[239,"D239 Consulta Dr Sérgio + Peso + Foto + Bioimpedância"],[269,"D269 Consulta Dr Sérgio + Revisão exames"],[299,"D299 Consulta Dr Sérgio"],[329,"D329 Consulta Dr Sérgio"],[354,"D354 Consulta Dr Sérgio + Comparativo anual + Revisão exames + Planejamento"],[359,"D359 Encerramento + Comparativo D0 x D360 + Renovação + Planejamento manutenção"]]
-};
-
-function tarefaDoDia(protocolo, dia) {
-  const lista = PROTO[protocolo] || PROTO[120];
-  let ultima = lista[0];
-  for (const [d, tarefa] of lista) {
-    if (d <= dia) ultima = [d, tarefa];
-    else break;
-  }
-  const proxima = lista.find(([d]) => d > dia);
-  return { atual: ultima[1], proxDia: proxima ? proxima[0] : null };
-}
-
-function diaAtualCalculado(p) {
-  if (!p.inicio) return p.diaAtual || 1;
-  const inicio = new Date(p.inicio);
-  const hoje = new Date();
-  const diff = Math.floor((hoje - inicio) / (1000 * 60 * 60 * 24));
-  return Math.max(1, Math.min(diff + 1, p.protocolo || 120));
-}
-
 function pgConcierge(){
-  return`<div class="ph"><div><h2>Pacientes em protocolo</h2><p>Avanço automático diário — ${new Date().toLocaleDateString('pt-BR')}</p></div>
+  return`<div class="ph"><div><h2>Pacientes em protocolo</h2><p>Acompanhamento ativo</p></div>
     <button class="btn btn-v btn-sm" onclick="abrirNovoPaciente()"><i class="ti ti-plus"></i> Novo paciente</button></div>
   <div class="stats-row" id="pac-stats"></div>
-  <div id="pac-fileiras"><div class="loading"><i class="ti ti-loader spin"></i></div></div>`
+  <div class="tc"><div class="tt"><input type="text" placeholder="Buscar paciente..." oninput="filtrarPacientes(this.value)"></div>
+  <table><thead><tr><th>Paciente</th><th>Protocolo</th><th>Dia</th><th>Progresso</th><th>Ações</th></tr></thead>
+  <tbody id="pac-tbody"><tr><td colspan="5"><div class="loading"><i class="ti ti-loader spin"></i></div></td></tr></tbody>
+  </table></div>`;
 }
 
 function renderConcierge(lista){
@@ -852,67 +803,20 @@ function renderConcierge(lista){
     <div class="sc"><div class="lb">90 dias</div><div class="vl" style="color:var(--v)">${pacientesCache.filter(p=>p.protocolo==90).length}</div></div>
     <div class="sc"><div class="lb">120 dias</div><div class="vl" style="color:var(--b400)">${pacientesCache.filter(p=>p.protocolo==120).length}</div></div>
     <div class="sc"><div class="lb">365 dias</div><div class="vl" style="color:var(--a400)">${pacientesCache.filter(p=>p.protocolo==365).length}</div></div>`;
-
-  const el = document.getElementById('pac-fileiras'); if(!el)return;
-
-  const grupos = {90:[], 120:[], 365:[]};
-  lista.forEach(p => {
-    const tot = parseInt(p.protocolo)||120;
-    const diaReal = diaAtualCalculado(p);
-    if(p.inicio && diaReal !== (p.diaAtual||1)) fbUp('pacientes', p.id, {diaAtual: diaReal}).catch(()=>{});
-    const d = {...p, diaReal, tot};
-    if(grupos[tot]) grupos[tot].push(d); else grupos[120].push(d);
-  });
-
-  el.innerHTML = [90, 120, 365].map(tot => {
-    const pacs = grupos[tot];
-    const cor = tot===90?'var(--v)':tot===120?'var(--b400)':'var(--a400)';
-    const bg = tot===90?'var(--vl)':tot===120?'var(--b50)':'var(--a50)';
-    return `
-    <div style="margin-bottom:32px">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:10px;border-bottom:.5px solid var(--g100)">
-        <div style="width:4px;height:26px;background:${cor};border-radius:2px;flex-shrink:0"></div>
-        <h3 style="font-size:16px;font-weight:600;color:var(--g900)">Protocolo ${tot} dias</h3>
-        <span style="background:${bg};color:${cor};font-size:11px;font-weight:600;padding:3px 10px;border-radius:10px">${pacs.length} paciente${pacs.length!==1?'s':''}</span>
-      </div>
-      ${!pacs.length
-        ? `<div style="background:#fff;border:1.5px dashed var(--g100);border-radius:10px;padding:24px;text-align:center;color:var(--g400);font-size:13px">Nenhum paciente neste protocolo ainda</div>`
-        : `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px">
-          ${pacs.map(p => {
-            const pct = Math.min(100, Math.round((p.diaReal/tot)*100));
-            const tarefa = tarefaDoDia(tot, p.diaReal);
-            const diasProx = tarefa.proxDia ? tarefa.proxDia - p.diaReal : null;
-            const urgente = diasProx !== null && diasProx <= 1;
-            return `<div style="background:#fff;border:${urgente?'1.5px solid '+cor:'.5px solid var(--g100)'};border-radius:12px;padding:16px;cursor:pointer;transition:all .15s"
-              onclick="abrirPaciente('${p.id}')"
-              onmouseenter="this.style.boxShadow='0 2px 12px rgba(0,0,0,.08)'"
-              onmouseleave="this.style.boxShadow='none'">
-              <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px">
-                <div style="flex:1;min-width:0">
-                  <div style="font-size:14px;font-weight:600;color:var(--g900);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.nome}</div>
-                  <div style="font-size:11px;color:var(--g400);margin-top:2px">${p.wa||'—'}</div>
-                </div>
-                <div style="text-align:right;flex-shrink:0;margin-left:8px">
-                  <div style="font-size:24px;font-weight:700;color:${cor};line-height:1">D${p.diaReal}</div>
-                  <div style="font-size:10px;color:var(--g400)">${tot-p.diaReal}d restam</div>
-                </div>
-              </div>
-              <div style="background:var(--g100);border-radius:4px;height:5px;overflow:hidden;margin-bottom:10px">
-                <div style="height:100%;border-radius:4px;background:${cor};width:${pct}%"></div>
-              </div>
-              <div style="background:${urgente?cor+'15':bg};border-radius:8px;padding:8px 10px;font-size:12px;color:${urgente?cor:'var(--g600)'};line-height:1.4;margin-bottom:8px">
-                <span style="font-weight:600;display:block;font-size:10px;text-transform:uppercase;letter-spacing:.4px;margin-bottom:2px;color:${cor}">Tarefa do dia</span>
-                ${tarefa.atual.replace(/^D\d+\s*/,'')}
-              </div>
-              <div style="display:flex;align-items:center;justify-content:space-between">
-                <span style="font-size:11px;color:var(--g400)">${diasProx?`Próximo: Dia ${tarefa.proxDia} (+${diasProx}d)`:''}</span>
-                ${p.wa?`<button class="btn-wa" style="padding:3px 8px;font-size:11px" onclick="event.stopPropagation();openWA('${p.wa}')"><i class="ti ti-brand-whatsapp"></i></button>`:''}
-              </div>
-            </div>`;
-          }).join('')}
-        </div>`
-      }
-    </div>`;
+  const tbody=document.getElementById('pac-tbody');if(!tbody)return;
+  if(!lista.length){tbody.innerHTML=`<tr><td colspan="5"><div class="empty"><i class="ti ti-inbox"></i><p>Nenhum paciente ainda.</p></div></td></tr>`;return}
+  tbody.innerHTML=lista.map(p=>{
+    const tot=p.protocolo||120;const pct=Math.min(100,Math.round((p.diaAtual/tot)*100));
+    return`<tr>
+      <td><strong>${p.nome}</strong><br><span style="color:var(--g400);font-size:11px">${p.wa||'—'}</span></td>
+      <td><span class="badge bv">${tot}d</span></td>
+      <td><strong style="font-size:16px;color:var(--v)">Dia ${p.diaAtual}</strong></td>
+      <td style="min-width:100px"><div class="pb"><div class="pf" style="width:${pct}%"></div></div><span style="font-size:11px;color:var(--g400)">${pct}%</span></td>
+      <td><div style="display:flex;gap:6px">
+        <button class="btn btn-v btn-sm" onclick="abrirPaciente('${p.id}')"><i class="ti ti-chart-line"></i></button>
+        ${p.wa?`<button class="btn-wa" onclick="openWA('${p.wa}')"><i class="ti ti-brand-whatsapp"></i></button>`:''}
+      </div></td>
+    </tr>`;
   }).join('');
 }
 
@@ -1019,324 +923,38 @@ async function salvarProtocolo(){
 }
 
 // ── VISÃO POR DIA ──
-let diasProtocoFiltro = 120;
-
 function pgDias(){
-  return`<div class="ph">
-    <div><h2>Visão por dia</h2><p>Todos os dias do protocolo com pacientes e tarefas</p></div>
-  </div>
-  <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center">
-    <span style="font-size:12px;color:var(--g400);font-weight:500">Protocolo:</span>
-    <button class="btn btn-sm" id="btn-f90" onclick="setDiasFiltro(90)" style="background:var(--vl);color:var(--v);border:.5px solid var(--vxl)">90 dias</button>
-    <button class="btn btn-sm" id="btn-f120" onclick="setDiasFiltro(120)" style="background:var(--vl);color:var(--v);border:.5px solid var(--vxl)">120 dias</button>
-    <button class="btn btn-sm" id="btn-f365" onclick="setDiasFiltro(365)" style="background:var(--g50);color:var(--g600);border:.5px solid var(--g100)">365 dias</button>
-    <span id="dias-resumo" style="margin-left:auto;font-size:12px;color:var(--g400)"></span>
-  </div>
-  <div id="dias-grid-wrap" style="overflow-x:auto;padding-bottom:16px">
-    <div class="loading"><i class="ti ti-loader spin"></i></div>
-  </div>`;
+  return`<div class="ph"><div><h2>Visão por dia</h2><p>Pacientes agrupados pelo dia do protocolo</p></div></div>
+  <div id="dias-body"><div class="loading"><i class="ti ti-loader spin"></i></div></div>`;
 }
-
-function setDiasFiltro(n){
-  diasProtocoFiltro = n;
-  [90,120,365].forEach(x=>{
-    const el=document.getElementById('btn-f'+x);
-    if(!el)return;
-    if(x===n){el.style.background='var(--v)';el.style.color='#fff';el.style.border='.5px solid var(--vm)'}
-    else{el.style.background='var(--g50)';el.style.color='var(--g600)';el.style.border='.5px solid var(--g100)'}
-  });
-  renderDias();
-}
-
 function renderDias(){
-  const wrap = document.getElementById('dias-grid-wrap');
-  if(!wrap)return;
-
-  const tot = diasProtocoFiltro;
-  const proto = PROTO[tot] || PROTO[120];
-  // Mapear dia -> tarefa
-  const tarefaMap = {};
-  proto.forEach(([d,t]) => tarefaMap[d] = t);
-
-  // Pacientes deste protocolo
-  const pacs = pacientesCache.filter(p=>(parseInt(p.protocolo)||120)===tot);
-
-  // Dia atual de cada paciente
-  const pacPorDia = {};
-  pacs.forEach(p=>{
-    const d = diaAtualCalculado(p);
-    if(!pacPorDia[d]) pacPorDia[d]=[];
-    pacPorDia[d].push(p);
-  });
-
-  const resumo = document.getElementById('dias-resumo');
-  if(resumo) resumo.textContent = `${pacs.length} paciente${pacs.length!==1?'s':''} · ${tot} dias`;
-
-  // Dias com pacientes ou tarefas
-  const diasComConteudo = new Set([...Object.keys(pacPorDia).map(Number), ...Object.keys(tarefaMap).map(Number)]);
-
-  // Gerar todos os dias de 0 a tot
-  const dias = [];
-  for(let d=0; d<=tot; d++) dias.push(d);
-
-  const hoje = new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});
-
-  wrap.innerHTML = `<div style="display:flex;gap:8px;min-width:max-content;padding:4px 2px">
-    ${dias.map(d => {
-      const temPac = pacPorDia[d] && pacPorDia[d].length > 0;
-      const tarefa = tarefaMap[d];
-      const vazio = !temPac && !tarefa;
-      const cor = tot===90?'var(--v)':tot===120?'var(--b400)':'var(--a400)';
-      const bg = tot===90?'var(--vl)':tot===120?'var(--b50)':'var(--a50)';
-
-      return `<div style="
-        flex-shrink:0;
-        width:${temPac||tarefa?'190px':'60px'};
-        min-height:${temPac||tarefa?'220px':'80px'};
-        background:${vazio?'var(--g50)':'#fff'};
-        border:.5px solid ${temPac?cor:'var(--g100)'};
-        border-radius:10px;
-        overflow:hidden;
-        transition:width .2s;
-        ${vazio?'opacity:.4':''}
-      ">
-        <!-- Header do dia -->
-        <div style="padding:8px 10px;background:${temPac?cor:tarefa?bg:'var(--g50)'};border-bottom:.5px solid ${temPac?cor+'44':'var(--g100)'}">
-          <div style="font-size:13px;font-weight:700;color:${temPac?'#fff':tarefa?cor:'var(--g400)'}">D${d}</div>
-          ${tarefa?`<div style="font-size:9px;color:${temPac?'rgba(255,255,255,.8)':cor};margin-top:1px;line-height:1.2;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;max-width:165px">${tarefa.replace(/^D\d+\s*/,'').substring(0,40)}</div>`:''}
-        </div>
-
-        ${temPac||tarefa?`<div style="padding:8px">
-          <!-- Pacientes neste dia -->
-          ${temPac?pacPorDia[d].map(p=>`
-            <div style="display:flex;align-items:center;gap:6px;padding:5px 0;border-bottom:.5px solid var(--g50);cursor:pointer" onclick="abrirPaciente('${p.id}')">
-              <div style="width:24px;height:24px;border-radius:50%;background:${bg};color:${cor};display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0">${(p.nome||'?').charAt(0)}</div>
-              <div style="flex:1;min-width:0">
-                <div style="font-size:11px;font-weight:500;color:var(--g900);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.nome.split(' ')[0]}</div>
-              </div>
-              ${p.wa?`<button class="btn-wa" style="padding:2px 6px;font-size:10px;flex-shrink:0" onclick="event.stopPropagation();openWA('${p.wa}')"><i class="ti ti-brand-whatsapp"></i></button>`:''}
-            </div>`).join(''):''}
-
-          <!-- Tarefa + campo editável -->
-          ${tarefa?`<div style="margin-top:8px">
-            <div style="font-size:10px;font-weight:600;color:var(--g400);text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px">Mensagem</div>
-            <textarea
-              id="msg-${tot}-${d}"
-              rows="3"
-              placeholder="Personalizar mensagem do dia ${d}..."
-              style="width:100%;border:.5px solid var(--g100);border-radius:6px;padding:5px 7px;font-size:11px;font-family:Inter,sans-serif;resize:vertical;outline:none;color:var(--g800);background:#fff"
-              onfocus="this.style.borderColor='${cor}'"
-              onblur="this.style.borderColor='var(--g100)';salvarMsgDia(${tot},${d},this.value)"
-            >${getMsgDia(tot,d)}</textarea>
-          </div>`:''}
-        </div>`:''}
-      </div>`;
-    }).join('')}
-  </div>`;
-
-  // Atualizar filtro visual
-  setDiasFiltro(diasProtocoFiltro);
-}
-
-// Cache de mensagens personalizadas por dia
-const msgDiaCache = {};
-
-function getMsgDia(proto, dia){
-  return msgDiaCache[proto+'_'+dia] || '';
-}
-
-async function salvarMsgDia(proto, dia, valor){
-  msgDiaCache[proto+'_'+dia] = valor;
-  // Salva no Firebase
-  try {
-    const ref = window.db.collection('msgs_dia').doc(proto+'_'+dia);
-    await ref.set({protocolo:proto, dia, mensagem:valor, atualizado:firebase.firestore.FieldValue.serverTimestamp()});
-  } catch(e){}
-}
-
-async function carregarMsgsDia(){
-  try {
-    const snap = await window.db.collection('msgs_dia').get();
-    snap.docs.forEach(d=>{
-      const data = d.data();
-      msgDiaCache[data.protocolo+'_'+data.dia] = data.mensagem||'';
-    });
-  } catch(e){}
-}
-
-
-// ── OUTROS CONTATOS ──
-const CATS_OUTROS = ['Fornecedor','Colaborador','Parceiro','Médico','Nutricionista','Outro'];
-
-function pgOutros(){
-  return`<div class="ph">
-    <div><h2>Outros contatos</h2><p>Fornecedores, colaboradores e parceiros</p></div>
-    <button class="btn btn-v btn-sm" onclick="abrirNovoOutro()"><i class="ti ti-plus"></i> Novo</button>
-  </div>
-  <div class="tc">
-    <div class="tt">
-      <input type="text" placeholder="Buscar..." oninput="filtrarOutros(this.value)">
-      <select onchange="filtrarOutrosCat(this.value)" style="border:.5px solid var(--g100);border-radius:8px;padding:7px 12px;font-size:13px;font-family:Inter,sans-serif;outline:none;background:var(--g50)">
-        <option value="">Todas categorias</option>
-        ${CATS_OUTROS.map(c=>`<option>${c}</option>`).join('')}
-      </select>
-    </div>
-    <div id="outros-body"><div class="loading"><i class="ti ti-loader spin"></i></div></div>
-  </div>`;
-}
-
-let outrosCache=[];
-let _unsubOutros=null;
-
-function iniciarOutrosListener(){
-  if(_unsubOutros)return;
-  _unsubOutros=fbListen('outros',d=>{outrosCache=d;if(paginaAtual==='outros')renderOutros()});
-}
-
-function renderOutros(lista){
-  iniciarOutrosListener();
-  if(!lista)lista=outrosCache;
-  const el=document.getElementById('outros-body');if(!el)return;
-  if(!lista.length){
-    el.innerHTML=`<div class="empty"><i class="ti ti-users-group"></i><p>Nenhum contato cadastrado.<br><small>Adicione fornecedores, colaboradores e parceiros.</small></p></div>`;
-    return;
-  }
-  el.innerHTML=`<table><thead><tr><th>Nome</th><th>Categoria</th><th>WhatsApp</th><th>Observação</th><th>Ações</th></tr></thead><tbody>
-    ${lista.map(o=>`<tr>
-      <td><strong>${o.nome||'—'}</strong></td>
-      <td><span class="badge bg">${o.categoria||'Outro'}</span></td>
-      <td style="font-size:12px;color:var(--g600)">${o.wa||'—'}</td>
-      <td style="font-size:12px;color:var(--g600);max-width:200px">${o.obs||'—'}</td>
-      <td><div style="display:flex;gap:6px">
-        ${o.wa?`<button class="btn-wa btn-sm" onclick="openWA('${o.wa}')"><i class="ti ti-brand-whatsapp"></i></button>`:''}
-        <button class="btn btn-ghost btn-xs" onclick="editarOutro('${o.id}')"><i class="ti ti-pencil"></i></button>
-        <button class="btn btn-danger btn-xs" onclick="deletarOutro('${o.id}')"><i class="ti ti-trash"></i></button>
-      </div></td>
-    </tr>`).join('')}
-  </tbody></table>`;
-}
-
-function filtrarOutros(q){renderOutros(outrosCache.filter(o=>(o.nome||'').toLowerCase().includes(q.toLowerCase())||(o.wa||'').includes(q)))}
-function filtrarOutrosCat(cat){renderOutros(cat?outrosCache.filter(o=>o.categoria===cat):outrosCache)}
-
-function abrirNovoOutro(id){
-  const o = id ? outrosCache.find(x=>x.id===id) : null;
-  document.getElementById('mv-title').textContent = o ? 'Editar contato' : 'Novo contato';
-  document.getElementById('mv-body').innerHTML=`
-    <div class="fr">
-      <div class="fg"><label>Nome</label><input id="no-nome" value="${o?.nome||''}" placeholder="Nome completo"></div>
-      <div class="fg"><label>WhatsApp</label><input id="no-wa" value="${o?.wa||''}" placeholder="51 9..."></div>
-    </div>
-    <div class="fr">
-      <div class="fg"><label>Categoria</label>
-        <select id="no-cat">
-          ${CATS_OUTROS.map(c=>`<option${(o?.categoria||''===c)?' selected':''}>${c}</option>`).join('')}
-        </select>
-      </div>
-      <div class="fg"><label>Email</label><input id="no-email" value="${o?.email||''}" placeholder="email@..."></div>
-    </div>
-    <div class="fg"><label>Observação</label><textarea id="no-obs" rows="2" placeholder="Notas, especialidade...">${o?.obs||''}</textarea></div>`;
-  document.getElementById('mv-footer').innerHTML=`
-    <button class="btn-cancel" onclick="closeM('m-ver')">Cancelar</button>
-    <button class="btn btn-v" onclick="salvarOutro('${id||''}')"><i class="ti ti-check"></i> Salvar</button>`;
-  openM('m-ver');
-}
-
-function editarOutro(id){abrirNovoOutro(id)}
-
-async function salvarOutro(id){
-  const nome=document.getElementById('no-nome').value.trim();
-  if(!nome){toast('⚠️ Informe o nome');return}
-  const data={
-    nome, wa:document.getElementById('no-wa').value,
-    categoria:document.getElementById('no-cat').value,
-    email:document.getElementById('no-email').value,
-    obs:document.getElementById('no-obs').value,
-  };
-  if(id) await fbUp('outros',id,data);
-  else await fbAdd('outros',data);
-  closeM('m-ver');toast('✅ Salvo!');
-}
-
-async function deletarOutro(id){
-  if(!confirm('Excluir este contato?'))return;
-  await fbDel('outros',id);
-  toast('🗑️ Removido');
-}
-
-// ── DRAG AND DROP ──
-let _dragId=null, _dragAba=null;
-
-function dragStart(e,id,aba){
-  _dragId=id; _dragAba=aba;
-  e.currentTarget.classList.add('dragging');
-  e.dataTransfer.effectAllowed='move';
-}
-function dragEnd(e){
-  e.currentTarget.classList.remove('dragging');
-  document.querySelectorAll('.kards').forEach(el=>el.classList.remove('drag-over'));
-}
-function dragOver(e){
-  e.preventDefault();
-  e.dataTransfer.dropEffect='move';
-  e.currentTarget.classList.add('drag-over');
-}
-function dragLeave(e){
-  e.currentTarget.classList.remove('drag-over');
-}
-async function dropCard(e,novaEtapa,aba){
-  e.preventDefault();
-  e.currentTarget.classList.remove('drag-over');
-  if(!_dragId||!_dragAba)return;
-  if(_dragAba!==aba)return;
-  await moverEtapa(_dragId,aba,novaEtapa);
-  _dragId=null; _dragAba=null;
-}
-
-// Touch drag support (mobile)
-let _touchCard=null,_touchClone=null,_touchAba=null,_touchId=null;
-function initTouchDrag(){
-  document.addEventListener('touchstart',e=>{
-    const card=e.target.closest('.kcard');
-    if(!card)return;
-    _touchCard=card;
-    _touchId=card.dataset.id;
-    _touchAba=card.dataset.aba;
-    _touchClone=card.cloneNode(true);
-    _touchClone.style.cssText='position:fixed;opacity:.7;pointer-events:none;z-index:9999;width:'+card.offsetWidth+'px;transform:scale(1.05)';
-    document.body.appendChild(_touchClone);
-  },{passive:true});
-  document.addEventListener('touchmove',e=>{
-    if(!_touchClone)return;
-    const t=e.touches[0];
-    _touchClone.style.left=(t.clientX-80)+'px';
-    _touchClone.style.top=(t.clientY-30)+'px';
-    document.querySelectorAll('.kards').forEach(el=>el.classList.remove('drag-over'));
-    const el=document.elementFromPoint(t.clientX,t.clientY);
-    const kards=el?.closest('.kards');
-    if(kards)kards.classList.add('drag-over');
-  },{passive:true});
-  document.addEventListener('touchend',async e=>{
-    if(!_touchClone)return;
-    const t=e.changedTouches[0];
-    const el=document.elementFromPoint(t.clientX,t.clientY);
-    const kards=el?.closest('.kards');
-    document.querySelectorAll('.kards').forEach(el=>el.classList.remove('drag-over'));
-    if(kards&&_touchId&&_touchAba){
-      const novaEtapa=kards.dataset.etapa;
-      if(novaEtapa)await moverEtapa(_touchId,_touchAba,novaEtapa);
-    }
-    _touchClone.remove();
-    _touchClone=null;_touchCard=null;_touchId=null;_touchAba=null;
-  });
+  const el=document.getElementById('dias-body');if(!el)return;
+  if(!pacientesCache.length){el.innerHTML=`<div class="empty"><i class="ti ti-calendar-off"></i><p>Nenhum paciente em protocolo.</p></div>`;return}
+  const porDia={};
+  pacientesCache.forEach(p=>{const d=p.diaAtual||1;if(!porDia[d])porDia[d]=[];porDia[d].push(p)});
+  const dias=Object.keys(porDia).map(Number).sort((a,b)=>a-b);
+  el.innerHTML=`<div class="dias-grid">${dias.map(dia=>{
+    const pacs=porDia[dia];
+    return`<div class="dc tem">
+      <div class="dch"><span>Dia ${dia}</span><span style="font-weight:400">${pacs.length} pac.</span></div>
+      <div class="dcb">
+        ${pacs.map(p=>`<div class="dpac">
+          <i class="ti ti-user" style="font-size:13px;color:var(--v);flex-shrink:0"></i>
+          <span style="flex:1">${p.nome.split(' ')[0]}</span>
+          ${p.wa?`<button class="btn-wa" style="padding:2px 7px;font-size:11px" onclick="openWA('${p.wa}')"><i class="ti ti-brand-whatsapp"></i></button>`:''}
+        </div>`).join('')}
+        ${pacs[0]?.nota?`<div class="dmsg">${pacs[0].nota.substring(0,80)}${pacs[0].nota.length>80?'...':''}</div>`:''}
+        <button class="btn btn-ghost btn-sm" style="width:100%;margin-top:8px;font-size:11px" onclick="abrirPaciente('${pacs[0].id}')"><i class="ti ti-pencil"></i> Editar dia</button>
+      </div></div>`;
+  }).join('')}</div>`;
 }
 
 // ── UTILS ──
 function openM(id){document.getElementById(id).classList.add('open')}
 function closeM(id){document.getElementById(id).classList.remove('open')}
-function openWA(n){if(!n)return;const clean=(n||'').replace(/@.*$/,'').replace(/\D/g,'');if(!clean||clean.length<8)return;window.open('https://wa.me/'+(clean.startsWith('55')?clean:'55'+clean),'_blank')}
+function openWA(n){const l=(n||'').replace(/\D/g,'');if(!l)return;window.open('https://wa.me/'+(l.startsWith('55')?l:'55'+l),'_blank')}
 document.querySelectorAll('.mo').forEach(el=>el.addEventListener('click',e=>{if(e.target===el)el.classList.remove('open')}));
-window.addEventListener('firebase-ready',()=>{console.log('✅ Instituto Müller Firebase OK');initTouchDrag();});
+window.addEventListener('firebase-ready',()=>console.log('✅ Instituto Müller Firebase OK'));
 
 window.login=login; window.logout=logout; window.nav=nav;
 window.abrirNovoLead=abrirNovoLead; window.salvarLead=salvarLead;
@@ -1354,7 +972,7 @@ window.abrirNovoPaciente=abrirNovoPaciente; window.salvarNovoPaciente=salvarNovo
 window.filtrarContatosNP=filtrarContatosNP; window.selContatoNP=selContatoNP;
 window.abrirPaciente=abrirPaciente; window.salvarProtocolo=salvarProtocolo;
 window.filtrarPacientes=filtrarPacientes; window.openWA=openWA;
-window.openM=openM; window.closeM=closeM; window.dragStart=dragStart; window.dragEnd=dragEnd; window.dragOver=dragOver; window.dragLeave=dragLeave; window.dropCard=dropCard; window.tarefaDoDia=tarefaDoDia; window.pgOutros=pgOutros; window.renderOutros=renderOutros; window.abrirNovoOutro=abrirNovoOutro; window.editarOutro=editarOutro; window.salvarOutro=salvarOutro; window.deletarOutro=deletarOutro; window.filtrarOutros=filtrarOutros; window.filtrarOutrosCat=filtrarOutrosCat; window.removerDoFluxo=removerDoFluxo; window.diaAtualCalculado=diaAtualCalculado; window.filtrarPacientes=filtrarPacientes; window.setDiasFiltro=setDiasFiltro; window.salvarMsgDia=salvarMsgDia; window.carregarMsgsDia=carregarMsgsDia;
+window.openM=openM; window.closeM=closeM;
 </script>
 </body>
 </html>
