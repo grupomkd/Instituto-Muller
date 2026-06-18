@@ -991,9 +991,21 @@ function verLead(id,aba){
       </select>
     </div>
     ${c.wa?`<button class="btn-wa" style="width:100%;justify-content:center;margin-bottom:10px" onclick="openWA('${c.wa}')"><i class="ti ti-brand-whatsapp"></i> Abrir WhatsApp</button>`:''}
+    <div class="ms" style="margin-bottom:10px">
+      <div class="ms-title" style="display:flex;align-items:center;justify-content:space-between">
+        <span><i class="ti ti-id-badge" style="font-size:13px"></i> Ficha do Paciente</span>
+        <span style="font-size:11px;color:var(--g400)">Acompanha em todos os fluxos</span>
+      </div>
+      <div id="ficha-livre-wrap">
+        ${renderFichaLivre(c.fichaLivre||[])}
+      </div>
+      <button onclick="adicionarCampoFicha('${id}','${aba}')" style="margin-top:8px;padding:7px 12px;background:var(--g50);border:.5px solid var(--g100);border-radius:8px;font-size:12px;cursor:pointer;color:var(--g600);width:100%;display:flex;align-items:center;justify-content:center;gap:5px">
+        <i class="ti ti-plus"></i> Adicionar informação
+      </button>
+    </div>
     <div class="ms">
       <div class="ms-title" style="display:flex;align-items:center;justify-content:space-between">
-        <span><i class="ti ti-id-badge" style="font-size:13px"></i> Ficha & Checklist</span>
+        <span><i class="ti ti-checklist" style="font-size:13px"></i> Checklist da etapa</span>
         ${!podeEditar?'<span style="font-size:11px;color:var(--g400)">Atendente preenche</span>':''}
       </div>
       ${fichaHistHtml}
@@ -1034,6 +1046,57 @@ async function salvarNomeLead(id, aba) {
   // atualiza título do modal
   document.getElementById('mv-title').textContent = nome;
 }
+// ── FICHA LIVRE PERMANENTE ──
+function renderFichaLivre(campos){
+  if(!campos||!campos.length) return '<div style="font-size:12px;color:var(--g400);font-style:italic;padding:6px 0">Nenhuma informação adicionada ainda. Clique em + para adicionar.</div>';
+  return campos.map((f,i)=>`
+    <div style="display:flex;align-items:flex-start;gap:8px;padding:8px 10px;background:var(--g50);border-radius:8px;margin-bottom:5px">
+      <div style="flex:1">
+        <div style="font-size:11px;font-weight:600;color:var(--g500);margin-bottom:3px">${f.label||'Info '+(i+1)}</div>
+        <div style="font-size:13px;color:var(--g900)">${f.valor||'—'}</div>
+      </div>
+      <button onclick="editarCampoFicha('${i}')" style="padding:3px 7px;background:transparent;border:.5px solid var(--g200);border-radius:6px;font-size:11px;cursor:pointer;color:var(--g500);flex-shrink:0">
+        <i class="ti ti-pencil"></i>
+      </button>
+    </div>`).join('');
+}
+
+let _fichaLeadId=null, _fichaLeadAba=null;
+
+async function adicionarCampoFicha(id,aba){
+  _fichaLeadId=id; _fichaLeadAba=aba;
+  const label=prompt('Nome do campo (ex: Objetivo, Como chegou, Plano de saúde):');
+  if(!label||!label.trim()) return;
+  const valor=prompt('Valor para "'+label+'":');
+  if(valor===null) return;
+  const dados=aba==='atendente'?leadsCache:vendasCache;
+  const lead=dados.find(x=>x.id===id);if(!lead)return;
+  const fichaLivre=[...(lead.fichaLivre||[]),{label:label.trim(),valor:valor.trim()}];
+  const col=aba==='atendente'?'leads':'vendas';
+  await fbUp(col,id,{fichaLivre});
+  toast('✅ Informação salva na ficha!');
+  // Atualiza o bloco na tela sem fechar modal
+  const wrap=document.getElementById('ficha-livre-wrap');
+  if(wrap) wrap.innerHTML=renderFichaLivre(fichaLivre);
+}
+
+async function editarCampoFicha(idx){
+  const id=_fichaLeadId, aba=_fichaLeadAba;
+  if(!id) return;
+  const dados=aba==='atendente'?leadsCache:vendasCache;
+  const lead=dados.find(x=>x.id===id);if(!lead)return;
+  const fichaLivre=[...(lead.fichaLivre||[])];
+  const campo=fichaLivre[idx];if(!campo)return;
+  const novoValor=prompt('Editar "'+campo.label+'":',campo.valor||'');
+  if(novoValor===null) return;
+  fichaLivre[idx].valor=novoValor.trim();
+  const col=aba==='atendente'?'leads':'vendas';
+  await fbUp(col,id,{fichaLivre});
+  toast('✅ Ficha atualizada!');
+  const wrap=document.getElementById('ficha-livre-wrap');
+  if(wrap) wrap.innerHTML=renderFichaLivre(fichaLivre);
+}
+
 async function toggleCk(id,aba,ckId,ok){
   const col=aba==='atendente'?'leads':'vendas';
   const dados=aba==='atendente'?leadsCache:vendasCache;
@@ -1152,7 +1215,7 @@ async function enviarParaVendas(id){
   const c=leadsCache.find(x=>x.id===id);if(!c)return;
   // Copia ficha mas zera checklist/historico para o novo fluxo
   // Mantém checklist, historico e ficha do atendente
-  await fbAdd('vendas',{...c,etapa:colsV[0]?.nome||'Proposta enviada',fluxos:['atendente','vendas'],originId:id,checklist:c.checklist||{},historico:c.historico||{},ficha:c.ficha||{}});
+  await fbAdd('vendas',{...c,etapa:colsV[0]?.nome||'Proposta enviada',fluxos:['atendente','vendas'],originId:id,checklist:c.checklist||{},historico:c.historico||{},ficha:c.ficha||{},fichaLivre:c.fichaLivre||[]});
   closeM('m-ver');toast('✅ Enviado para Vendas!');
 }
 function abrirEnviarConcierge(id,aba){
@@ -1176,7 +1239,7 @@ async function confirmarConcierge(id,aba){
   const c=dados.find(x=>x.id===id);if(!c)return;
   const protocolo=parseInt(document.getElementById('env-prot').value)||120;
   const inicio=document.getElementById('env-inicio').value;
-  await fbAdd('pacientes',{nome:c.nome,wa:limparNumero(c.wa)||c.wa,objetivo:document.getElementById('env-nota').value||c.objetivo||'',protocolo,diaAtual:1,inicio,nota:'',ficha:c.ficha||{},checklist:c.checklist||{},historico:c.historico||{}});
+  await fbAdd('pacientes',{nome:c.nome,wa:limparNumero(c.wa)||c.wa,objetivo:document.getElementById('env-nota').value||c.objetivo||'',protocolo,diaAtual:1,inicio,nota:'',ficha:c.ficha||{},checklist:c.checklist||{},historico:c.historico||{},fichaLivre:c.fichaLivre||[]});
   closeM('m-gen');toast('✅ Enviado para Concierge!');
 }
 async function removerDoFluxo(id,aba){
@@ -1494,6 +1557,15 @@ function abrirPaciente(id){
     </div>
     <div class="fg"><label>Anotação do dia</label><textarea id="pac-nota" rows="3">${p.nota||''}</textarea></div>
     ${p.wa?`<button class="btn-wa" style="width:100%;justify-content:center;margin-top:8px" onclick="openWA('${p.wa}')"><i class="ti ti-brand-whatsapp"></i> Enviar mensagem</button>`:''}
+    ${(p.fichaLivre||[]).length?`
+    <div style="margin-top:12px;padding-top:12px;border-top:.5px solid var(--g100)">
+      <div style="font-size:11px;font-weight:600;color:var(--g400);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px">Ficha do Paciente</div>
+      ${(p.fichaLivre||[]).map(f=>`
+        <div style="display:flex;gap:8px;padding:7px 10px;background:var(--vl);border-radius:7px;margin-bottom:5px">
+          <div style="font-size:12px;font-weight:600;color:var(--v);min-width:100px">${f.label}</div>
+          <div style="font-size:13px;color:var(--g900)">${f.valor||'—'}</div>
+        </div>`).join('')}
+    </div>`:''}
     ${Object.keys(p.ficha||{}).length||Object.keys(p.checklist||{}).length?`
     <div style="margin-top:16px;padding-top:16px;border-top:.5px solid var(--g100)">
       <div style="font-size:11px;font-weight:600;color:var(--g400);text-transform:uppercase;letter-spacing:.4px;margin-bottom:10px">Ficha do atendente</div>
@@ -1779,7 +1851,7 @@ async function limparDuplicatas(aba){
   toast(`✅ ${paraRemover.length} duplicado(s) removido(s)!`);
 }
 
-window.exibirNumero=exibirNumero; window.verLead=verLead; window.abrirEditorFicha=abrirEditorFicha; window.renderFichaEditor=renderFichaEditor; window.salvarFicha=salvarFicha; window.confirmarDeletarCol=confirmarDeletarCol; window.moverParaOutros=moverParaOutros; window.confirmarMoverOutros=confirmarMoverOutros; window.limparDuplicatas=limparDuplicatas; window.toggleCk=toggleCk; window.salvarCkCampo=salvarCkCampo; window.moverEtapa=moverEtapa; window.salvarNotaAba=salvarNotaAba; window.abrirNovoLead=abrirNovoLead; window.salvarLead=salvarLead; window.filtrarContatosM=filtrarContatosM; window.selContato=selContato; window.login=login; window.logout=logout; window.nav=nav; window.abrirFluxoEditor=abrirFluxoEditor; window.salvarFluxo=salvarFluxo; window.renderFluxoEditor=renderFluxoEditor; window.editarCol=editarCol; window.salvarCol=salvarCol; window.deletarCol=deletarCol; window.adicionarCol=adicionarCol; window.addCkItem=addCkItem; window.enviarParaVendas=enviarParaVendas; window.abrirEnviarConcierge=abrirEnviarConcierge; window.confirmarConcierge=confirmarConcierge; window.removerDoFluxo=removerDoFluxo; window.filtrarContatos=filtrarContatos; window.adicionarContatoFluxo=adicionarContatoFluxo; window.atualizarEtapasDestino=atualizarEtapasDestino; window.confirmarAdicionarFluxo=confirmarAdicionarFluxo; window.filtrarOutros=filtrarOutros; window.filtrarOutrosCat=filtrarOutrosCat; window.abrirNovoOutro=abrirNovoOutro; window.salvarOutro=salvarOutro; window.abrirNovoPaciente=abrirNovoPaciente; window.filtrarContatosNP=filtrarContatosNP; window.selContatoNP=selContatoNP; window.salvarNovoPaciente=salvarNovoPaciente; window.abrirPaciente=abrirPaciente; window.salvarProtocolo=salvarProtocolo; window.setDiasFiltro=setDiasFiltro; window.setFiltroPaciente=setFiltroPaciente; window.diasNav=diasNav; window.irParaHoje=irParaHoje; window.salvarMsgDia=salvarMsgDia; window.salvarTarefaCustom=salvarTarefaCustom; window.dragStart=dragStart; window.dragEnd=dragEnd; window.dragOver=dragOver; window.dragLeave=dragLeave; window.dropCard=dropCard; window.dragStartDia=dragStartDia; window.dropDia=dropDia; window.initKanbanScroll=initKanbanScroll;
+window.exibirNumero=exibirNumero; window.verLead=verLead; window.abrirEditorFicha=abrirEditorFicha; window.renderFichaEditor=renderFichaEditor; window.salvarFicha=salvarFicha; window.confirmarDeletarCol=confirmarDeletarCol; window.moverParaOutros=moverParaOutros; window.confirmarMoverOutros=confirmarMoverOutros; window.limparDuplicatas=limparDuplicatas; window.toggleCk=toggleCk; window.salvarCkCampo=salvarCkCampo; window.moverEtapa=moverEtapa; window.salvarNotaAba=salvarNotaAba; window.abrirNovoLead=abrirNovoLead; window.salvarLead=salvarLead; window.filtrarContatosM=filtrarContatosM; window.selContato=selContato; window.login=login; window.logout=logout; window.nav=nav; window.abrirFluxoEditor=abrirFluxoEditor; window.salvarFluxo=salvarFluxo; window.renderFluxoEditor=renderFluxoEditor; window.editarCol=editarCol; window.salvarCol=salvarCol; window.deletarCol=deletarCol; window.adicionarCol=adicionarCol; window.addCkItem=addCkItem; window.enviarParaVendas=enviarParaVendas; window.abrirEnviarConcierge=abrirEnviarConcierge; window.confirmarConcierge=confirmarConcierge; window.removerDoFluxo=removerDoFluxo; window.filtrarContatos=filtrarContatos; window.adicionarContatoFluxo=adicionarContatoFluxo; window.atualizarEtapasDestino=atualizarEtapasDestino; window.confirmarAdicionarFluxo=confirmarAdicionarFluxo; window.filtrarOutros=filtrarOutros; window.filtrarOutrosCat=filtrarOutrosCat; window.abrirNovoOutro=abrirNovoOutro; window.salvarOutro=salvarOutro; window.abrirNovoPaciente=abrirNovoPaciente; window.filtrarContatosNP=filtrarContatosNP; window.selContatoNP=selContatoNP; window.salvarNovoPaciente=salvarNovoPaciente; window.abrirPaciente=abrirPaciente; window.adicionarCampoFicha=adicionarCampoFicha; window.editarCampoFicha=editarCampoFicha; window.salvarProtocolo=salvarProtocolo; window.setDiasFiltro=setDiasFiltro; window.setFiltroPaciente=setFiltroPaciente; window.diasNav=diasNav; window.irParaHoje=irParaHoje; window.salvarMsgDia=salvarMsgDia; window.salvarTarefaCustom=salvarTarefaCustom; window.dragStart=dragStart; window.dragEnd=dragEnd; window.dragOver=dragOver; window.dragLeave=dragLeave; window.dropCard=dropCard; window.dragStartDia=dragStartDia; window.dropDia=dropDia; window.initKanbanScroll=initKanbanScroll;
 </script>
 </body>
 </html>
