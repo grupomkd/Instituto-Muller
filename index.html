@@ -1174,7 +1174,6 @@ async function salvarNovoPaciente(){
 }
 
 // ── PROTOCOLO MODAL ──
-let pacAtivo=null;
 function abrirPaciente(id){
   const p=pacientesCache.find(x=>x.id===id);if(!p)return;
   pacAtivo=p;
