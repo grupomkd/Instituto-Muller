@@ -571,12 +571,22 @@ function pgKanban(aba){
       <button class="btn btn-v btn-sm" onclick="abrirNovoLead('${aba}')"><i class="ti ti-plus"></i> Novo</button>
     </div></div>
   <div class="stats-row" id="stats-${aba}"></div>
+  <div id="dedup-bar-${aba}" style="display:none;background:var(--a50);border:.5px solid var(--a100);border-radius:8px;padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:10px">
+    <span style="font-size:13px;color:var(--a600)"><i class="ti ti-alert-triangle"></i> <span id="dedup-count-${aba}">0</span> leads duplicados encontrados</span>
+    <button class="btn btn-sm" style="background:var(--a400);color:#fff" onclick="limparDuplicatas('${aba}')"><i class="ti ti-eraser"></i> Limpar duplicatas</button>
+  </div>
   <div class="kw" id="kw-${aba}"><div class="kb" id="kb-${aba}"><div class="loading"><i class="ti ti-loader spin"></i></div></div></div>`;
 }
 
 function renderKanban(aba){
   const cols=aba==='atendente'?colsAt:colsV;
   const dados=aba==='atendente'?leadsCache:vendasCache;
+  // Verificar duplicatas
+  const waMap={};const dups=[];
+  dados.forEach(d=>{const w=limparNumero(d.wa);if(w){if(waMap[w])dups.push(d.id);else waMap[w]=d.id;}});
+  const dupBar=document.getElementById('dedup-bar-'+aba);
+  const dupCount=document.getElementById('dedup-count-'+aba);
+  if(dupBar){if(dups.length>0){dupBar.style.display='flex';if(dupCount)dupCount.textContent=dups.length;}else{dupBar.style.display='none';}}
   const stats=document.getElementById('stats-'+aba);
   if(stats)stats.innerHTML=`<div class="sc"><div class="lb">Total</div><div class="vl">${dados.length}</div></div>`+
     cols.slice(0,3).map(c=>`<div class="sc"><div class="lb">${c.nome}</div><div class="vl" style="color:${c.cor}">${dados.filter(d=>d.etapa===c.nome).length}</div></div>`).join('');
@@ -586,9 +596,10 @@ function renderKanban(aba){
     const temCk=col.ck&&col.ck.length>0;
     return`<div class="kc"><div class="kch">
       <div class="kct"><div class="dot" style="background:${col.cor}"></div>${col.nome}${temCk?` <i class="ti ti-checklist" style="font-size:12px;color:${col.cor};opacity:.7"></i>`:''}</div>
-      <div style="display:flex;align-items:center;gap:4px">
+      <div style="display:flex;align-items:center;gap:2px">
         <span class="kcc">${cards.length}</span>
-        <button class="btn-ec" onclick="editarCol('${aba}',${ci})"><i class="ti ti-pencil"></i></button>
+        <button class="btn-ec" onclick="editarCol('${aba}',${ci})" title="Editar etapa"><i class="ti ti-pencil"></i></button>
+        <button class="btn-ec" onclick="confirmarDeletarCol('${aba}',${ci})" title="Excluir etapa" style="color:var(--r400)"><i class="ti ti-trash"></i></button>
       </div></div>
       <div class="kcards" data-etapa="${col.nome}" data-aba="${aba}"
         ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dropCard(event,'${col.nome}','${aba}')">
@@ -702,6 +713,14 @@ async function deletarCol(){
   if(!confirm('Excluir etapa?'))return;
   const{aba,idx}=editColCtx;const cols=aba==='atendente'?colsAt:colsV;
   cols.splice(idx,1);await fbSaveCols(aba,cols);closeM('m-col');renderKanban(aba);
+}
+async function confirmarDeletarCol(aba,idx){
+  const cols=aba==='atendente'?colsAt:colsV;
+  if(!confirm(`Excluir etapa "${cols[idx].nome}"?`))return;
+  cols.splice(idx,1);
+  await fbSaveCols(aba,cols);
+  toast('🗑️ Etapa removida');
+  renderKanban(aba);
 }
 async function adicionarCol(aba){
   const cols=aba==='atendente'?colsAt:colsV;
@@ -851,6 +870,7 @@ function verLead(id,aba){
       <div style="display:flex;gap:8px;flex-wrap:wrap">
         <button class="btn btn-a btn-sm" onclick="enviarParaVendas('${id}')"><i class="ti ti-target"></i> Vendas</button>
         <button class="btn btn-v btn-sm" onclick="abrirEnviarConcierge('${id}','atendente')"><i class="ti ti-clipboard-heart"></i> Concierge</button>
+        <button class="btn btn-ghost btn-sm" onclick="moverParaOutros('${id}','atendente')"><i class="ti ti-users-group"></i> Outros</button>
         <button class="btn btn-danger btn-sm" onclick="removerDoFluxo('${id}','${aba}')"><i class="ti ti-trash"></i> Remover</button>
       </div>
     </div>`:''}
@@ -931,8 +951,15 @@ async function salvarLead(){
   const nome=document.getElementById('ml-nome').value.trim();
   if(!nome){toast('⚠️ Informe o nome');return}
   const col=_novoLeadAba==='atendente'?'leads':'vendas';
+  const waVal=limparNumero(document.getElementById('ml-wa').value);
+  // Verificar duplicata por número
+  if(waVal){
+    const cache=_novoLeadAba==='atendente'?leadsCache:vendasCache;
+    const dup=cache.find(l=>limparNumero(l.wa)===waVal);
+    if(dup){toast('⚠️ Este número já está no fluxo: '+dup.nome);return;}
+  }
   await fbAdd(col,{
-    nome,wa:document.getElementById('ml-wa').value,
+    nome,wa:waVal||document.getElementById('ml-wa').value,
     origem:document.getElementById('ml-origem').value,
     objetivo:document.getElementById('ml-obj').value,
     etapa:document.getElementById('ml-etapa').value,
@@ -998,6 +1025,47 @@ async function removerDoFluxo(id,aba){
   if(!confirm('Remover do fluxo? Permanece em Contatos WA.'))return;
   await fbDel(aba==='atendente'?'leads':'vendas',id);
   closeM('m-ver');toast('✅ Removido');
+}
+
+function moverParaOutros(id,aba){
+  const dados=aba==='atendente'?leadsCache:vendasCache;
+  const c=dados.find(x=>x.id===id);if(!c)return;
+  document.getElementById('mg-title').textContent='Mover para Outros contatos';
+  document.getElementById('mg-body').innerHTML=`
+    <div style="padding:10px 12px;background:var(--vl);border-radius:8px;margin-bottom:14px;font-size:13px">
+      <strong>${c.nome||'—'}</strong> · ${limparNumero(c.wa)||'—'}
+    </div>
+    <p style="font-size:13px;color:var(--g600);margin-bottom:14px">Este contato será removido do fluxo de leads e adicionado em <strong>Outros contatos</strong>.</p>
+    <div class="fg"><label>Categoria</label>
+      <select id="mv-cat">
+        ${CATS_OUTROS.map(c=>`<option>${c}</option>`).join('')}
+      </select>
+    </div>
+    <div class="fg"><label>Observação</label>
+      <input id="mv-obs" placeholder="Ex: Fornecedor de suplementos..." value="${c.objetivo||''}">
+    </div>`;
+  document.getElementById('mg-footer').innerHTML=`
+    <button class="btn-cancel" onclick="closeM('m-gen')">Cancelar</button>
+    <button class="btn btn-v" onclick="confirmarMoverOutros('${id}','${aba}')"><i class="ti ti-check"></i> Confirmar</button>`;
+  closeM('m-ver');
+  openM('m-gen');
+}
+
+async function confirmarMoverOutros(id,aba){
+  const dados=aba==='atendente'?leadsCache:vendasCache;
+  const c=dados.find(x=>x.id===id);if(!c)return;
+  // Adiciona em Outros
+  await fbAdd('outros',{
+    nome:c.nome||'',
+    wa:limparNumero(c.wa)||'',
+    categoria:document.getElementById('mv-cat').value,
+    obs:document.getElementById('mv-obs').value,
+    email:'',
+  });
+  // Remove do fluxo atual
+  await fbDel(aba==='atendente'?'leads':'vendas',id);
+  closeM('m-gen');
+  toast('✅ Movido para Outros!');
 }
 
 // ── CONTATOS PAGE ──
@@ -1448,7 +1516,28 @@ document.querySelectorAll('.mo').forEach(el=>el.addEventListener('click',e=>{if(
 
 // Init touch após DOM pronto
 document.addEventListener('DOMContentLoaded',()=>initTouchKanban());
-window.verLead=verLead; window.abrirEditorFicha=abrirEditorFicha; window.renderFichaEditor=renderFichaEditor; window.salvarFicha=salvarFicha; window.toggleCk=toggleCk; window.salvarCkCampo=salvarCkCampo; window.moverEtapa=moverEtapa; window.salvarNotaAba=salvarNotaAba; window.abrirNovoLead=abrirNovoLead; window.salvarLead=salvarLead; window.filtrarContatosM=filtrarContatosM; window.selContato=selContato; window.login=login; window.logout=logout; window.nav=nav; window.abrirFluxoEditor=abrirFluxoEditor; window.salvarFluxo=salvarFluxo; window.renderFluxoEditor=renderFluxoEditor; window.editarCol=editarCol; window.salvarCol=salvarCol; window.deletarCol=deletarCol; window.adicionarCol=adicionarCol; window.addCkItem=addCkItem; window.enviarParaVendas=enviarParaVendas; window.abrirEnviarConcierge=abrirEnviarConcierge; window.confirmarConcierge=confirmarConcierge; window.removerDoFluxo=removerDoFluxo; window.filtrarContatos=filtrarContatos; window.adicionarContatoFluxo=adicionarContatoFluxo; window.atualizarEtapasDestino=atualizarEtapasDestino; window.confirmarAdicionarFluxo=confirmarAdicionarFluxo; window.filtrarOutros=filtrarOutros; window.filtrarOutrosCat=filtrarOutrosCat; window.abrirNovoOutro=abrirNovoOutro; window.salvarOutro=salvarOutro; window.abrirNovoPaciente=abrirNovoPaciente; window.filtrarContatosNP=filtrarContatosNP; window.selContatoNP=selContatoNP; window.salvarNovoPaciente=salvarNovoPaciente; window.abrirPaciente=abrirPaciente; window.salvarProtocolo=salvarProtocolo; window.setDiasFiltro=setDiasFiltro; window.diasNav=diasNav; window.irParaHoje=irParaHoje; window.salvarMsgDia=salvarMsgDia; window.salvarTarefaCustom=salvarTarefaCustom; window.dragStart=dragStart; window.dragEnd=dragEnd; window.dragOver=dragOver; window.dragLeave=dragLeave; window.dropCard=dropCard; window.dragStartDia=dragStartDia; window.dropDia=dropDia; window.initKanbanScroll=initKanbanScroll;
+async function limparDuplicatas(aba){
+  if(!confirm('Remover leads duplicados automaticamente? Mantém o mais antigo de cada número.'))return;
+  const col=aba==='atendente'?'leads':'vendas';
+  const dados=aba==='atendente'?leadsCache:vendasCache;
+  const waMap={};
+  const paraRemover=[];
+  // Ordena por data de criação (mais antigo primeiro) - os sem data ficam por último
+  const ordenados=[...dados].sort((a,b)=>{
+    const ta=a.criadoEm?.seconds||0;
+    const tb=b.criadoEm?.seconds||0;
+    return ta-tb;
+  });
+  ordenados.forEach(d=>{
+    const w=limparNumero(d.wa);
+    if(w){if(waMap[w])paraRemover.push(d.id);else waMap[w]=d.id;}
+  });
+  if(!paraRemover.length){toast('Nenhum duplicado encontrado!');return;}
+  for(const id of paraRemover)await fbDel(col,id);
+  toast(`✅ ${paraRemover.length} duplicado(s) removido(s)!`);
+}
+
+window.verLead=verLead; window.abrirEditorFicha=abrirEditorFicha; window.renderFichaEditor=renderFichaEditor; window.salvarFicha=salvarFicha; window.confirmarDeletarCol=confirmarDeletarCol; window.moverParaOutros=moverParaOutros; window.confirmarMoverOutros=confirmarMoverOutros; window.limparDuplicatas=limparDuplicatas; window.toggleCk=toggleCk; window.salvarCkCampo=salvarCkCampo; window.moverEtapa=moverEtapa; window.salvarNotaAba=salvarNotaAba; window.abrirNovoLead=abrirNovoLead; window.salvarLead=salvarLead; window.filtrarContatosM=filtrarContatosM; window.selContato=selContato; window.login=login; window.logout=logout; window.nav=nav; window.abrirFluxoEditor=abrirFluxoEditor; window.salvarFluxo=salvarFluxo; window.renderFluxoEditor=renderFluxoEditor; window.editarCol=editarCol; window.salvarCol=salvarCol; window.deletarCol=deletarCol; window.adicionarCol=adicionarCol; window.addCkItem=addCkItem; window.enviarParaVendas=enviarParaVendas; window.abrirEnviarConcierge=abrirEnviarConcierge; window.confirmarConcierge=confirmarConcierge; window.removerDoFluxo=removerDoFluxo; window.filtrarContatos=filtrarContatos; window.adicionarContatoFluxo=adicionarContatoFluxo; window.atualizarEtapasDestino=atualizarEtapasDestino; window.confirmarAdicionarFluxo=confirmarAdicionarFluxo; window.filtrarOutros=filtrarOutros; window.filtrarOutrosCat=filtrarOutrosCat; window.abrirNovoOutro=abrirNovoOutro; window.salvarOutro=salvarOutro; window.abrirNovoPaciente=abrirNovoPaciente; window.filtrarContatosNP=filtrarContatosNP; window.selContatoNP=selContatoNP; window.salvarNovoPaciente=salvarNovoPaciente; window.abrirPaciente=abrirPaciente; window.salvarProtocolo=salvarProtocolo; window.setDiasFiltro=setDiasFiltro; window.diasNav=diasNav; window.irParaHoje=irParaHoje; window.salvarMsgDia=salvarMsgDia; window.salvarTarefaCustom=salvarTarefaCustom; window.dragStart=dragStart; window.dragEnd=dragEnd; window.dragOver=dragOver; window.dragLeave=dragLeave; window.dropCard=dropCard; window.dragStartDia=dragStartDia; window.dropDia=dropDia; window.initKanbanScroll=initKanbanScroll;
 </script>
 </body>
 </html>
