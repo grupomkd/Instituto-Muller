@@ -746,19 +746,45 @@ async function salvarFluxo(){
   closeM('m-fluxo');toast('✅ Fluxo salvo');renderKanban(fluxoEditAba);
 }
 
-// ── VER LEAD (com checklist completo) ──
+// ── VER LEAD (com checklist + ficha acumulativa) ──
 function verLead(id,aba){
   const dados=aba==='atendente'?leadsCache:vendasCache;
   const c=dados.find(x=>x.id===id);if(!c)return;
   const cols=aba==='atendente'?colsAt:colsV;
   const colAtual=cols.find(col=>col.nome===c.etapa)||cols[0];
   const ck=colAtual?.ck||[];
-  const hist=c.historico||{};
   const checklist=c.checklist||{};
+  const hist=c.historico||{};
+  const ficha=c.ficha||{};
+  const podeEditar=aba==='atendente';
 
   document.getElementById('mv-title').textContent=c.nome||'Lead';
-  
-  // Campos do checklist atual
+
+  // ── Ficha do lead (campos com texto livre) ──
+  const fichaHtml=`
+    <div class="ms">
+      <div class="ms-title" style="display:flex;align-items:center;justify-content:space-between">
+        <span><i class="ti ti-id-badge" style="font-size:13px"></i> Ficha do lead</span>
+        ${podeEditar?`<button class="btn btn-ghost btn-xs" onclick="abrirEditorFicha('${id}','${aba}')"><i class="ti ti-pencil"></i> Editar ficha</button>`:'<span style="font-size:11px;color:var(--g400)">Somente leitura</span>'}
+      </div>
+      <div style="margin-top:10px;display:grid;gap:8px">
+        ${Object.keys(ficha).length?Object.entries(ficha).map(([campo,valor])=>`
+          <div style="display:flex;gap:8px;padding:8px 10px;background:var(--g50);border-radius:8px;align-items:flex-start">
+            <div style="font-size:12px;font-weight:600;color:var(--g600);min-width:100px;flex-shrink:0">${campo}</div>
+            <div style="font-size:13px;color:var(--g900);flex:1">${valor||'—'}</div>
+          </div>`).join('')
+        :`<div style="font-size:13px;color:var(--g400);padding:8px 0">${podeEditar?'Nenhum campo ainda. Clique em "Editar ficha" para adicionar.':'Nenhuma informação preenchida ainda.'}</div>`}
+      </div>
+      ${!podeEditar?`
+      <div style="margin-top:12px;padding-top:12px;border-top:.5px solid var(--g100)">
+        <div style="font-size:11px;font-weight:600;color:var(--g400);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px">Minhas anotações (${aba})</div>
+        <textarea id="nota-aba-${id}" rows="3" placeholder="Adicione suas notas aqui..."
+          style="width:100%;border:.5px solid var(--g100);border-radius:8px;padding:8px 10px;font-size:13px;font-family:Inter,sans-serif;resize:vertical;outline:none"
+          onblur="salvarNotaAba('${id}','${aba}',this.value)">${c['nota_'+aba]||''}</textarea>
+      </div>`:''}
+    </div>`;
+
+  // ── Checklist da etapa atual ──
   const ckHtml=ck.length?`
     <div class="ms">
       <div class="ms-title"><i class="ti ti-checklist" style="font-size:13px"></i> Checklist — ${c.etapa}</div>
@@ -766,43 +792,49 @@ function verLead(id,aba){
         const ok=checklist[item.id]?.ok||false;
         const val=checklist[item.id]?.valor||'';
         return`<div class="ck-item${ok?' done':''}" id="ckwrap-${item.id}">
-          <input type="checkbox" id="ck-${item.id}" ${ok?'checked':''} onchange="toggleCk('${id}','${aba}','${item.id}',this.checked,'${item.campo}')">
+          <input type="checkbox" id="ck-${item.id}" ${ok?'checked':''} onchange="toggleCk('${id}','${aba}','${item.id}',this.checked)">
           <div style="flex:1">
             <label for="ck-${item.id}">${item.label}</label>
-            ${item.campo?`<div class="ck-field"><input type="text" id="ckf-${item.id}" value="${val}" placeholder="Preencher..." onblur="salvarCkCampo('${id}','${aba}','${item.id}',this.value,'${item.campo}')" style="width:100%;border:.5px solid var(--g100);border-radius:6px;padding:6px 8px;font-size:12px;font-family:Inter,sans-serif;outline:none;min-height:36px"></div>`:''} 
+            ${item.campo?`<input type="text" id="ckf-${item.id}" value="${val}" placeholder="Preencher..."
+              style="width:100%;border:.5px solid var(--g100);border-radius:6px;padding:6px 8px;font-size:12px;font-family:Inter,sans-serif;outline:none;margin-top:4px;min-height:36px"
+              onblur="salvarCkCampo('${id}','${aba}','${item.id}',this.value,'${item.campo}')"
+              onfocus="this.style.borderColor='var(--v)'" onblur2="this.style.borderColor='var(--g100)'">`:''}
           </div>
         </div>`;
       }).join('')}
     </div>`:'';
 
-  // Histórico de etapas anteriores
+  // ── Histórico de etapas anteriores ──
   const histHtml=Object.keys(hist).length?`
     <div class="ms">
       <div class="ms-title"><i class="ti ti-history" style="font-size:13px"></i> Histórico de etapas</div>
       ${Object.entries(hist).map(([etapa,data])=>`
         <div class="hist-item done">
-          <div style="display:flex;justify-content:space-between;align-items:center">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
             <div class="hi-etapa">${etapa}</div>
             <div class="hi-data">${data.data||''}</div>
           </div>
-          ${Object.entries(data.campos||{}).map(([campo,valor])=>valor?`<div class="hist-campo"><strong>${campo}:</strong> ${valor}</div>`:'').join('')}
+          ${Object.entries(data.campos||{}).filter(([k,v])=>v).map(([campo,valor])=>
+            `<div class="hist-campo"><strong>${campo}:</strong> ${valor}</div>`
+          ).join('')}
         </div>`).join('')}
     </div>`:'';
 
   document.getElementById('mv-body').innerHTML=`
-    <div style="display:flex;gap:16px;font-size:13px;margin-bottom:12px;flex-wrap:wrap">
+    <div style="display:flex;gap:12px;font-size:13px;margin-bottom:12px;flex-wrap:wrap">
       <div><span style="color:var(--g400);display:block;font-size:11px;margin-bottom:2px">WhatsApp</span><strong>${limparNumero(c.wa)||'—'}</strong></div>
       <div><span style="color:var(--g400);display:block;font-size:11px;margin-bottom:2px">Origem</span>${c.origem||'—'}</div>
       <div><span style="color:var(--g400);display:block;font-size:11px;margin-bottom:2px">Etapa</span><span class="badge bg">${c.etapa||'—'}</span></div>
     </div>
-    ${c.objetivo?`<div style="padding:10px 12px;background:var(--g50);border-radius:8px;font-size:13px;margin-bottom:12px"><span style="color:var(--g400);font-size:11px;display:block;margin-bottom:3px">OBJETIVO</span>${c.objetivo}</div>`:''}
-    ${c.ultimaMensagem?`<div style="padding:10px 12px;background:var(--vl);border-radius:8px;font-size:12px;color:var(--v);margin-bottom:12px"><i class="ti ti-brand-whatsapp"></i> Última msg: "${c.ultimaMensagem.substring(0,100)}"</div>`:''}
+    ${c.objetivo?`<div style="padding:10px 12px;background:var(--g50);border-radius:8px;font-size:13px;margin-bottom:10px"><span style="color:var(--g400);font-size:11px;display:block;margin-bottom:3px">OBJETIVO</span>${c.objetivo}</div>`:''}
+    ${c.ultimaMensagem?`<div style="padding:10px 12px;background:var(--vl);border-radius:8px;font-size:12px;color:var(--v);margin-bottom:10px"><i class="ti ti-brand-whatsapp"></i> "${c.ultimaMensagem.substring(0,100)}"</div>`:''}
     <div class="fg"><label>Mover para etapa</label>
       <select onchange="moverEtapa('${id}','${aba}',this.value)" style="width:100%;padding:10px 12px;border:.5px solid var(--g100);border-radius:8px;font-family:Inter,sans-serif;font-size:14px;min-height:44px">
         ${cols.map(col=>`<option${c.etapa===col.nome?' selected':''}>${col.nome}</option>`).join('')}
       </select>
     </div>
-    ${c.wa?`<button class="btn-wa" style="width:100%;justify-content:center;margin-bottom:12px" onclick="openWA('${c.wa}')"><i class="ti ti-brand-whatsapp"></i> Abrir WhatsApp</button>`:''}
+    ${c.wa?`<button class="btn-wa" style="width:100%;justify-content:center;margin-bottom:10px" onclick="openWA('${c.wa}')"><i class="ti ti-brand-whatsapp"></i> Abrir WhatsApp</button>`:''}
+    ${fichaHtml}
     ${ckHtml}
     ${histHtml}
     ${aba==='atendente'?`
@@ -817,7 +849,7 @@ function verLead(id,aba){
     ${aba==='vendas'?`
     <div class="ms">
       <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="btn btn-v btn-sm" onclick="abrirEnviarConcierge('${id}','vendas')"><i class="ti ti-clipboard-heart"></i> Enviar para Concierge</button>
+        <button class="btn btn-v btn-sm" onclick="abrirEnviarConcierge('${id}','vendas')"><i class="ti ti-clipboard-heart"></i> Concierge</button>
         <button class="btn btn-danger btn-sm" onclick="removerDoFluxo('${id}','${aba}')"><i class="ti ti-trash"></i> Remover</button>
       </div>
     </div>`:''}`;
@@ -826,22 +858,61 @@ function verLead(id,aba){
   openM('m-ver');
 }
 
-async function toggleCk(id,aba,ckId,ok,campo){
+// ── EDITOR DE FICHA ──
+let _fichaTemp=[], _fichaId=null, _fichaAba=null;
+function abrirEditorFicha(id,aba){
+  const dados=aba==='atendente'?leadsCache:vendasCache;
+  const c=dados.find(x=>x.id===id);if(!c)return;
+  _fichaId=id; _fichaAba=aba;
+  _fichaTemp=Object.entries(c.ficha||{}).map(([campo,valor])=>({campo,valor}));
+  document.getElementById('mg-title').textContent='Editar ficha do lead';
+  renderFichaEditor();
+  document.getElementById('mg-footer').innerHTML=`
+    <button class="btn btn-ghost btn-sm" onclick="_fichaTemp.push({campo:'',valor:''});renderFichaEditor()"><i class="ti ti-plus"></i> Campo</button>
+    <button class="btn-cancel" onclick="closeM('m-gen');verLead('${id}','${aba}')">Cancelar</button>
+    <button class="btn btn-v" onclick="salvarFicha('${id}','${aba}')"><i class="ti ti-check"></i> Salvar</button>`;
+  closeM('m-ver');
+  openM('m-gen');
+}
+function renderFichaEditor(){
+  document.getElementById('mg-body').innerHTML=`
+    <p style="font-size:12px;color:var(--g400);margin-bottom:12px">Adicione campos como "Nome", "Endereço", "Telefone fixo" etc.</p>
+    ${_fichaTemp.map((item,i)=>`
+      <div style="display:flex;gap:6px;margin-bottom:8px;align-items:center">
+        <input type="text" value="${item.campo}" placeholder="Nome do campo" oninput="_fichaTemp[${i}].campo=this.value"
+          style="flex:1;border:.5px solid var(--g100);border-radius:6px;padding:8px 10px;font-size:13px;font-family:Inter,sans-serif;min-height:40px;outline:none;font-weight:500">
+        <input type="text" value="${item.valor}" placeholder="Valor" oninput="_fichaTemp[${i}].valor=this.value"
+          style="flex:2;border:.5px solid var(--g100);border-radius:6px;padding:8px 10px;font-size:13px;font-family:Inter,sans-serif;min-height:40px;outline:none">
+        <button onclick="_fichaTemp.splice(${i},1);renderFichaEditor()" style="background:none;border:none;cursor:pointer;color:var(--r400);font-size:18px;min-width:36px;min-height:36px"><i class="ti ti-x"></i></button>
+      </div>`).join('')}
+    ${!_fichaTemp.length?`<p style="text-align:center;color:var(--g400);font-size:13px;padding:16px">Clique em "+ Campo" para adicionar</p>`:''}`;
+}
+async function salvarFicha(id,aba){
+  const col=aba==='atendente'?'leads':'vendas';
+  const ficha={};
+  _fichaTemp.filter(x=>x.campo.trim()).forEach(x=>{ficha[x.campo.trim()]=x.valor});
+  await fbUp(col,id,{ficha});
+  closeM('m-gen');
+  toast('✅ Ficha salva!');
+  verLead(id,aba);
+}
+
+async function toggleCk(id,aba,ckId,ok){
   const col=aba==='atendente'?'leads':'vendas';
   const dados=aba==='atendente'?leadsCache:vendasCache;
   const lead=dados.find(x=>x.id===id);if(!lead)return;
-  const checklist=lead.checklist||{};
+  const checklist=JSON.parse(JSON.stringify(lead.checklist||{}));
   if(!checklist[ckId])checklist[ckId]={ok:false,valor:''};
   checklist[ckId].ok=ok;
   const wrap=document.getElementById('ckwrap-'+ckId);
-  if(wrap){wrap.classList.toggle('done',ok)}
+  if(wrap)wrap.classList.toggle('done',ok);
   await fbUp(col,id,{checklist});
 }
 async function salvarCkCampo(id,aba,ckId,valor,campo){
   const col=aba==='atendente'?'leads':'vendas';
   const dados=aba==='atendente'?leadsCache:vendasCache;
   const lead=dados.find(x=>x.id===id);if(!lead)return;
-  const checklist=lead.checklist||{};
+  const checklist=JSON.parse(JSON.stringify(lead.checklist||{}));
   if(!checklist[ckId])checklist[ckId]={ok:false,valor:''};
   checklist[ckId].valor=valor;
   await fbUp(col,id,{checklist});
@@ -850,9 +921,7 @@ async function moverEtapa(id,aba,etapa){
   const col=aba==='atendente'?'leads':'vendas';
   const dados=aba==='atendente'?leadsCache:vendasCache;
   const lead=dados.find(x=>x.id===id);if(!lead)return;
-  
-  // Salvar histórico da etapa anterior com campos preenchidos
-  const hist=lead.historico||{};
+  const hist=JSON.parse(JSON.stringify(lead.historico||{}));
   const ck=lead.checklist||{};
   const colsAba=aba==='atendente'?colsAt:colsV;
   const colAnterior=colsAba.find(c=>c.nome===lead.etapa);
@@ -863,7 +932,15 @@ async function moverEtapa(id,aba,etapa){
   }
   await fbUp(col,id,{etapa,historico:hist});
   toast(`→ ${etapa}`);
+  closeM('m-ver');
 }
+async function salvarNotaAba(id,aba,valor){
+  const col=aba==='atendente'?'leads':'vendas';
+  const update={};
+  update['nota_'+aba]=valor;
+  await fbUp(col,id,update);
+}
+
 
 // ── NOVO LEAD ──
 function abrirNovoLead(aba){
@@ -914,7 +991,8 @@ function selContato(id){
 // ── TRANSFERÊNCIAS ──
 async function enviarParaVendas(id){
   const c=leadsCache.find(x=>x.id===id);if(!c)return;
-  await fbAdd('vendas',{...c,etapa:colsV[0]?.nome||'Proposta enviada',fluxos:['atendente','vendas'],originId:id,checklist:{},historico:{}});
+  // Copia ficha mas zera checklist/historico para o novo fluxo
+  await fbAdd('vendas',{...c,etapa:colsV[0]?.nome||'Proposta enviada',fluxos:['atendente','vendas'],originId:id,checklist:{},historico:{},ficha:c.ficha||{}});
   closeM('m-ver');toast('✅ Enviado para Vendas!');
 }
 function abrirEnviarConcierge(id,aba){
@@ -938,7 +1016,7 @@ async function confirmarConcierge(id,aba){
   const c=dados.find(x=>x.id===id);if(!c)return;
   const protocolo=parseInt(document.getElementById('env-prot').value)||120;
   const inicio=document.getElementById('env-inicio').value;
-  await fbAdd('pacientes',{nome:c.nome,wa:limparNumero(c.wa),objetivo:document.getElementById('env-nota').value||c.objetivo||'',protocolo,diaAtual:1,inicio,nota:''});
+  await fbAdd('pacientes',{nome:c.nome,wa:limparNumero(c.wa),objetivo:document.getElementById('env-nota').value||c.objetivo||'',protocolo,diaAtual:1,inicio,nota:'',ficha:c.ficha||{}});
   closeM('m-gen');toast('✅ Enviado para Concierge!');
 }
 async function removerDoFluxo(id,aba){
@@ -1395,6 +1473,7 @@ document.querySelectorAll('.mo').forEach(el=>el.addEventListener('click',e=>{if(
 
 // Init touch após DOM pronto
 document.addEventListener('DOMContentLoaded',()=>initTouchKanban());
+window.verLead=verLead; window.abrirEditorFicha=abrirEditorFicha; window.renderFichaEditor=renderFichaEditor; window.salvarFicha=salvarFicha; window.toggleCk=toggleCk; window.salvarCkCampo=salvarCkCampo; window.moverEtapa=moverEtapa; window.salvarNotaAba=salvarNotaAba; window.abrirNovoLead=abrirNovoLead; window.salvarLead=salvarLead; window.filtrarContatosM=filtrarContatosM; window.selContato=selContato; window.login=login; window.logout=logout; window.nav=nav; window.abrirFluxoEditor=abrirFluxoEditor; window.salvarFluxo=salvarFluxo; window.renderFluxoEditor=renderFluxoEditor; window.editarCol=editarCol; window.salvarCol=salvarCol; window.deletarCol=deletarCol; window.adicionarCol=adicionarCol; window.addCkItem=addCkItem; window.enviarParaVendas=enviarParaVendas; window.abrirEnviarConcierge=abrirEnviarConcierge; window.confirmarConcierge=confirmarConcierge; window.removerDoFluxo=removerDoFluxo; window.filtrarContatos=filtrarContatos; window.adicionarContatoFluxo=adicionarContatoFluxo; window.atualizarEtapasDestino=atualizarEtapasDestino; window.confirmarAdicionarFluxo=confirmarAdicionarFluxo; window.filtrarOutros=filtrarOutros; window.filtrarOutrosCat=filtrarOutrosCat; window.abrirNovoOutro=abrirNovoOutro; window.salvarOutro=salvarOutro; window.abrirNovoPaciente=abrirNovoPaciente; window.filtrarContatosNP=filtrarContatosNP; window.selContatoNP=selContatoNP; window.salvarNovoPaciente=salvarNovoPaciente; window.abrirPaciente=abrirPaciente; window.salvarProtocolo=salvarProtocolo; window.setDiasFiltro=setDiasFiltro; window.diasNav=diasNav; window.irParaHoje=irParaHoje; window.salvarMsgDia=salvarMsgDia; window.salvarTarefaCustom=salvarTarefaCustom; window.dragStart=dragStart; window.dragEnd=dragEnd; window.dragOver=dragOver; window.dragLeave=dragLeave; window.dropCard=dropCard; window.dragStartDia=dragStartDia; window.dropDia=dropDia; window.initKanbanScroll=initKanbanScroll;
 </script>
 </body>
 </html>
