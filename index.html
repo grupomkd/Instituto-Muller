@@ -746,78 +746,80 @@ async function salvarFluxo(){
   closeM('m-fluxo');toast('✅ Fluxo salvo');renderKanban(fluxoEditAba);
 }
 
-// ── VER LEAD (com checklist + ficha acumulativa) ──
+// ── VER LEAD (checklist = ficha unificada) ──
 function verLead(id,aba){
   const dados=aba==='atendente'?leadsCache:vendasCache;
   const c=dados.find(x=>x.id===id);if(!c)return;
   const cols=aba==='atendente'?colsAt:colsV;
   const colAtual=cols.find(col=>col.nome===c.etapa)||cols[0];
-  const ck=colAtual?.ck||[];
+  const ckEtapa=colAtual?.ck||[];
   const checklist=c.checklist||{};
   const hist=c.historico||{};
-  const ficha=c.ficha||{};
   const podeEditar=aba==='atendente';
 
   document.getElementById('mv-title').textContent=c.nome||'Lead';
 
-  // ── Ficha do lead (campos com texto livre) ──
-  const fichaHtml=`
-    <div class="ms">
-      <div class="ms-title" style="display:flex;align-items:center;justify-content:space-between">
-        <span><i class="ti ti-id-badge" style="font-size:13px"></i> Ficha do lead</span>
-        ${podeEditar?`<button class="btn btn-ghost btn-xs" onclick="abrirEditorFicha('${id}','${aba}')"><i class="ti ti-pencil"></i> Editar ficha</button>`:'<span style="font-size:11px;color:var(--g400)">Somente leitura</span>'}
-      </div>
-      <div style="margin-top:10px;display:grid;gap:8px">
-        ${Object.keys(ficha).length?Object.entries(ficha).map(([campo,valor])=>`
-          <div style="display:flex;gap:8px;padding:8px 10px;background:var(--g50);border-radius:8px;align-items:flex-start">
-            <div style="font-size:12px;font-weight:600;color:var(--g600);min-width:100px;flex-shrink:0">${campo}</div>
-            <div style="font-size:13px;color:var(--g900);flex:1">${valor||'—'}</div>
-          </div>`).join('')
-        :`<div style="font-size:13px;color:var(--g400);padding:8px 0">${podeEditar?'Nenhum campo ainda. Clique em "Editar ficha" para adicionar.':'Nenhuma informação preenchida ainda.'}</div>`}
-      </div>
-      ${!podeEditar?`
-      <div style="margin-top:12px;padding-top:12px;border-top:.5px solid var(--g100)">
-        <div style="font-size:11px;font-weight:600;color:var(--g400);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px">Minhas anotações (${aba})</div>
-        <textarea id="nota-aba-${id}" rows="3" placeholder="Adicione suas notas aqui..."
-          style="width:100%;border:.5px solid var(--g100);border-radius:8px;padding:8px 10px;font-size:13px;font-family:Inter,sans-serif;resize:vertical;outline:none"
-          onblur="salvarNotaAba('${id}','${aba}',this.value)">${c['nota_'+aba]||''}</textarea>
-      </div>`:''}
-    </div>`;
+  // ── Ficha unificada: todos os ck de todas as etapas anteriores + etapa atual ──
+  // Coleta todos os campos de todas as etapas (histórico + atual)
+  const etapasAnteriores=Object.keys(hist);
+  const camposAnteriores=[];
+  etapasAnteriores.forEach(etapaNome=>{
+    const colEtapa=cols.find(c=>c.nome===etapaNome);
+    if(colEtapa&&colEtapa.ck){
+      colEtapa.ck.forEach(item=>{
+        camposAnteriores.push({...item,etapa:etapaNome,anterior:true});
+      });
+    }
+  });
 
-  // ── Checklist da etapa atual ──
-  const ckHtml=ck.length?`
-    <div class="ms">
-      <div class="ms-title"><i class="ti ti-checklist" style="font-size:13px"></i> Checklist — ${c.etapa}</div>
-      ${ck.map(item=>{
+  // Ficha histórico (etapas anteriores - somente leitura)
+  const fichaHistHtml=camposAnteriores.length?`
+    <div style="margin-bottom:8px">
+      <div style="font-size:10px;font-weight:600;color:var(--g400);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px">Etapas anteriores</div>
+      ${camposAnteriores.map(item=>{
         const ok=checklist[item.id]?.ok||false;
         const val=checklist[item.id]?.valor||'';
-        return`<div class="ck-item${ok?' done':''}" id="ckwrap-${item.id}">
-          <input type="checkbox" id="ck-${item.id}" ${ok?'checked':''} onchange="toggleCk('${id}','${aba}','${item.id}',this.checked)">
+        return`<div style="display:flex;align-items:flex-start;gap:10px;padding:8px 10px;background:var(--g50);border-radius:8px;margin-bottom:5px;opacity:.75">
+          <i class="ti ti-${ok?'circle-check':'circle'}" style="font-size:18px;color:${ok?'var(--v)':'var(--g200)'};flex-shrink:0;margin-top:1px"></i>
           <div style="flex:1">
-            <label for="ck-${item.id}">${item.label}</label>
-            ${item.campo?`<input type="text" id="ckf-${item.id}" value="${val}" placeholder="Preencher..."
-              style="width:100%;border:.5px solid var(--g100);border-radius:6px;padding:6px 8px;font-size:12px;font-family:Inter,sans-serif;outline:none;margin-top:4px;min-height:36px"
-              onblur="salvarCkCampo('${id}','${aba}','${item.id}',this.value,'${item.campo}')"
-              onfocus="this.style.borderColor='var(--v)'" onblur2="this.style.borderColor='var(--g100)'">`:''}
+            <div style="font-size:12px;font-weight:500;color:var(--g600)">${item.label} <span style="font-size:10px;color:var(--g400)">(${item.etapa})</span></div>
+            ${val?`<div style="font-size:13px;color:var(--g900);margin-top:2px">${val}</div>`:'<div style="font-size:12px;color:var(--g400);font-style:italic">Não preenchido</div>'}
           </div>
         </div>`;
       }).join('')}
     </div>`:'';
 
-  // ── Histórico de etapas anteriores ──
-  const histHtml=Object.keys(hist).length?`
-    <div class="ms">
-      <div class="ms-title"><i class="ti ti-history" style="font-size:13px"></i> Histórico de etapas</div>
-      ${Object.entries(hist).map(([etapa,data])=>`
-        <div class="hist-item done">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-            <div class="hi-etapa">${etapa}</div>
-            <div class="hi-data">${data.data||''}</div>
+  // Ficha etapa atual (editável se for atendente)
+  const fichaAtualHtml=ckEtapa.length?`
+    <div>
+      <div style="font-size:10px;font-weight:600;color:var(--v);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px">Etapa atual — ${c.etapa}</div>
+      ${ckEtapa.map(item=>{
+        const ok=checklist[item.id]?.ok||false;
+        const val=checklist[item.id]?.valor||'';
+        return`<div class="ck-item${ok?' done':''}" id="ckwrap-${item.id}" style="margin-bottom:6px">
+          <input type="checkbox" id="ck-${item.id}" ${ok?'checked':''} ${!podeEditar?'disabled':''}
+            onchange="toggleCk('${id}','${aba}','${item.id}',this.checked)">
+          <div style="flex:1">
+            <label for="ck-${item.id}" style="${!podeEditar?'cursor:default':'cursor:pointer'}">${item.label}</label>
+            ${podeEditar?`<input type="text" id="ckf-${item.id}" value="${val.replace(/"/g,'&quot;')}" placeholder="Preencher..."
+              style="width:100%;border:.5px solid var(--g100);border-radius:6px;padding:7px 9px;font-size:13px;font-family:Inter,sans-serif;outline:none;margin-top:5px;min-height:38px;background:#fff"
+              onfocus="this.style.borderColor='var(--v)'"
+              onblur="this.style.borderColor='var(--g100)';salvarCkCampo('${id}','${aba}','${item.id}',this.value,'${item.label}')">`
+            :val?`<div style="font-size:13px;color:var(--g900);margin-top:3px;padding:6px 0">${val}</div>`
+            :`<div style="font-size:12px;color:var(--g400);font-style:italic;margin-top:3px">Não preenchido</div>`}
           </div>
-          ${Object.entries(data.campos||{}).filter(([k,v])=>v).map(([campo,valor])=>
-            `<div class="hist-campo"><strong>${campo}:</strong> ${valor}</div>`
-          ).join('')}
-        </div>`).join('')}
+        </div>`;
+      }).join('')}
+    </div>`
+  :`<div style="font-size:13px;color:var(--g400);padding:8px 0">Nenhum item de checklist nesta etapa.${podeEditar?' Edite a etapa para adicionar.':''}</div>`;
+
+  // Notas de outros fluxos
+  const notaHtml=!podeEditar?`
+    <div class="ms">
+      <div class="ms-title">Minhas anotações (${aba})</div>
+      <textarea id="nota-aba-${id}" rows="3" placeholder="Adicione suas notas..."
+        style="width:100%;border:.5px solid var(--g100);border-radius:8px;padding:8px 10px;font-size:13px;font-family:Inter,sans-serif;resize:vertical;outline:none;min-height:80px"
+        onblur="salvarNotaAba('${id}','${aba}',this.value)">${c['nota_'+aba]||''}</textarea>
     </div>`:'';
 
   document.getElementById('mv-body').innerHTML=`
@@ -834,9 +836,15 @@ function verLead(id,aba){
       </select>
     </div>
     ${c.wa?`<button class="btn-wa" style="width:100%;justify-content:center;margin-bottom:10px" onclick="openWA('${c.wa}')"><i class="ti ti-brand-whatsapp"></i> Abrir WhatsApp</button>`:''}
-    ${fichaHtml}
-    ${ckHtml}
-    ${histHtml}
+    <div class="ms">
+      <div class="ms-title" style="display:flex;align-items:center;justify-content:space-between">
+        <span><i class="ti ti-id-badge" style="font-size:13px"></i> Ficha & Checklist</span>
+        ${!podeEditar?'<span style="font-size:11px;color:var(--g400)">Atendente preenche</span>':''}
+      </div>
+      ${fichaHistHtml}
+      ${fichaAtualHtml}
+    </div>
+    ${notaHtml}
     ${aba==='atendente'?`
     <div class="ms">
       <div class="ms-title">Encaminhar para</div>
@@ -858,45 +866,6 @@ function verLead(id,aba){
   openM('m-ver');
 }
 
-// ── EDITOR DE FICHA ──
-let _fichaTemp=[], _fichaId=null, _fichaAba=null;
-function abrirEditorFicha(id,aba){
-  const dados=aba==='atendente'?leadsCache:vendasCache;
-  const c=dados.find(x=>x.id===id);if(!c)return;
-  _fichaId=id; _fichaAba=aba;
-  _fichaTemp=Object.entries(c.ficha||{}).map(([campo,valor])=>({campo,valor}));
-  document.getElementById('mg-title').textContent='Editar ficha do lead';
-  renderFichaEditor();
-  document.getElementById('mg-footer').innerHTML=`
-    <button class="btn btn-ghost btn-sm" onclick="_fichaTemp.push({campo:'',valor:''});renderFichaEditor()"><i class="ti ti-plus"></i> Campo</button>
-    <button class="btn-cancel" onclick="closeM('m-gen');verLead('${id}','${aba}')">Cancelar</button>
-    <button class="btn btn-v" onclick="salvarFicha('${id}','${aba}')"><i class="ti ti-check"></i> Salvar</button>`;
-  closeM('m-ver');
-  openM('m-gen');
-}
-function renderFichaEditor(){
-  document.getElementById('mg-body').innerHTML=`
-    <p style="font-size:12px;color:var(--g400);margin-bottom:12px">Adicione campos como "Nome", "Endereço", "Telefone fixo" etc.</p>
-    ${_fichaTemp.map((item,i)=>`
-      <div style="display:flex;gap:6px;margin-bottom:8px;align-items:center">
-        <input type="text" value="${item.campo}" placeholder="Nome do campo" oninput="_fichaTemp[${i}].campo=this.value"
-          style="flex:1;border:.5px solid var(--g100);border-radius:6px;padding:8px 10px;font-size:13px;font-family:Inter,sans-serif;min-height:40px;outline:none;font-weight:500">
-        <input type="text" value="${item.valor}" placeholder="Valor" oninput="_fichaTemp[${i}].valor=this.value"
-          style="flex:2;border:.5px solid var(--g100);border-radius:6px;padding:8px 10px;font-size:13px;font-family:Inter,sans-serif;min-height:40px;outline:none">
-        <button onclick="_fichaTemp.splice(${i},1);renderFichaEditor()" style="background:none;border:none;cursor:pointer;color:var(--r400);font-size:18px;min-width:36px;min-height:36px"><i class="ti ti-x"></i></button>
-      </div>`).join('')}
-    ${!_fichaTemp.length?`<p style="text-align:center;color:var(--g400);font-size:13px;padding:16px">Clique em "+ Campo" para adicionar</p>`:''}`;
-}
-async function salvarFicha(id,aba){
-  const col=aba==='atendente'?'leads':'vendas';
-  const ficha={};
-  _fichaTemp.filter(x=>x.campo.trim()).forEach(x=>{ficha[x.campo.trim()]=x.valor});
-  await fbUp(col,id,{ficha});
-  closeM('m-gen');
-  toast('✅ Ficha salva!');
-  verLead(id,aba);
-}
-
 async function toggleCk(id,aba,ckId,ok){
   const col=aba==='atendente'?'leads':'vendas';
   const dados=aba==='atendente'?leadsCache:vendasCache;
@@ -908,27 +877,29 @@ async function toggleCk(id,aba,ckId,ok){
   if(wrap)wrap.classList.toggle('done',ok);
   await fbUp(col,id,{checklist});
 }
-async function salvarCkCampo(id,aba,ckId,valor,campo){
+async function salvarCkCampo(id,aba,ckId,valor,label){
   const col=aba==='atendente'?'leads':'vendas';
   const dados=aba==='atendente'?leadsCache:vendasCache;
   const lead=dados.find(x=>x.id===id);if(!lead)return;
   const checklist=JSON.parse(JSON.stringify(lead.checklist||{}));
   if(!checklist[ckId])checklist[ckId]={ok:false,valor:''};
   checklist[ckId].valor=valor;
+  if(valor.trim())checklist[ckId].ok=true;
   await fbUp(col,id,{checklist});
+  // Atualiza checkbox visualmente
+  const cb=document.getElementById('ck-'+ckId);
+  const wrap=document.getElementById('ckwrap-'+ckId);
+  if(cb&&valor.trim()){cb.checked=true;if(wrap)wrap.classList.add('done')}
 }
 async function moverEtapa(id,aba,etapa){
   const col=aba==='atendente'?'leads':'vendas';
   const dados=aba==='atendente'?leadsCache:vendasCache;
   const lead=dados.find(x=>x.id===id);if(!lead)return;
   const hist=JSON.parse(JSON.stringify(lead.historico||{}));
-  const ck=lead.checklist||{};
   const colsAba=aba==='atendente'?colsAt:colsV;
   const colAnterior=colsAba.find(c=>c.nome===lead.etapa);
   if(colAnterior&&lead.etapa!==etapa){
-    const campos={};
-    (colAnterior.ck||[]).forEach(item=>{if(ck[item.id]?.valor)campos[item.campo||item.label]=ck[item.id].valor});
-    hist[lead.etapa]={data:new Date().toLocaleDateString('pt-BR'),campos};
+    hist[lead.etapa]={data:new Date().toLocaleDateString('pt-BR'),campos:{}};
   }
   await fbUp(col,id,{etapa,historico:hist});
   toast(`→ ${etapa}`);
@@ -936,10 +907,14 @@ async function moverEtapa(id,aba,etapa){
 }
 async function salvarNotaAba(id,aba,valor){
   const col=aba==='atendente'?'leads':'vendas';
-  const update={};
-  update['nota_'+aba]=valor;
+  const update={};update['nota_'+aba]=valor;
   await fbUp(col,id,update);
 }
+
+// Remove funções antigas de ficha separada (não mais usadas)
+function abrirEditorFicha(){}
+function renderFichaEditor(){}
+function salvarFicha(){}
 
 
 // ── NOVO LEAD ──
