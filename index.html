@@ -1478,7 +1478,7 @@ function abrirPaciente(id){
       ${tarefa.proxDia?`<div style="font-size:11px;color:var(--g400);margin-top:4px">Próximo: Dia ${tarefa.proxDia}</div>`:''}
     </div>
     <div class="fr" style="margin-bottom:12px">
-      <div class="fg"><label>Dia atual</label><input type="number" id="pac-dia" value="${diaReal}" min="1" max="${tot}"></div>
+      <div class="fg"><label>Dia atual</label><input type="number" id="pac-dia" value="${diaReal}" min="1" max="${tot}" oninput="atualizarPreviewInicio(this.value)"></div>
       <div class="fg"><label>Protocolo</label>
         <select id="pac-prot">
           <option value="90"${p.protocolo==90?' selected':''}>90 dias</option>
@@ -1486,6 +1486,11 @@ function abrirPaciente(id){
           <option value="365"${p.protocolo==365?' selected':''}>365 dias</option>
         </select>
       </div>
+    </div>
+    <div class="fg" style="margin-bottom:12px">
+      <label>Data de início do protocolo</label>
+      <input type="date" id="pac-inicio" value="${p.inicio||''}" onchange="atualizarPreviewDia(this.value)">
+      <div id="pac-inicio-preview" style="font-size:11px;color:var(--g400);margin-top:3px">Dia atual calculado automaticamente pela data de início</div>
     </div>
     <div class="fg"><label>Anotação do dia</label><textarea id="pac-nota" rows="3">${p.nota||''}</textarea></div>
     ${p.wa?`<button class="btn-wa" style="width:100%;justify-content:center;margin-top:8px" onclick="openWA('${p.wa}')"><i class="ti ti-brand-whatsapp"></i> Enviar mensagem</button>`:''}
@@ -1507,8 +1512,45 @@ function abrirPaciente(id){
 }
 async function salvarProtocolo(){
   if(!pacAtivo)return;
-  await fbUp('pacientes',pacAtivo.id,{diaAtual:parseInt(document.getElementById('pac-dia').value)||1,protocolo:parseInt(document.getElementById('pac-prot').value)||120,nota:document.getElementById('pac-nota').value});
+  const novoDia=parseInt(document.getElementById('pac-dia').value)||1;
+  const novoProt=parseInt(document.getElementById('pac-prot').value)||120;
+  const novaData=document.getElementById('pac-inicio').value;
+  // Calcula novo inicio baseado no dia informado
+  const novoInicio = novaData || calcInicioParaDia(novoDia);
+  await fbUp('pacientes',pacAtivo.id,{
+    diaAtual:novoDia,
+    protocolo:novoProt,
+    nota:document.getElementById('pac-nota').value,
+    inicio:novoInicio
+  });
   closeM('m-pac');toast('✅ Protocolo atualizado');
+}
+
+function atualizarPreviewInicio(dia){
+  const d = parseInt(dia)||1;
+  const novoInicio = calcInicioParaDia(d);
+  const el = document.getElementById('pac-inicio');
+  const prev = document.getElementById('pac-inicio-preview');
+  if(el) el.value = novoInicio;
+  if(prev) prev.textContent = 'Início ajustado para: ' + new Date(novoInicio+'T12:00:00').toLocaleDateString('pt-BR');
+}
+
+function atualizarPreviewDia(data){
+  if(!data) return;
+  const ini = new Date(data);
+  const hoje = new Date();
+  const diff = Math.floor((hoje-ini)/(1000*60*60*24));
+  const dia = Math.max(1,diff+1);
+  const el = document.getElementById('pac-dia');
+  const prev = document.getElementById('pac-inicio-preview');
+  if(el) el.value = dia;
+  if(prev) prev.textContent = 'Dia atual calculado: D' + dia;
+}
+
+function calcInicioParaDia(dia){
+  const hoje=new Date();
+  hoje.setDate(hoje.getDate()-(dia-1));
+  return hoje.toISOString().split('T')[0];
 }
 
 // ── VISÃO POR DIA ──
@@ -1580,6 +1622,7 @@ function renderDias(){
         ondrop="dropDia(event,${d},${tot})">
         <div style="padding:6px 10px;background:${temPac?cor:temTarefa?bg:'var(--g50)'};border-bottom:.5px solid ${temPac?cor+'44':'var(--g100)'}">
           <div style="font-size:12px;font-weight:700;color:${temPac?'#fff':temTarefa?cor:'var(--g400)'}">D${d}</div>
+          ${(()=>{const pacs2=pacPorDia[d]||[];if(!pacs2.length&&temTarefa){const ref=pacs.find(p=>p.inicio);if(ref&&ref.inicio){const ini2=new Date(ref.inicio);ini2.setDate(ini2.getDate()+d);return'<div style="font-size:9px;color:'+(temPac?'rgba(255,255,255,.6)':cor+'99')+'">'+ ini2.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})+'</div>';}}return '';})()}
           ${temTarefa?`<div contenteditable="true" id="tarefa-${tot}-${d}"
             style="font-size:10px;color:${temPac?'rgba(255,255,255,.85)':cor};margin-top:2px;line-height:1.3;outline:none;cursor:text;max-width:165px"
             onblur="salvarTarefaCustom(${tot},${d},this.innerText)"
