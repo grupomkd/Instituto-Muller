@@ -1106,7 +1106,17 @@ async function toggleCk(id,aba,ckId,ok){
   checklist[ckId].ok=ok;
   const wrap=document.getElementById('ckwrap-'+ckId);
   if(wrap)wrap.classList.toggle('done',ok);
-  await fbUp(col,id,{checklist});
+
+  // Se desmarcar e não tiver valor, remove da fichaLivre
+  const fichaLivre=JSON.parse(JSON.stringify(lead.fichaLivre||[]));
+  if(!ok){
+    const idx=fichaLivre.findIndex(f=>f._ckId===ckId);
+    if(idx>=0 && !checklist[ckId]?.valor?.trim()) fichaLivre.splice(idx,1);
+  }
+
+  await fbUp(col,id,{checklist,fichaLivre});
+  const fichaWrap=document.getElementById('ficha-livre-wrap');
+  if(fichaWrap) fichaWrap.innerHTML=renderFichaLivre(fichaLivre);
 }
 async function salvarCkCampo(id,aba,ckId,valor,label){
   const col=aba==='atendente'?'leads':'vendas';
@@ -1116,11 +1126,30 @@ async function salvarCkCampo(id,aba,ckId,valor,label){
   if(!checklist[ckId])checklist[ckId]={ok:false,valor:''};
   checklist[ckId].valor=valor;
   if(valor.trim())checklist[ckId].ok=true;
-  await fbUp(col,id,{checklist});
+
+  // Sincroniza com fichaLivre automaticamente
+  const fichaLivre=JSON.parse(JSON.stringify(lead.fichaLivre||[]));
+  const idxFicha=fichaLivre.findIndex(f=>f._ckId===ckId);
+  if(valor.trim()){
+    if(idxFicha>=0){
+      fichaLivre[idxFicha].valor=valor.trim();
+    } else {
+      fichaLivre.push({label:label||ckId, valor:valor.trim(), _ckId:ckId});
+    }
+  } else if(idxFicha>=0){
+    fichaLivre.splice(idxFicha,1);
+  }
+
+  await fbUp(col,id,{checklist,fichaLivre});
+
   // Atualiza checkbox visualmente
   const cb=document.getElementById('ck-'+ckId);
   const wrap=document.getElementById('ckwrap-'+ckId);
   if(cb&&valor.trim()){cb.checked=true;if(wrap)wrap.classList.add('done')}
+
+  // Atualiza ficha na tela
+  const fichaWrap=document.getElementById('ficha-livre-wrap');
+  if(fichaWrap) fichaWrap.innerHTML=renderFichaLivre(fichaLivre);
 }
 async function moverEtapa(id,aba,etapa){
   const col=aba==='atendente'?'leads':'vendas';
