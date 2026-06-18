@@ -385,17 +385,35 @@ const fbGetAll = col => db.collection(col).get().then(s=>s.docs.map(d=>({id:d.id
 function limparNumero(n){
   if(!n) return '';
   let s = String(n);
-  // Remove sufixos @lid @c.us etc ANTES de limpar
+  // Remove sufixos @lid @c.us etc
   s = s.replace(/@.*$/, '');
   // Remove tudo que não é dígito
   let d = s.replace(/\D/g,'');
   if(!d || d.length < 8) return '';
-  // Números com mais de 13 dígitos são IDs internos do WA (LID) - descartar
-  if(d.length > 13) return '';
+  // Números com mais de 13 dígitos são IDs internos do WA (LID)
+  // Tenta extrair os últimos 13 dígitos que podem ser o número real
+  if(d.length > 13) {
+    // Pega os últimos 11 ou 13 dígitos
+    const tail13 = d.slice(-13);
+    const tail11 = d.slice(-11);
+    if(tail13.startsWith('55')) return tail13;
+    if(tail11.length === 11) return '55' + tail11;
+    return ''; // Não conseguiu extrair número válido
+  }
   // Garante DDI 55 (Brasil)
   if(d.length === 11 && !d.startsWith('55')) d = '55' + d;
   if(d.length === 10 && !d.startsWith('55')) d = '55' + d;
   return d;
+}
+
+// Mostra número formatado para exibição
+function exibirNumero(n){
+  const num = limparNumero(n);
+  if(!num) return n||'—'; // Mostra o original se não conseguir limpar
+  // Formata: 55 11 9 1234-5678
+  if(num.length === 13) return `+${num.slice(0,2)} (${num.slice(2,4)}) ${num.slice(4,5)} ${num.slice(5,9)}-${num.slice(9)}`;
+  if(num.length === 12) return `+${num.slice(0,2)} (${num.slice(2,4)}) ${num.slice(4,8)}-${num.slice(8)}`;
+  return num;
 }
 function openWA(n){
   const num = limparNumero(n);
@@ -625,7 +643,7 @@ function mkCard(c,aba,col){
     ondragstart="dragStart(event,'${c.id}','${aba}')" ondragend="dragEnd(event)"
     onclick="verLead('${c.id}','${aba}')">
     <div class="kn">${c.nome||'Sem nome'}</div>
-    <div class="ks">${numLimpo||c.wa||'—'}${c.origem?' · '+c.origem:''}</div>
+    <div class="ks">${exibirNumero(c.wa)||'—'}${c.origem?' · '+c.origem:''}</div>
     ${ultimaMsg?`<div class="ks" style="margin-top:3px;font-style:italic;color:var(--g500)">${direcao==='enviada'?'<i class="ti ti-arrow-up-right" style="font-size:10px"></i>':'<i class="ti ti-arrow-down-left" style="font-size:10px"></i>'} "${ultimaMsg.substring(0,45)}"</div>`:''}
     <div class="ka">
       ${ckBadge}
@@ -849,7 +867,7 @@ function verLead(id,aba){
 
   document.getElementById('mv-body').innerHTML=`
     <div style="display:flex;gap:12px;font-size:13px;margin-bottom:12px;flex-wrap:wrap">
-      <div><span style="color:var(--g400);display:block;font-size:11px;margin-bottom:2px">WhatsApp</span><strong>${limparNumero(c.wa)||'—'}</strong></div>
+      <div><span style="color:var(--g400);display:block;font-size:11px;margin-bottom:2px">WhatsApp</span><strong>${exibirNumero(c.wa)}</strong></div>
       <div><span style="color:var(--g400);display:block;font-size:11px;margin-bottom:2px">Origem</span>${c.origem||'—'}</div>
       <div><span style="color:var(--g400);display:block;font-size:11px;margin-bottom:2px">Etapa</span><span class="badge bg">${c.etapa||'—'}</span></div>
     </div>
@@ -921,14 +939,23 @@ async function moverEtapa(id,aba,etapa){
   const col=aba==='atendente'?'leads':'vendas';
   const dados=aba==='atendente'?leadsCache:vendasCache;
   const lead=dados.find(x=>x.id===id);if(!lead)return;
+  if(lead.etapa===etapa){closeM('m-ver');return;}
   const hist=JSON.parse(JSON.stringify(lead.historico||{}));
   const colsAba=aba==='atendente'?colsAt:colsV;
   const colAnterior=colsAba.find(c=>c.nome===lead.etapa);
-  if(colAnterior&&lead.etapa!==etapa){
-    hist[lead.etapa]={data:new Date().toLocaleDateString('pt-BR'),campos:{}};
+  // Salva snapshot da etapa anterior no histórico
+  if(colAnterior){
+    const ckSnap={};
+    (colAnterior.ck||[]).forEach(item=>{
+      if(lead.checklist?.[item.id]){
+        ckSnap[item.id]=lead.checklist[item.id];
+      }
+    });
+    hist[lead.etapa]={data:new Date().toLocaleDateString('pt-BR'),campos:{},ckSnap};
   }
+  // checklist NÃO é zerado - mantém todos os dados
   await fbUp(col,id,{etapa,historico:hist});
-  toast(`→ ${etapa}`);
+  toast(`✅ Movido para ${etapa}`);
   closeM('m-ver');
 }
 async function salvarNotaAba(id,aba,valor){
@@ -1000,7 +1027,8 @@ function selContato(id){
 async function enviarParaVendas(id){
   const c=leadsCache.find(x=>x.id===id);if(!c)return;
   // Copia ficha mas zera checklist/historico para o novo fluxo
-  await fbAdd('vendas',{...c,etapa:colsV[0]?.nome||'Proposta enviada',fluxos:['atendente','vendas'],originId:id,checklist:{},historico:{},ficha:c.ficha||{}});
+  // Mantém checklist, historico e ficha do atendente
+  await fbAdd('vendas',{...c,etapa:colsV[0]?.nome||'Proposta enviada',fluxos:['atendente','vendas'],originId:id,checklist:c.checklist||{},historico:c.historico||{},ficha:c.ficha||{}});
   closeM('m-ver');toast('✅ Enviado para Vendas!');
 }
 function abrirEnviarConcierge(id,aba){
@@ -1024,7 +1052,7 @@ async function confirmarConcierge(id,aba){
   const c=dados.find(x=>x.id===id);if(!c)return;
   const protocolo=parseInt(document.getElementById('env-prot').value)||120;
   const inicio=document.getElementById('env-inicio').value;
-  await fbAdd('pacientes',{nome:c.nome,wa:limparNumero(c.wa),objetivo:document.getElementById('env-nota').value||c.objetivo||'',protocolo,diaAtual:1,inicio,nota:'',ficha:c.ficha||{}});
+  await fbAdd('pacientes',{nome:c.nome,wa:limparNumero(c.wa)||c.wa,objetivo:document.getElementById('env-nota').value||c.objetivo||'',protocolo,diaAtual:1,inicio,nota:'',ficha:c.ficha||{},checklist:c.checklist||{},historico:c.historico||{}});
   closeM('m-gen');toast('✅ Enviado para Concierge!');
 }
 async function removerDoFluxo(id,aba){
@@ -1336,7 +1364,21 @@ function abrirPaciente(id){
       </div>
     </div>
     <div class="fg"><label>Anotação do dia</label><textarea id="pac-nota" rows="3">${p.nota||''}</textarea></div>
-    ${p.wa?`<button class="btn-wa" style="width:100%;justify-content:center" onclick="openWA('${p.wa}')"><i class="ti ti-brand-whatsapp"></i> Enviar mensagem</button>`:''}`;
+    ${p.wa?`<button class="btn-wa" style="width:100%;justify-content:center;margin-top:8px" onclick="openWA('${p.wa}')"><i class="ti ti-brand-whatsapp"></i> Enviar mensagem</button>`:''}
+    ${Object.keys(p.ficha||{}).length||Object.keys(p.checklist||{}).length?`
+    <div style="margin-top:16px;padding-top:16px;border-top:.5px solid var(--g100)">
+      <div style="font-size:11px;font-weight:600;color:var(--g400);text-transform:uppercase;letter-spacing:.4px;margin-bottom:10px">Ficha do atendente</div>
+      ${Object.entries(p.ficha||{}).map(([campo,valor])=>`
+        <div style="display:flex;gap:8px;padding:7px 10px;background:var(--g50);border-radius:7px;margin-bottom:5px">
+          <div style="font-size:12px;font-weight:600;color:var(--g600);min-width:90px">${campo}</div>
+          <div style="font-size:13px;color:var(--g900)">${valor||'—'}</div>
+        </div>`).join('')}
+      ${Object.entries(p.checklist||{}).filter(([k,v])=>v?.valor).map(([k,v])=>`
+        <div style="display:flex;gap:8px;padding:7px 10px;background:var(--vl);border-radius:7px;margin-bottom:5px">
+          <i class="ti ti-check" style="color:var(--v);font-size:14px;flex-shrink:0;margin-top:1px"></i>
+          <div style="font-size:13px;color:var(--g800)">${v.valor}</div>
+        </div>`).join('')}
+    </div>`:''}`;
   openM('m-pac');
 }
 async function salvarProtocolo(){
@@ -1543,7 +1585,7 @@ async function limparDuplicatas(aba){
   toast(`✅ ${paraRemover.length} duplicado(s) removido(s)!`);
 }
 
-window.verLead=verLead; window.abrirEditorFicha=abrirEditorFicha; window.renderFichaEditor=renderFichaEditor; window.salvarFicha=salvarFicha; window.confirmarDeletarCol=confirmarDeletarCol; window.moverParaOutros=moverParaOutros; window.confirmarMoverOutros=confirmarMoverOutros; window.limparDuplicatas=limparDuplicatas; window.toggleCk=toggleCk; window.salvarCkCampo=salvarCkCampo; window.moverEtapa=moverEtapa; window.salvarNotaAba=salvarNotaAba; window.abrirNovoLead=abrirNovoLead; window.salvarLead=salvarLead; window.filtrarContatosM=filtrarContatosM; window.selContato=selContato; window.login=login; window.logout=logout; window.nav=nav; window.abrirFluxoEditor=abrirFluxoEditor; window.salvarFluxo=salvarFluxo; window.renderFluxoEditor=renderFluxoEditor; window.editarCol=editarCol; window.salvarCol=salvarCol; window.deletarCol=deletarCol; window.adicionarCol=adicionarCol; window.addCkItem=addCkItem; window.enviarParaVendas=enviarParaVendas; window.abrirEnviarConcierge=abrirEnviarConcierge; window.confirmarConcierge=confirmarConcierge; window.removerDoFluxo=removerDoFluxo; window.filtrarContatos=filtrarContatos; window.adicionarContatoFluxo=adicionarContatoFluxo; window.atualizarEtapasDestino=atualizarEtapasDestino; window.confirmarAdicionarFluxo=confirmarAdicionarFluxo; window.filtrarOutros=filtrarOutros; window.filtrarOutrosCat=filtrarOutrosCat; window.abrirNovoOutro=abrirNovoOutro; window.salvarOutro=salvarOutro; window.abrirNovoPaciente=abrirNovoPaciente; window.filtrarContatosNP=filtrarContatosNP; window.selContatoNP=selContatoNP; window.salvarNovoPaciente=salvarNovoPaciente; window.abrirPaciente=abrirPaciente; window.salvarProtocolo=salvarProtocolo; window.setDiasFiltro=setDiasFiltro; window.diasNav=diasNav; window.irParaHoje=irParaHoje; window.salvarMsgDia=salvarMsgDia; window.salvarTarefaCustom=salvarTarefaCustom; window.dragStart=dragStart; window.dragEnd=dragEnd; window.dragOver=dragOver; window.dragLeave=dragLeave; window.dropCard=dropCard; window.dragStartDia=dragStartDia; window.dropDia=dropDia; window.initKanbanScroll=initKanbanScroll;
+window.exibirNumero=exibirNumero; window.verLead=verLead; window.abrirEditorFicha=abrirEditorFicha; window.renderFichaEditor=renderFichaEditor; window.salvarFicha=salvarFicha; window.confirmarDeletarCol=confirmarDeletarCol; window.moverParaOutros=moverParaOutros; window.confirmarMoverOutros=confirmarMoverOutros; window.limparDuplicatas=limparDuplicatas; window.toggleCk=toggleCk; window.salvarCkCampo=salvarCkCampo; window.moverEtapa=moverEtapa; window.salvarNotaAba=salvarNotaAba; window.abrirNovoLead=abrirNovoLead; window.salvarLead=salvarLead; window.filtrarContatosM=filtrarContatosM; window.selContato=selContato; window.login=login; window.logout=logout; window.nav=nav; window.abrirFluxoEditor=abrirFluxoEditor; window.salvarFluxo=salvarFluxo; window.renderFluxoEditor=renderFluxoEditor; window.editarCol=editarCol; window.salvarCol=salvarCol; window.deletarCol=deletarCol; window.adicionarCol=adicionarCol; window.addCkItem=addCkItem; window.enviarParaVendas=enviarParaVendas; window.abrirEnviarConcierge=abrirEnviarConcierge; window.confirmarConcierge=confirmarConcierge; window.removerDoFluxo=removerDoFluxo; window.filtrarContatos=filtrarContatos; window.adicionarContatoFluxo=adicionarContatoFluxo; window.atualizarEtapasDestino=atualizarEtapasDestino; window.confirmarAdicionarFluxo=confirmarAdicionarFluxo; window.filtrarOutros=filtrarOutros; window.filtrarOutrosCat=filtrarOutrosCat; window.abrirNovoOutro=abrirNovoOutro; window.salvarOutro=salvarOutro; window.abrirNovoPaciente=abrirNovoPaciente; window.filtrarContatosNP=filtrarContatosNP; window.selContatoNP=selContatoNP; window.salvarNovoPaciente=salvarNovoPaciente; window.abrirPaciente=abrirPaciente; window.salvarProtocolo=salvarProtocolo; window.setDiasFiltro=setDiasFiltro; window.diasNav=diasNav; window.irParaHoje=irParaHoje; window.salvarMsgDia=salvarMsgDia; window.salvarTarefaCustom=salvarTarefaCustom; window.dragStart=dragStart; window.dragEnd=dragEnd; window.dragOver=dragOver; window.dragLeave=dragLeave; window.dropCard=dropCard; window.dragStartDia=dragStartDia; window.dropDia=dropDia; window.initKanbanScroll=initKanbanScroll;
 </script>
 </body>
 </html>
