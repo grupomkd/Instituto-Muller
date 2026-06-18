@@ -866,6 +866,14 @@ function verLead(id,aba){
     </div>`:'';
 
   document.getElementById('mv-body').innerHTML=`
+    ${podeEditar?`<div style="margin-bottom:12px">
+      <label style="font-size:11px;color:var(--g400);display:block;margin-bottom:4px">NOME DO LEAD</label>
+      <div style="display:flex;gap:8px;align-items:center">
+        <input id="mv-nome-input" type="text" value="${(c.nome||'').replace(/"/g,'&quot;')}" placeholder="Digite o nome..."
+          style="flex:1;padding:8px 12px;border:.5px solid var(--g100);border-radius:8px;font-size:14px;font-family:Inter,sans-serif;outline:none;min-height:40px">
+        <button onclick="salvarNomeLead('${id}','${aba}')" style="padding:8px 14px;background:var(--v);color:#fff;border:none;border-radius:8px;font-size:13px;cursor:pointer;white-space:nowrap">Salvar</button>
+      </div>
+    </div>`:''}
     <div style="display:flex;gap:12px;font-size:13px;margin-bottom:12px;flex-wrap:wrap">
       <div><span style="color:var(--g400);display:block;font-size:11px;margin-bottom:2px">WhatsApp</span><strong>${exibirNumero(c.wa)}</strong></div>
       <div><span style="color:var(--g400);display:block;font-size:11px;margin-bottom:2px">Origem</span>${c.origem||'—'}</div>
@@ -910,6 +918,18 @@ function verLead(id,aba){
   openM('m-ver');
 }
 
+
+async function salvarNomeLead(id, aba) {
+  const input = document.getElementById('mv-nome-input');
+  if (!input) return;
+  const nome = input.value.trim();
+  if (!nome) return;
+  const col = aba === 'atendente' ? 'leads' : (aba === 'vendas' ? 'vendas' : 'pacientes');
+  await fbUp(col, id, { nome });
+  toast('✅ Nome salvo!');
+  // atualiza título do modal
+  document.getElementById('mv-title').textContent = nome;
+}
 async function toggleCk(id,aba,ckId,ok){
   const col=aba==='atendente'?'leads':'vendas';
   const dados=aba==='atendente'?leadsCache:vendasCache;
