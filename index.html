@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Instituto Müller — CRM</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
@@ -17,68 +17,79 @@
   --r50:#FCEBEB;--r400:#E24B4A;
   --p50:#EEEDFE;--p400:#7F77DD;--p600:#534AB7;
 }
-body{font-family:'Inter',sans-serif;font-size:14px;background:#f0f4f1;color:var(--g900);min-height:100vh}
+body{font-family:'Inter',sans-serif;font-size:14px;background:#f0f4f1;color:var(--g900);min-height:100vh;-webkit-tap-highlight-color:transparent}
 
 /* LOGIN */
-#login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:2rem;background:linear-gradient(135deg,var(--vb) 0%,var(--v) 100%)}
+#login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:2rem;background:linear-gradient(135deg,var(--vb) 0%,var(--v) 100%);padding:20px}
 .login-logo h1{font-size:26px;font-weight:600;color:#fff;text-align:center}
 .login-logo p{font-size:12px;color:rgba(255,255,255,.6);margin-top:4px;letter-spacing:.5px;text-transform:uppercase;text-align:center}
 .login-cards{display:flex;gap:16px;flex-wrap:wrap;justify-content:center}
-.login-card{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:16px;padding:28px 32px;width:190px;cursor:pointer;transition:all .2s;text-align:center;color:#fff}
-.login-card:hover{background:rgba(255,255,255,.2);transform:translateY(-3px)}
-.login-card .ci{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:24px;background:rgba(255,255,255,.15)}
+.login-card{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:16px;padding:24px 28px;width:170px;cursor:pointer;transition:all .2s;text-align:center;color:#fff}
+.login-card:hover,.login-card:active{background:rgba(255,255,255,.2);transform:translateY(-3px)}
+.login-card .ci{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:22px;background:rgba(255,255,255,.15)}
 .login-card h3{font-size:14px;font-weight:600}
-.login-card p{font-size:12px;color:rgba(255,255,255,.6);margin-top:4px}
+.login-card p{font-size:11px;color:rgba(255,255,255,.6);margin-top:4px}
 
 /* APP */
 #app{display:none;min-height:100vh}
-.topbar{background:var(--v);padding:0 24px;height:54px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
-.topbar-logo{font-size:15px;font-weight:600;color:#fff;display:flex;align-items:center;gap:10px}
-.topbar-logo i{font-size:20px;color:rgba(255,255,255,.7)}
-.role-tag{font-size:11px;font-weight:500;padding:3px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:.4px;background:rgba(255,255,255,.2);color:#fff}
-.btn-logout{font-size:12px;color:rgba(255,255,255,.7);background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:4px}
+.topbar{background:var(--v);padding:0 16px;height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.topbar-logo{font-size:14px;font-weight:600;color:#fff;display:flex;align-items:center;gap:8px}
+.topbar-logo i{font-size:18px;color:rgba(255,255,255,.7)}
+.role-tag{font-size:10px;font-weight:500;padding:2px 8px;border-radius:20px;text-transform:uppercase;letter-spacing:.4px;background:rgba(255,255,255,.2);color:#fff}
+.btn-logout{font-size:12px;color:rgba(255,255,255,.7);background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:4px;padding:8px}
 .btn-logout:hover{color:#fff}
-.main{display:flex;min-height:calc(100vh - 54px)}
+.main{display:flex;min-height:calc(100vh - 52px)}
 
-/* SIDEBAR */
-.sidebar{width:220px;min-width:220px;background:#fff;border-right:.5px solid var(--g100);padding:16px 10px;display:flex;flex-direction:column;gap:3px}
-.sidebar-label{font-size:10px;font-weight:600;color:var(--g400);text-transform:uppercase;letter-spacing:.6px;padding:10px 8px 4px}
-.nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;font-size:13px;color:var(--g600);cursor:pointer;border:none;background:none;width:100%;text-align:left;transition:background .1s}
+/* SIDEBAR - desktop */
+.sidebar{width:200px;min-width:200px;background:#fff;border-right:.5px solid var(--g100);padding:12px 8px;display:flex;flex-direction:column;gap:2px}
+.sidebar-label{font-size:10px;font-weight:600;color:var(--g400);text-transform:uppercase;letter-spacing:.6px;padding:8px 8px 4px}
+.nav-item{display:flex;align-items:center;gap:8px;padding:10px 10px;border-radius:8px;font-size:13px;color:var(--g600);cursor:pointer;border:none;background:none;width:100%;text-align:left;transition:background .1s;min-height:44px}
 .nav-item:hover{background:var(--g50);color:var(--g900)}
 .nav-item.active{background:var(--vl);color:var(--v);font-weight:500}
-.nav-item i{font-size:17px}
+.nav-item i{font-size:17px;flex-shrink:0}
 .nav-badge{margin-left:auto;background:var(--c400);color:#fff;font-size:10px;font-weight:600;padding:1px 7px;border-radius:10px}
 
 /* CONTENT */
-.content{flex:1;padding:24px;overflow-y:auto;min-width:0}
-.ph{margin-bottom:20px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
-.ph h2{font-size:18px;font-weight:600}
-.ph p{font-size:13px;color:var(--g400);margin-top:2px}
+.content{flex:1;padding:16px;overflow-y:auto;min-width:0}
+.ph{margin-bottom:16px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.ph h2{font-size:17px;font-weight:600}
+.ph p{font-size:12px;color:var(--g400);margin-top:2px}
 
 /* STATS */
-.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:20px}
-.sc{background:#fff;border:.5px solid var(--g100);border-radius:10px;padding:14px 16px}
-.sc .lb{font-size:11px;color:var(--g400);font-weight:500;text-transform:uppercase;letter-spacing:.4px}
-.sc .vl{font-size:24px;font-weight:600;color:var(--g900);margin-top:4px}
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:8px;margin-bottom:16px}
+.sc{background:#fff;border:.5px solid var(--g100);border-radius:10px;padding:12px 14px}
+.sc .lb{font-size:10px;color:var(--g400);font-weight:500;text-transform:uppercase;letter-spacing:.4px}
+.sc .vl{font-size:22px;font-weight:600;color:var(--g900);margin-top:4px}
 
 /* KANBAN */
-.kw{overflow-x:auto;padding-bottom:12px}
-.kb{display:flex;gap:12px;min-width:max-content}
-.kc{width:230px;background:#fff;border:.5px solid var(--g100);border-radius:12px;overflow:hidden;flex-shrink:0}
-.kch{padding:11px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:.5px solid var(--g100)}
+.kw{overflow-x:auto;padding-bottom:12px;cursor:grab;user-select:none}
+.kw.dragging-scroll{cursor:grabbing}
+.kw::-webkit-scrollbar{height:6px}
+.kw::-webkit-scrollbar-track{background:var(--g50);border-radius:3px}
+.kw::-webkit-scrollbar-thumb{background:var(--g200);border-radius:3px}
+.kb{display:flex;gap:10px;min-width:max-content;padding:2px}
+.kc{width:220px;background:#fff;border:.5px solid var(--g100);border-radius:12px;overflow:hidden;flex-shrink:0}
+.kch{padding:10px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:.5px solid var(--g100)}
 .kct{font-size:12px;font-weight:600;color:var(--g800);display:flex;align-items:center;gap:6px}
 .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.kcc{font-size:11px;font-weight:600;background:var(--g50);color:var(--g400);padding:2px 8px;border-radius:10px}
-.btn-ec{background:none;border:none;cursor:pointer;color:var(--g400);font-size:14px;padding:2px 4px;border-radius:4px}
+.kcc{font-size:10px;font-weight:600;background:var(--g50);color:var(--g400);padding:2px 7px;border-radius:10px}
+.btn-ec{background:none;border:none;cursor:pointer;color:var(--g400);font-size:14px;padding:3px 5px;border-radius:4px;min-height:32px;min-width:32px;display:flex;align-items:center;justify-content:center}
 .btn-ec:hover{color:var(--v);background:var(--vl)}
-.kcards{padding:10px;min-height:80px;display:flex;flex-direction:column;gap:8px}
-.kcard{background:#fff;border:.5px solid var(--g100);border-radius:10px;padding:12px;cursor:pointer;transition:border-color .15s}
+.kcards{padding:8px;min-height:80px;display:flex;flex-direction:column;gap:6px}
+.kcards.drag-over{background:var(--vl);border-radius:8px;outline:2px dashed var(--v)}
+.kcard{background:#fff;border:.5px solid var(--g100);border-radius:10px;padding:11px;cursor:pointer;transition:border-color .15s;position:relative}
 .kcard:hover{border-color:var(--vxl)}
+.kcard.dragging{opacity:.4;transform:scale(.97)}
 .kcard .kn{font-size:13px;font-weight:500;color:var(--g900)}
-.kcard .ks{font-size:11px;color:var(--g400);margin-top:3px}
-.kcard .ka{margin-top:8px;display:flex;gap:6px;flex-wrap:wrap}
+.kcard .ks{font-size:11px;color:var(--g400);margin-top:2px}
+.kcard .ka{margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 .kadd-col{width:160px;flex-shrink:0;border:1.5px dashed var(--g100);border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;color:var(--g400);font-size:13px;min-height:100px;transition:all .15s}
 .kadd-col:hover{border-color:var(--v);color:var(--v);background:var(--vl)}
+
+/* CHECKLIST badge */
+.ck-badge{font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;display:inline-flex;align-items:center;gap:3px}
+.ck-ok{background:#eafaf3;color:var(--v)}
+.ck-pend{background:var(--a50);color:var(--a600)}
 
 /* BADGES */
 .badge{display:inline-block;font-size:11px;font-weight:500;padding:2px 8px;border-radius:20px}
@@ -87,92 +98,85 @@ body{font-family:'Inter',sans-serif;font-size:14px;background:#f0f4f1;color:var(
 .ba{background:var(--a50);color:var(--a600)}
 .bc{background:var(--c50);color:var(--c600)}
 .br{background:var(--r50);color:var(--r400)}
-.bp{background:var(--p50);color:var(--p600)}
 .bg{background:var(--g50);color:var(--g600)}
 
 /* BTN */
-.btn{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:opacity .15s;white-space:nowrap}
+.btn{padding:8px 14px;border-radius:8px;font-size:13px;font-weight:500;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:opacity .15s;white-space:nowrap;min-height:40px}
 .btn:hover{opacity:.85}
+.btn:active{opacity:.7;transform:scale(.98)}
 .btn-v{background:var(--v);color:#fff}
 .btn-b{background:var(--b400);color:#fff}
 .btn-a{background:var(--a400);color:#fff}
 .btn-p{background:var(--p400);color:#fff}
 .btn-r{background:var(--r400);color:#fff}
-.btn-sm{padding:5px 10px;font-size:12px}
-.btn-xs{padding:3px 8px;font-size:11px}
+.btn-sm{padding:6px 12px;font-size:12px;min-height:36px}
+.btn-xs{padding:4px 8px;font-size:11px;min-height:30px}
 .btn-ghost{background:var(--g50);color:var(--g800);border:.5px solid var(--g100)}
-.btn-wa{background:#25D366;color:#fff;border:none;border-radius:20px;padding:5px 12px;font-size:12px;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:5px}
-.btn-cancel{padding:8px 16px;border-radius:8px;font-size:13px;border:.5px solid var(--g100);background:none;cursor:pointer;color:var(--g600)}
+.btn-wa{background:#25D366;color:#fff;border:none;border-radius:20px;padding:8px 14px;font-size:12px;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:5px;min-height:36px}
+.btn-cancel{padding:8px 14px;border-radius:8px;font-size:13px;border:.5px solid var(--g100);background:none;cursor:pointer;color:var(--g600);min-height:40px}
 .btn-danger{background:var(--r50);color:var(--r400);border:.5px solid #f7c1c1}
 
 /* MODAL */
-.mo{display:none;position:fixed;inset:0;background:rgba(15,61,38,.5);z-index:200;align-items:center;justify-content:center}
+.mo{display:none;position:fixed;inset:0;background:rgba(15,61,38,.5);z-index:200;align-items:flex-end;justify-content:center}
 .mo.open{display:flex}
-.modal{background:#fff;border-radius:16px;width:500px;max-width:96vw;max-height:92vh;overflow-y:auto;padding:28px}
-.modal-lg{width:700px}
-.modal-sm{width:360px}
-.mh{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.modal{background:#fff;border-radius:16px 16px 0 0;width:100%;max-width:560px;max-height:92vh;overflow-y:auto;padding:24px;padding-bottom:max(24px,env(safe-area-inset-bottom))}
+.modal-lg{max-width:700px}
+.modal-sm{max-width:380px}
+.mh{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
 .mh h3{font-size:16px;font-weight:600}
-.mc{background:none;border:none;cursor:pointer;font-size:20px;color:var(--g400)}
-.fg{margin-bottom:14px}
+.mc{background:none;border:none;cursor:pointer;font-size:22px;color:var(--g400);padding:4px;min-height:40px;min-width:40px;display:flex;align-items:center;justify-content:center}
+.fg{margin-bottom:12px}
 .fg label{display:block;font-size:12px;font-weight:500;color:var(--g600);margin-bottom:5px}
-.fg input,.fg select,.fg textarea{width:100%;border:.5px solid var(--g100);border-radius:8px;padding:9px 12px;font-size:13px;font-family:'Inter',sans-serif;color:var(--g900);background:#fff;outline:none;transition:border-color .15s}
+.fg input,.fg select,.fg textarea{width:100%;border:.5px solid var(--g100);border-radius:8px;padding:10px 12px;font-size:14px;font-family:'Inter',sans-serif;color:var(--g900);background:#fff;outline:none;transition:border-color .15s;-webkit-appearance:none;min-height:44px}
 .fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--v)}
-.fr{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.mf{margin-top:20px;display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap}
-.ms{margin-top:16px;padding-top:16px;border-top:.5px solid var(--g100)}
-.ms-title{font-size:11px;font-weight:600;color:var(--g400);text-transform:uppercase;letter-spacing:.4px;margin-bottom:10px}
+.fg textarea{min-height:80px;resize:vertical}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mf{margin-top:18px;display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap}
+.ms{margin-top:14px;padding-top:14px;border-top:.5px solid var(--g100)}
+.ms-title{font-size:11px;font-weight:600;color:var(--g400);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px}
+
+/* CHECKLIST no modal */
+.ck-item{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:var(--g50);border-radius:8px;margin-bottom:6px}
+.ck-item input[type=checkbox]{width:20px;height:20px;flex-shrink:0;margin-top:2px;cursor:pointer;accent-color:var(--v)}
+.ck-item label{font-size:13px;color:var(--g800);flex:1;cursor:pointer;line-height:1.4}
+.ck-item.done label{text-decoration:line-through;color:var(--g400)}
+.ck-field{margin-top:6px}
+.ck-field input{width:100%;border:.5px solid var(--g100);border-radius:6px;padding:7px 10px;font-size:12px;font-family:Inter,sans-serif;background:#fff;outline:none}
+.ck-field input:focus{border-color:var(--v)}
 
 /* CONTATOS */
-.cont-item{display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:.5px solid var(--g50);cursor:pointer;transition:background .1s}
-.cont-item:hover{background:var(--vl)}
+.cont-item{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:.5px solid var(--g50);cursor:pointer;transition:background .1s;min-height:56px}
+.cont-item:hover,.cont-item:active{background:var(--vl)}
 .cont-item.sel{background:var(--vl);border-left:3px solid var(--v)}
-.av{width:38px;height:38px;border-radius:50%;background:var(--vl);color:var(--v);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;flex-shrink:0}
+.av{width:40px;height:40px;border-radius:50%;background:var(--vl);color:var(--v);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;flex-shrink:0}
 .ci-info .cn{font-size:13px;font-weight:500;color:var(--g900)}
 .ci-info .cw{font-size:11px;color:var(--g400)}
-.ci-info .ct{margin-top:3px;display:flex;gap:4px;flex-wrap:wrap}
-.cont-list{max-height:320px;overflow-y:auto;border:.5px solid var(--g100);border-radius:8px}
+.cont-list{max-height:260px;overflow-y:auto;border:.5px solid var(--g100);border-radius:8px}
 
 /* TABLE */
 .tc{background:#fff;border:.5px solid var(--g100);border-radius:12px;overflow:hidden}
-.tt{padding:12px 16px;display:flex;align-items:center;gap:10px;border-bottom:.5px solid var(--g100)}
-.tt input{flex:1;border:.5px solid var(--g100);border-radius:8px;padding:7px 12px;font-size:13px;font-family:'Inter',sans-serif;outline:none;background:var(--g50);color:var(--g900)}
+.tt{padding:10px 14px;display:flex;align-items:center;gap:8px;border-bottom:.5px solid var(--g100);flex-wrap:wrap}
+.tt input,.tt select{border:.5px solid var(--g100);border-radius:8px;padding:8px 12px;font-size:13px;font-family:'Inter',sans-serif;outline:none;background:var(--g50);color:var(--g900);min-height:40px}
+.tt input{flex:1;min-width:150px}
 .tt input:focus{border-color:var(--v)}
 table{width:100%;border-collapse:collapse}
-thead th{background:var(--g50);font-size:11px;font-weight:600;color:var(--g400);text-transform:uppercase;letter-spacing:.4px;padding:10px 16px;text-align:left}
-tbody td{padding:11px 16px;font-size:13px;border-top:.5px solid var(--g50);color:var(--g800);vertical-align:middle}
+thead th{background:var(--g50);font-size:10px;font-weight:600;color:var(--g400);text-transform:uppercase;letter-spacing:.4px;padding:10px 14px;text-align:left}
+tbody td{padding:12px 14px;font-size:13px;border-top:.5px solid var(--g50);color:var(--g800);vertical-align:middle}
 tbody tr:hover{background:var(--g50)}
 
 /* PROTOCOLO */
-.ph-pac{background:var(--v);border-radius:12px;padding:18px 22px;margin-bottom:20px;color:#fff;display:flex;align-items:center;justify-content:space-between}
-.ph-pac .pn{font-size:17px;font-weight:600}
-.ph-pac .pm{font-size:12px;color:rgba(255,255,255,.7);margin-top:3px}
-.ph-pac .pd{font-size:32px;font-weight:700}
-.ph-pac .pdl{font-size:12px;color:rgba(255,255,255,.7)}
-
-/* DIAS */
-.dias-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
-.dc{background:#fff;border:.5px solid var(--g100);border-radius:10px;overflow:hidden}
-.dc.tem{border-color:var(--vxl)}
-.dch{padding:8px 12px;background:var(--g50);display:flex;align-items:center;justify-content:space-between;font-size:12px;font-weight:600;color:var(--g600)}
-.dcb{padding:8px 12px}
-.dpac{font-size:12px;color:var(--g800);padding:4px 0;border-bottom:.5px solid var(--g50);display:flex;align-items:center;gap:6px}
-.dpac:last-child{border-bottom:none}
-.dmsg{font-size:11px;color:var(--g400);margin-top:6px;font-style:italic;line-height:1.4}
-
-/* PB */
-.pb{background:var(--g100);border-radius:4px;height:6px;overflow:hidden;display:block;width:100%}
+.pb{background:var(--g100);border-radius:4px;height:5px;overflow:hidden;display:block;width:100%}
 .pf{height:100%;border-radius:4px;background:var(--v)}
 
-/* DRAG AND DROP */
-.kcard.dragging{opacity:.4;transform:scale(.97);cursor:grabbing}
-.kcard{cursor:grab}
-.kards.drag-over{background:var(--vl);border-radius:8px;outline:2px dashed var(--v)}
-.kards.drag-over *{pointer-events:none}
+/* VISAO DIAS */
+.dias-card{background:#fff;border:.5px solid var(--g100);border-radius:10px;overflow:hidden;flex-shrink:0;width:190px;cursor:default;transition:border-color .15s}
+.dias-card.tem-pac{border-color:var(--vxl)}
+.dias-card.drag-over-dia{border-color:var(--v);background:var(--vl);outline:2px dashed var(--v)}
+.dias-card-header{padding:8px 10px;display:flex;align-items:center;justify-content:space-between;border-bottom:.5px solid var(--g100)}
 
 /* TOAST */
-.toast{position:fixed;bottom:24px;right:24px;background:var(--v);color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;z-index:999;opacity:0;transform:translateY(8px);transition:all .25s;max-width:300px}
-.toast.show{opacity:1;transform:translateY(0)}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--v);color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;z-index:999;opacity:0;transition:all .25s;max-width:90vw;text-align:center;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
 .loading{text-align:center;padding:40px;color:var(--g400);font-size:13px}
 .spin{animation:spin 1s linear infinite;display:inline-block}
@@ -180,10 +184,44 @@ tbody tr:hover{background:var(--g50)}
 .empty{text-align:center;padding:40px 24px;color:var(--g400)}
 .empty i{font-size:32px;display:block;margin-bottom:8px}
 
-/* FLUXO EDITOR */
+/* MOBILE */
+@media(max-width:768px){
+  .sidebar{display:none}
+  .content{padding:12px}
+  .fr{grid-template-columns:1fr}
+  .modal{border-radius:20px 20px 0 0;padding:20px}
+  .ph{flex-direction:column;gap:8px}
+  .ph .btn{align-self:flex-start}
+  .stats-row{grid-template-columns:1fr 1fr}
+  .kc{width:200px}
+  table{display:block;overflow-x:auto}
+  .tt{flex-direction:column;align-items:stretch}
+  .tt input,.tt select{width:100%}
+
+  /* Bottom nav mobile */
+  .mobile-nav{display:flex;position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:.5px solid var(--g100);z-index:99;padding:6px 0 max(6px,env(safe-area-inset-bottom)) 0}
+  .mobile-nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 4px;cursor:pointer;border:none;background:none;color:var(--g400);font-size:10px;font-weight:500;position:relative}
+  .mobile-nav-item.active{color:var(--v)}
+  .mobile-nav-item i{font-size:22px}
+  .mobile-nav-badge{position:absolute;top:4px;right:calc(50% - 18px);background:var(--c400);color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:10px}
+  .main{flex-direction:column;padding-bottom:60px}
+}
+@media(min-width:769px){
+  .mobile-nav{display:none}
+  .mo{align-items:center}
+  .modal{border-radius:16px;max-height:90vh}
+}
+
+/* Fluxo editor */
 .fe-item{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--g50);border-radius:8px;margin-bottom:6px}
-.fe-item input{flex:1;border:.5px solid var(--g100);border-radius:6px;padding:5px 8px;font-size:13px;font-family:'Inter',sans-serif;background:#fff;outline:none}
-.fe-item input:focus{border-color:var(--v)}
+.fe-item input{flex:1;border:.5px solid var(--g100);border-radius:6px;padding:6px 8px;font-size:13px;font-family:'Inter',sans-serif;background:#fff;outline:none;min-height:38px}
+
+/* Histórico etapas */
+.hist-item{padding:10px 12px;background:var(--g50);border-radius:8px;margin-bottom:6px;border-left:3px solid var(--g200)}
+.hist-item.done{border-left-color:var(--v)}
+.hist-item .hi-etapa{font-size:11px;font-weight:600;color:var(--g400);text-transform:uppercase;letter-spacing:.3px}
+.hist-item .hi-data{font-size:10px;color:var(--g400)}
+.hist-campo{font-size:12px;color:var(--g800);margin-top:4px}
 </style>
 </head>
 <body>
@@ -218,34 +256,33 @@ tbody tr:hover{background:var(--g50)}
       Instituto Müller
       <span class="role-tag" id="role-badge"></span>
     </div>
-    <button class="btn-logout" onclick="logout()"><i class="ti ti-logout"></i> Sair</button>
+    <button class="btn-logout" onclick="logout()"><i class="ti ti-logout"></i></button>
   </div>
   <div class="main">
     <nav class="sidebar" id="sidebar"></nav>
     <div class="content" id="content"></div>
   </div>
+  <nav class="mobile-nav" id="mobile-nav"></nav>
 </div>
 
-<!-- MODAL LEAD/CONTATO -->
+<!-- MODAL LEAD -->
 <div class="mo" id="m-lead">
   <div class="modal">
     <div class="mh"><h3 id="ml-title">Novo lead</h3><button class="mc" onclick="closeM('m-lead')"><i class="ti ti-x"></i></button></div>
-    <div class="fg"><label>Buscar nos contatos</label>
-      <input type="text" id="ml-busca" placeholder="Nome ou número..." oninput="filtrarContatosM(this.value)">
+    <div class="fg"><label>Buscar contato</label>
+      <input type="text" id="ml-busca" placeholder="Nome ou número..." oninput="filtrarContatosM(this.value)" autocomplete="off">
     </div>
-    <div class="cont-list" id="ml-cont-list" style="margin-bottom:12px">
-      <div class="loading"><i class="ti ti-loader spin"></i> Carregando...</div>
-    </div>
-    <div style="text-align:center;font-size:12px;color:var(--g400);margin-bottom:12px">— ou preencha manualmente —</div>
+    <div class="cont-list" id="ml-cont-list" style="margin-bottom:12px"></div>
+    <div style="text-align:center;font-size:12px;color:var(--g400);margin-bottom:10px">— ou preencha manualmente —</div>
     <div class="fr">
-      <div class="fg"><label>Nome</label><input id="ml-nome" placeholder="Nome completo"></div>
-      <div class="fg"><label>WhatsApp</label><input id="ml-wa" placeholder="51 9 9999-9999"></div>
+      <div class="fg"><label>Nome</label><input id="ml-nome" placeholder="Nome completo" autocomplete="off"></div>
+      <div class="fg"><label>WhatsApp</label><input id="ml-wa" placeholder="51 9 9999-9999" type="tel"></div>
     </div>
     <div class="fr">
       <div class="fg"><label>Origem</label>
         <select id="ml-origem"><option>Instagram</option><option>Indicação</option><option>Google</option><option>WhatsApp direto</option><option>Outro</option></select>
       </div>
-      <div class="fg"><label>Objetivo</label><input id="ml-obj" placeholder="Emagrecimento..."></div>
+      <div class="fg"><label>Objetivo</label><input id="ml-obj" placeholder="Emagrecimento..." autocomplete="off"></div>
     </div>
     <div class="fg"><label>Etapa</label><select id="ml-etapa"></select></div>
     <div class="mf">
@@ -255,9 +292,9 @@ tbody tr:hover{background:var(--g50)}
   </div>
 </div>
 
-<!-- MODAL VER -->
+<!-- MODAL VER LEAD (com checklist) -->
 <div class="mo" id="m-ver">
-  <div class="modal">
+  <div class="modal modal-lg">
     <div class="mh"><h3 id="mv-title">Detalhes</h3><button class="mc" onclick="closeM('m-ver')"><i class="ti ti-x"></i></button></div>
     <div id="mv-body"></div>
     <div class="mf" id="mv-footer"><button class="btn-cancel" onclick="closeM('m-ver')">Fechar</button></div>
@@ -268,7 +305,7 @@ tbody tr:hover{background:var(--g50)}
 <div class="mo" id="m-col">
   <div class="modal modal-sm">
     <div class="mh"><h3>Editar etapa</h3><button class="mc" onclick="closeM('m-col')"><i class="ti ti-x"></i></button></div>
-    <div class="fg"><label>Nome</label><input id="col-nome" placeholder="Ex: Aguardando retorno"></div>
+    <div class="fg"><label>Nome</label><input id="col-nome" autocomplete="off"></div>
     <div class="fg"><label>Cor</label>
       <select id="col-cor">
         <option value="#1D9E75">Verde</option><option value="#378ADD">Azul</option>
@@ -276,6 +313,10 @@ tbody tr:hover{background:var(--g50)}
         <option value="#E24B4A">Vermelho</option><option value="#7F77DD">Roxo</option>
         <option value="#888780">Cinza</option>
       </select>
+    </div>
+    <div class="fg"><label style="margin-bottom:8px">Checklist desta etapa</label>
+      <div id="col-ck-list"></div>
+      <button class="btn btn-ghost btn-sm" style="margin-top:6px;width:100%" onclick="addCkItem()"><i class="ti ti-plus"></i> Adicionar item</button>
     </div>
     <div class="mf">
       <button class="btn btn-danger btn-sm" onclick="deletarCol()"><i class="ti ti-trash"></i></button>
@@ -304,18 +345,26 @@ tbody tr:hover{background:var(--g50)}
     <div id="mf-body"></div>
     <div class="mf">
       <button class="btn-cancel" onclick="closeM('m-fluxo')">Cancelar</button>
-      <button class="btn btn-v" onclick="salvarFluxo()"><i class="ti ti-device-floppy"></i> Salvar fluxo</button>
+      <button class="btn btn-v" onclick="salvarFluxo()"><i class="ti ti-device-floppy"></i> Salvar</button>
     </div>
+  </div>
+</div>
+
+<!-- MODAL GENÉRICO -->
+<div class="mo" id="m-gen">
+  <div class="modal modal-sm">
+    <div class="mh"><h3 id="mg-title">-</h3><button class="mc" onclick="closeM('m-gen')"><i class="ti ti-x"></i></button></div>
+    <div id="mg-body"></div>
+    <div class="mf" id="mg-footer"><button class="btn-cancel" onclick="closeM('m-gen')">Fechar</button></div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
-<!-- FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script>
-const _app = firebase.initializeApp({
+firebase.initializeApp({
   apiKey:"AIzaSyDKpPgUwbN46Zg0wUsr392j92Z9H3RcNik",
   authDomain:"instituto-muller-crm.firebaseapp.com",
   projectId:"instituto-muller-crm",
@@ -323,70 +372,112 @@ const _app = firebase.initializeApp({
   messagingSenderId:"966335138365",
   appId:"1:966335138365:web:83fb57f77815dac7ee3854"
 });
-const _db = firebase.firestore();
-window.db = _db;
-window.FB = {
-  collection: (db, col) => db.collection(col),
-  addDoc: (ref, data) => ref.add(data),
-  doc: (db, col, id) => db.collection(col).doc(id),
-  updateDoc: (ref, data) => ref.update(data),
-  deleteDoc: (ref) => ref.delete(),
-  getDocs: (ref) => ref.get(),
-  onSnapshot: (ref, cb) => ref.onSnapshot(snap => cb(snap)),
-  query: (ref, ...args) => { let q = ref; args.forEach(a => { q = a(q); }); return q; },
-  orderBy: (field, dir='asc') => (ref) => ref.orderBy(field, dir),
-  where: (field, op, val) => (ref) => ref.where(field, op, val),
-  serverTimestamp: () => firebase.firestore.FieldValue.serverTimestamp(),
-};
+const db = firebase.firestore();
 
-window.dispatchEvent(new Event('firebase-ready'));
-</script>
+// ── HELPERS FB ──
+const fbAdd = (col,data) => db.collection(col).add({...data, criadoEm: firebase.firestore.FieldValue.serverTimestamp()});
+const fbUp  = (col,id,data) => db.collection(col).doc(id).update(data);
+const fbDel = (col,id) => db.collection(col).doc(id).delete();
+const fbListen = (col,cb) => db.collection(col).orderBy('criadoEm','desc').onSnapshot(s=>cb(s.docs.map(d=>({id:d.id,...d.data()}))));
+const fbGetAll = col => db.collection(col).get().then(s=>s.docs.map(d=>({id:d.id,...d.data()})));
 
-<script>
+// ── UTILS NÚMERO WA ──
+function limparNumero(n){
+  if(!n) return '';
+  // Remove tudo que não é dígito
+  let d = String(n).replace(/\D/g,'');
+  // Remove sufixos de ID interno do WA
+  d = d.replace(/^(\d+)(lid|c\.us|s\.whatsapp\.net).*$/i,'$1');
+  if(!d || d.length < 8) return '';
+  // Garante DDI 55 (Brasil)
+  if(d.length === 11 && !d.startsWith('55')) d = '55' + d;
+  if(d.length === 10 && !d.startsWith('55')) d = '55' + d;
+  return d;
+}
+function openWA(n){
+  const num = limparNumero(n);
+  if(!num){toast('⚠️ Número inválido');return;}
+  window.open('https://wa.me/'+num,'_blank');
+}
+
+// ── TOAST ──
+function toast(msg,dur=2500){
+  const el=document.getElementById('toast');
+  el.textContent=msg;el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),dur);
+}
+
 // ── STATE ──
 let role=null, paginaAtual='';
-let leadsCache=[], vendasCache=[], pacientesCache=[], contatosCache=[];
+let leadsCache=[], vendasCache=[], pacientesCache=[], contatosCache=[], outrosCache=[];
 let colsAt=[], colsV=[];
 let editColCtx={aba:null,idx:null};
 let pacAtivo=null;
 let _novoLeadAba='atendente';
 let fluxoEditTemp=[], fluxoEditAba='';
+let diasFiltro=120, diasOffset=0;
+const DIAS_PAG=25;
+const msgDiaCache={}, tarefaCustomCache={};
 
 const ETAPAS_AT_DEF=[
-  {nome:'Contato salvo',cor:'#888780'},{nome:'Lead novo',cor:'#1D9E75'},
-  {nome:'Qualificando',cor:'#378ADD'},{nome:'Consulta ofertada',cor:'#BA7517'},
-  {nome:'Aguardando decisão',cor:'#888780'},{nome:'Pré-agendado',cor:'#7F77DD'},
-  {nome:'Pix pendente',cor:'#D85A30'},{nome:'Consulta confirmada',cor:'#1D9E75'},
-  {nome:'Consulta realizada',cor:'#534AB7'},
+  {nome:'Contato salvo',cor:'#888780',ck:[]},
+  {nome:'Lead novo',cor:'#1D9E75',ck:[
+    {id:'ck1',label:'Nome completo confirmado',campo:'nome_completo'},
+    {id:'ck2',label:'Objetivo identificado',campo:'objetivo'},
+    {id:'ck3',label:'Como chegou até nós?',campo:'como_chegou'},
+    {id:'ck4',label:'Tem disponibilidade para consulta?',campo:'disponibilidade'},
+  ]},
+  {nome:'Qualificando',cor:'#378ADD',ck:[
+    {id:'ck5',label:'Instagram / Rede social anotado',campo:'instagram'},
+    {id:'ck6',label:'Faixa etária confirmada',campo:'idade'},
+    {id:'ck7',label:'Principais queixas/objetivos',campo:'queixas'},
+    {id:'ck8',label:'Tem plano de saúde?',campo:'plano_saude'},
+  ]},
+  {nome:'Consulta ofertada',cor:'#BA7517',ck:[
+    {id:'ck9',label:'Consulta explicada e ofertada',campo:''},
+    {id:'ck10',label:'Objeções anotadas',campo:'objecoes'},
+    {id:'ck11',label:'Data sugerida para consulta',campo:'data_sugerida'},
+  ]},
+  {nome:'Aguardando decisão',cor:'#888780',ck:[]},
+  {nome:'Pré-agendado',cor:'#7F77DD',ck:[
+    {id:'ck12',label:'Data e hora confirmadas',campo:'data_hora'},
+    {id:'ck13',label:'Endereço/link enviado',campo:''},
+  ]},
+  {nome:'Pix pendente',cor:'#D85A30',ck:[
+    {id:'ck14',label:'Valor informado',campo:'valor'},
+    {id:'ck15',label:'Chave PIX enviada',campo:''},
+  ]},
+  {nome:'Consulta confirmada',cor:'#1D9E75',ck:[]},
+  {nome:'Consulta realizada',cor:'#534AB7',ck:[]},
 ];
 const ETAPAS_V_DEF=[
-  {nome:'Proposta enviada',cor:'#378ADD'},{nome:'Em negociação',cor:'#BA7517'},
-  {nome:'Proposta de acomp.',cor:'#7F77DD'},{nome:'Acomp. fechado',cor:'#1D9E75'},
-  {nome:'Perdido',cor:'#E24B4A'},
+  {nome:'Proposta enviada',cor:'#378ADD',ck:[{id:'vck1',label:'Proposta personalizada enviada',campo:'proposta'}]},
+  {nome:'Em negociação',cor:'#BA7517',ck:[{id:'vck2',label:'Objeção identificada',campo:'objecao'},{id:'vck3',label:'Contraproposta feita',campo:'contraproposta'}]},
+  {nome:'Proposta de acomp.',cor:'#7F77DD',ck:[]},
+  {nome:'Acomp. fechado',cor:'#1D9E75',ck:[]},
+  {nome:'Perdido',cor:'#E24B4A',ck:[{id:'vck4',label:'Motivo do não fechamento',campo:'motivo_perda'}]},
 ];
 
-// ── FB HELPERS ──
-async function fbAdd(col,data){return await window.db.collection(col).add({...data,criadoEm:firebase.firestore.FieldValue.serverTimestamp()})}
-async function fbUp(col,id,data){await window.db.collection(col).doc(id).update(data)}
-async function fbDel(col,id){await window.db.collection(col).doc(id).delete()}
-function fbListen(col,cb){
-  return window.db.collection(col).orderBy('criadoEm','desc')
-    .onSnapshot(snap=>cb(snap.docs.map(d=>({id:d.id,...d.data()}))));
-}
-async function fbGetCols(aba){
-  const snap=await window.db.collection('cfg_cols_'+aba).get();
-  if(snap.empty)return null;
-  return snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.ordem||0)-(b.ordem||0));
-}
-async function fbSaveCols(aba,cols){
-  const ref=window.db.collection('cfg_cols_'+aba);
-  const snap=await ref.get();
-  for(const d of snap.docs)await d.ref.delete();
-  for(let i=0;i<cols.length;i++)await ref.add({nome:cols[i].nome,cor:cols[i].cor,ordem:i});
-}
+const PROTO = {
+  90:[[0,"D0 Aplicação + Consulta Nutri + Peso + Foto + Bioimpedância"],[1,"D1 Follow-up aplicação"],[4,"D4 Reforço hidratação"],[7,"D7 Reforço alimentação"],[9,"D9 Confirmação aplicação"],[10,"D10 2ª Aplicação"],[11,"D11 Follow-up aplicação"],[14,"D14 Exercício"],[17,"D17 Monitoramento sintomas"],[19,"D19 Confirmação aplicação"],[20,"D20 3ª Aplicação"],[21,"D21 Follow-up aplicação"],[24,"D24 Motivacional"],[27,"D27 Reforço hidratação"],[29,"D29 Preparação consulta"],[30,"D30 4ª Aplicação + Consulta Dr Sérgio + Peso + Foto + Bioimpedância"],[31,"D31 Follow-up consulta"],[39,"D39 Confirmação aplicação"],[40,"D40 5ª Aplicação"],[41,"D41 Follow-up aplicação"],[44,"D44 Reforço alimentação"],[47,"D47 Exercício"],[49,"D49 Confirmação aplicação"],[50,"D50 5ª Aplicação + Bioimpedância rápida"],[51,"D51 Follow-up aplicação"],[54,"D54 Monitoramento sintomas"],[57,"D57 Motivacional"],[59,"D59 Preparação consulta"],[60,"D60 6ª Aplicação + Consulta Dr Sérgio + Peso + Foto + Bioimpedância"],[61,"D61 Follow-up consulta"],[69,"D69 Confirmação aplicação"],[70,"D70 Aplicação"],[71,"D71 Follow-up aplicação"],[74,"D74 Reforço hidratação"],[77,"D77 Alimentação"],[79,"D79 Confirmação aplicação"],[80,"D80 Aplicação + Bioimpedância rápida"],[81,"D81 Follow-up aplicação"],[84,"D84 Monitoramento sintomas"],[87,"D87 Motivacional"],[89,"D89 Preparação encerramento"],[90,"D90 Consulta Dr Sérgio + Consulta Nutri + Peso + Foto + Bioimpedância + Comparativo + Planejamento"],[91,"D91 Follow-up consulta"]],
+  120:[[0,"D0 Orientação + Consulta paga"],[1,"D1 Confirmação pré-consulta"],[2,"D2 Pré-consulta"],[4,"D4 Reforço exames"],[6,"D6 Confirmação consulta"],[7,"D7 Consulta inicial + Peso + Foto + Bioimpedância"],[8,"D8 Pós-consulta"],[9,"D9 Negociação / Fechamento"],[10,"D10 Follow-up + Consulta Nutri"],[11,"D11 Monitoramento interno"],[12,"D12 Confirmação aplicação"],[13,"D13 1ª Aplicação"],[14,"D14 Follow-up aplicação"],[17,"D17 Reforço adesão alimentar"],[19,"D19 Monitoramento sintomas"],[20,"D20 2ª Aplicação"],[21,"D21 Follow-up aplicação"],[23,"D23 Hidratação + Proteína"],[26,"D26 Confirmação aplicação"],[27,"D27 3ª Aplicação"],[28,"D28 Follow-up aplicação"],[29,"D29 Confirmação D34"],[31,"D31 Reforço evolução"],[33,"D33 Confirmação aplicação"],[34,"D34 4ª Aplicação + Peso + Foto + Bioimpedância"],[37,"D37 Reforço adesão"],[40,"D40 Monitoramento sintomas"],[41,"D41 5ª Aplicação"],[42,"D42 Preparação consulta"],[43,"D43 Confirmação consulta"],[45,"D45 Consulta Ajuste Dr Sérgio + Peso + Foto + Bioimpedância"],[46,"D46 Follow-up consulta"],[47,"D47 Confirmação aplicação"],[48,"D48 6ª Aplicação + Bioimpedância rápida + Checkpoint Nutri"],[49,"D49 Follow-up aplicação"],[50,"D50 Consulta Nutri"],[51,"D51 Reforço alimentar"],[54,"D54 Monitoramento sintomas"],[55,"D55 7ª Aplicação"],[56,"D56 Follow-up aplicação"],[58,"D58 Confirmação aplicação"],[59,"D59 Hidratação"],[60,"D60 Checkpoint motivacional"],[61,"D61 Monitoramento interno"],[62,"D62 8ª Aplicação + Bioimpedância rápida"],[63,"D63 Follow-up aplicação"],[67,"D67 Reforço exames"],[69,"D69 9ª Aplicação + Reforço realização exames"],[70,"D70 Follow-up aplicação"],[71,"D71 Agendar consulta D75"],[75,"D75 Consulta robusta Dr Sérgio + Peso + Foto + Bioimpedância"],[76,"D76 10ª Aplicação + Bioimpedância rápida + Follow-up consulta"],[77,"D77 Follow-up aplicação"],[79,"D79 Conversa continuidade"],[82,"D82 Confirmação aplicação"],[83,"D83 11ª Aplicação"],[84,"D84 Follow-up aplicação"],[89,"D89 Confirmação consulta + aplicação se houver"],[90,"D90 Consulta encerramento + Peso + Foto + Bioimpedância + Comparativo + Renovação"],[91,"D91 Follow-up aplicação"],[94,"D94 Reforço Hidratação"],[96,"D96 Confirmação aplicação"],[97,"D97 13ª Aplicação"],[98,"D98 Follow-up aplicação"],[101,"D101 Reforço Alimentação"],[103,"D103 Confirmação aplicação"],[104,"D104 14ª Aplicação + Bioimpedância rápida"],[105,"D105 Follow-up aplicação"],[108,"D108 Exercício"],[110,"D110 Confirmação aplicação"],[111,"D111 15ª Aplicação"],[112,"D112 Follow-up aplicação + Monitoramento sintomas"],[115,"D115 Motivacional"],[117,"D117 Confirmação aplicação"],[118,"D118 16ª Aplicação"],[119,"D119 Consulta Dr Sérgio + Peso + Foto + Bioimpedância"],[120,"D120 Follow-up consulta"]],
+  365:[[0,"D0 Orientação + Consulta paga"],[1,"D1 Confirmação pré-consulta"],[7,"D7 Consulta inicial + Peso + Foto + Bioimpedância"],[13,"D13 1ª Aplicação"],[20,"D20 2ª Aplicação"],[27,"D27 3ª Aplicação"],[34,"D34 4ª Aplicação + Peso + Foto + Bioimpedância"],[45,"D45 Consulta Ajuste Dr Sérgio + Peso + Foto + Bioimpedância"],[55,"D55 7ª Aplicação"],[75,"D75 Consulta robusta Dr Sérgio + Peso + Foto + Bioimpedância"],[90,"D90 Consulta encerramento 1º ciclo + Renovação"],[120,"D120 Follow-up consulta"],[149,"D149 Consulta Dr Sérgio + Peso + Foto + Bioimpedância"],[179,"D179 Consulta Dr Sérgio + Revisão exames"],[209,"D209 29ª Aplicação + Consulta Dr Sérgio + Peso + Foto + Bioimpedância"],[239,"D239 Consulta Dr Sérgio + Peso + Foto + Bioimpedância"],[269,"D269 Consulta Dr Sérgio + Revisão exames"],[299,"D299 Consulta Dr Sérgio"],[329,"D329 Consulta Dr Sérgio"],[354,"D354 Consulta Dr Sérgio + Comparativo anual + Revisão exames + Planejamento"],[359,"D359 Encerramento + Comparativo D0 x D360 + Renovação + Planejamento manutenção"]]
+};
 
-// ── TOAST ──
-function toast(msg,dur=2500){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),dur)}
+function tarefaDoDia(protocolo,dia){
+  const lista=PROTO[protocolo]||PROTO[120];
+  let ultima=lista[0];
+  for(const[d,t]of lista){if(d<=dia)ultima=[d,t];else break;}
+  const prox=lista.find(([d])=>d>dia);
+  return{atual:ultima[1],proxDia:prox?prox[0]:null};
+}
+function diaAtualCalc(p){
+  if(!p.inicio)return p.diaAtual||1;
+  const ini=new Date(p.inicio);
+  const hoje=new Date();
+  const diff=Math.floor((hoje-ini)/(1000*60*60*24));
+  return Math.max(1,Math.min(diff+1,p.protocolo||120));
+}
 
 // ── AUTH ──
 async function login(r){
@@ -394,54 +485,93 @@ async function login(r){
   document.getElementById('login-screen').style.display='none';
   document.getElementById('app').style.display='block';
   document.getElementById('role-badge').textContent={atendente:'Atendente',vendas:'Vendas',concierge:'Concierge'}[r];
-  renderSidebar();
-  colsAt=(await fbGetCols('atendente'))||ETAPAS_AT_DEF;
-  colsV=(await fbGetCols('vendas'))||ETAPAS_V_DEF;
-  window._u1=fbListen('leads',d=>{leadsCache=d;atualizarBadges();if(paginaAtual==='atendente')renderKanban('atendente')});
-  window._u2=fbListen('vendas',d=>{vendasCache=d;if(paginaAtual==='vendas')renderKanban('vendas')});
-  window._u3=fbListen('pacientes',d=>{pacientesCache=d;if(paginaAtual==='concierge')renderConcierge();if(paginaAtual==='dias')renderDias()});
-  window._u4=fbListen('contatos_wa',d=>{contatosCache=d;if(paginaAtual==='contatos')renderTabContatos()});
+  
+  colsAt = await fbGetCols('atendente') || ETAPAS_AT_DEF;
+  colsV  = await fbGetCols('vendas') || ETAPAS_V_DEF;
+  
+  db.collection('leads').orderBy('criadoEm','desc').onSnapshot(s=>{leadsCache=s.docs.map(d=>({id:d.id,...d.data()}));atualizarBadges();if(paginaAtual==='atendente')renderKanban('atendente')});
+  db.collection('vendas').orderBy('criadoEm','desc').onSnapshot(s=>{vendasCache=s.docs.map(d=>({id:d.id,...d.data()}));if(paginaAtual==='vendas')renderKanban('vendas')});
+  db.collection('pacientes').orderBy('criadoEm','desc').onSnapshot(s=>{pacientesCache=s.docs.map(d=>({id:d.id,...d.data()}));if(paginaAtual==='concierge')renderConcierge();if(paginaAtual==='dias')renderDias()});
+  db.collection('contatos_wa').orderBy('criadoEm','desc').onSnapshot(s=>{contatosCache=s.docs.map(d=>({id:d.id,...d.data()}));if(paginaAtual==='contatos')renderTabContatos()});
+  db.collection('outros').orderBy('criadoEm','desc').onSnapshot(s=>{outrosCache=s.docs.map(d=>({id:d.id,...d.data()}));if(paginaAtual==='outros')renderOutros()});
   carregarMsgsDia();
-  nav(r==='atendente'?'atendente':r==='vendas'?'vendas':'concierge');
+  renderSidebar();
+  const first={atendente:'atendente',vendas:'vendas',concierge:'concierge'}[r];
+  nav(first);
 }
-function logout(){['_u1','_u2','_u3','_u4'].forEach(k=>{if(window[k])window[k]()});role=null;paginaAtual='';document.getElementById('login-screen').style.display='flex';document.getElementById('app').style.display='none'}
+function logout(){
+  role=null;paginaAtual='';
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('app').style.display='none';
+}
 
 // ── SIDEBAR ──
 const navMap={
-  atendente:[{id:'atendente',icon:'ti-users',label:'Leads & Qualificação',badge:true},{id:'outros',icon:'ti-users-group',label:'Outros contatos'},{id:'contatos',icon:'ti-address-book',label:'Contatos WA'}],
-  vendas:[{id:'vendas',icon:'ti-target',label:'Pipeline de vendas'},{id:'contatos',icon:'ti-address-book',label:'Contatos WA'}],
-  concierge:[{id:'concierge',icon:'ti-clipboard-heart',label:'Pacientes'},{id:'dias',icon:'ti-calendar-stats',label:'Visão por dia'},{id:'contatos',icon:'ti-address-book',label:'Contatos WA'}]
+  atendente:[{id:'atendente',icon:'ti-users',label:'Leads',badge:true},{id:'outros',icon:'ti-users-group',label:'Outros'},{id:'contatos',icon:'ti-address-book',label:'Contatos'}],
+  vendas:[{id:'vendas',icon:'ti-target',label:'Pipeline'},{id:'contatos',icon:'ti-address-book',label:'Contatos'}],
+  concierge:[{id:'concierge',icon:'ti-clipboard-heart',label:'Pacientes'},{id:'dias',icon:'ti-calendar-stats',label:'Por dia'},{id:'contatos',icon:'ti-address-book',label:'Contatos'}]
 };
 function renderSidebar(){
-  document.getElementById('sidebar').innerHTML='<div class="sidebar-label">Menu</div>'+
-    navMap[role].map(it=>`<button class="nav-item" id="nav-${it.id}" onclick="nav('${it.id}')"><i class="ti ${it.icon}" aria-hidden="true"></i>${it.label}${it.badge?`<span class="nav-badge" id="badge-leads" style="display:none">0</span>`:''}</button>`).join('');
+  const items=navMap[role];
+  const sideHtml='<div class="sidebar-label">Menu</div>'+items.map(it=>`
+    <button class="nav-item" id="nav-${it.id}" onclick="nav('${it.id}')">
+      <i class="ti ${it.icon}"></i>${it.label}
+      ${it.badge?`<span class="nav-badge" id="badge-leads" style="display:none">0</span>`:''}
+    </button>`).join('');
+  document.getElementById('sidebar').innerHTML=sideHtml;
+  
+  const mobileHtml=items.map(it=>`
+    <button class="mobile-nav-item" id="mnav-${it.id}" onclick="nav('${it.id}')">
+      <i class="ti ${it.icon}"></i>${it.label}
+      ${it.badge?`<span class="mobile-nav-badge" id="mbadge-leads" style="display:none">0</span>`:''}
+    </button>`).join('');
+  document.getElementById('mobile-nav').innerHTML=mobileHtml;
 }
-function setNav(id){document.querySelectorAll('.nav-item').forEach(e=>e.classList.remove('active'));const el=document.getElementById('nav-'+id);if(el)el.classList.add('active')}
-function atualizarBadges(){const n=leadsCache.filter(l=>l.etapa==='Lead novo').length;const el=document.getElementById('badge-leads');if(el){el.textContent=n;el.style.display=n>0?'inline':'none'}}
+function setNav(id){
+  document.querySelectorAll('.nav-item,.mobile-nav-item').forEach(e=>e.classList.remove('active'));
+  document.querySelectorAll(`#nav-${id},#mnav-${id}`).forEach(e=>e&&e.classList.add('active'));
+}
+function atualizarBadges(){
+  const n=leadsCache.filter(l=>l.etapa==='Lead novo').length;
+  ['badge-leads','mbadge-leads'].forEach(id=>{const el=document.getElementById(id);if(el){el.textContent=n;el.style.display=n>0?'inline':'none';}});
+}
 
 // ── ROUTER ──
 function nav(id){
   paginaAtual=id;setNav(id);
   const c=document.getElementById('content');
-  if(id==='atendente'){c.innerHTML=pgKanban('atendente');renderKanban('atendente')}
-  else if(id==='vendas'){c.innerHTML=pgKanban('vendas');renderKanban('vendas')}
+  if(id==='atendente'){c.innerHTML=pgKanban('atendente');renderKanban('atendente');initKanbanScroll('atendente')}
+  else if(id==='vendas'){c.innerHTML=pgKanban('vendas');renderKanban('vendas');initKanbanScroll('vendas')}
   else if(id==='concierge'){c.innerHTML=pgConcierge();renderConcierge()}
-  else if(id==='dias'){c.innerHTML=pgDias();setTimeout(()=>{setDiasFiltro(120);renderDias();},50)}
-  else if(id==='outros'){c.innerHTML=pgOutros();renderOutros()}
+  else if(id==='dias'){c.innerHTML=pgDias();setTimeout(()=>{setDiasFiltro(120)},50)}
   else if(id==='contatos'){c.innerHTML=pgContatos();renderTabContatos()}
+  else if(id==='outros'){c.innerHTML=pgOutros();renderOutros()}
 }
 
-// ── KANBAN PAGE ──
+// ── KANBAN SCROLL COM MOUSE (PC) ──
+function initKanbanScroll(aba){
+  const el=document.getElementById('kw-'+aba);if(!el)return;
+  let isDown=false,startX,scrollLeft;
+  el.addEventListener('mousedown',e=>{
+    if(e.target.closest('.kcard,.btn,.btn-ec,.kadd-col'))return;
+    isDown=true;el.classList.add('dragging-scroll');
+    startX=e.pageX-el.offsetLeft;scrollLeft=el.scrollLeft;
+  });
+  el.addEventListener('mouseleave',()=>{isDown=false;el.classList.remove('dragging-scroll')});
+  el.addEventListener('mouseup',()=>{isDown=false;el.classList.remove('dragging-scroll')});
+  el.addEventListener('mousemove',e=>{if(!isDown)return;e.preventDefault();const x=e.pageX-el.offsetLeft;const walk=(x-startX)*1.5;el.scrollLeft=scrollLeft-walk});
+}
+
+// ── KANBAN ──
 function pgKanban(aba){
   const t={atendente:'Qualificação de leads',vendas:'Pipeline de vendas'};
-  const s={atendente:'Do primeiro contato até a consulta',vendas:'Fechamento e acompanhamentos'};
-  return`<div class="ph"><div><h2>${t[aba]}</h2><p>${s[aba]}</p></div>
-    <div style="display:flex;gap:8px">
-      <button class="btn btn-ghost btn-sm" onclick="abrirFluxoEditor('${aba}')"><i class="ti ti-settings"></i> Editar fluxo</button>
+  return`<div class="ph"><div><h2>${t[aba]}</h2><p>Arraste os cards entre colunas</p></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-ghost btn-sm" onclick="abrirFluxoEditor('${aba}')"><i class="ti ti-settings"></i> Fluxo</button>
       <button class="btn btn-v btn-sm" onclick="abrirNovoLead('${aba}')"><i class="ti ti-plus"></i> Novo</button>
     </div></div>
   <div class="stats-row" id="stats-${aba}"></div>
-  <div class="kw"><div class="kb" id="kb-${aba}"><div class="loading"><i class="ti ti-loader spin"></i></div></div></div>`;
+  <div class="kw" id="kw-${aba}"><div class="kb" id="kb-${aba}"><div class="loading"><i class="ti ti-loader spin"></i></div></div></div>`;
 }
 
 function renderKanban(aba){
@@ -450,96 +580,289 @@ function renderKanban(aba){
   const stats=document.getElementById('stats-'+aba);
   if(stats)stats.innerHTML=`<div class="sc"><div class="lb">Total</div><div class="vl">${dados.length}</div></div>`+
     cols.slice(0,3).map(c=>`<div class="sc"><div class="lb">${c.nome}</div><div class="vl" style="color:${c.cor}">${dados.filter(d=>d.etapa===c.nome).length}</div></div>`).join('');
-  const board=document.getElementById('kb-'+aba);
-  if(!board)return;
+  const board=document.getElementById('kb-'+aba);if(!board)return;
   board.innerHTML=cols.map((col,ci)=>{
     const cards=dados.filter(d=>d.etapa===col.nome);
+    const temCk=col.ck&&col.ck.length>0;
     return`<div class="kc"><div class="kch">
-      <div class="kct"><div class="dot" style="background:${col.cor}"></div>${col.nome}</div>
+      <div class="kct"><div class="dot" style="background:${col.cor}"></div>${col.nome}${temCk?` <i class="ti ti-checklist" style="font-size:12px;color:${col.cor};opacity:.7"></i>`:''}</div>
       <div style="display:flex;align-items:center;gap:4px">
         <span class="kcc">${cards.length}</span>
         <button class="btn-ec" onclick="editarCol('${aba}',${ci})"><i class="ti ti-pencil"></i></button>
       </div></div>
-      <div class="kards" data-etapa="${col.nome}" style="padding:10px;min-height:80px;display:flex;flex-direction:column;gap:8px"
-        ondragover="dragOver(event)"
-        ondragleave="dragLeave(event)"
-        ondrop="dropCard(event,'${col.nome}','${aba}')">
-        ${cards.map(c=>mkCard(c,aba)).join('')}
+      <div class="kcards" data-etapa="${col.nome}" data-aba="${aba}"
+        ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dropCard(event,'${col.nome}','${aba}')">
+        ${cards.map(c=>mkCard(c,aba,col)).join('')}
         ${!cards.length?`<div style="padding:16px;text-align:center;color:var(--g200);font-size:12px">Vazio</div>`:''}
       </div></div>`;
   }).join('')+`<div class="kadd-col" onclick="adicionarCol('${aba}')"><i class="ti ti-plus"></i><span>Nova etapa</span></div>`;
 }
 
-function mkCard(c,aba){
-  return`<div class="kcard" draggable="true"
-    data-id="${c.id}" data-aba="${aba}"
-    ondragstart="dragStart(event,'${c.id}','${aba}')"
-    ondragend="dragEnd(event)"
-    onclick="verContato('${c.id}','${aba}')">
+function mkCard(c,aba,col){
+  const dados = c.checklist||{};
+  const ck = col.ck||[];
+  const total = ck.length;
+  const feitos = ck.filter(item=>dados[item.id]?.ok).length;
+  const ckBadge = total>0 ? `<span class="ck-badge ${feitos===total?'ck-ok':'ck-pend'}"><i class="ti ti-${feitos===total?'check':'list-check'}" style="font-size:10px"></i>${feitos}/${total}</span>` : '';
+  return`<div class="kcard" draggable="true" data-id="${c.id}" data-aba="${aba}"
+    ondragstart="dragStart(event,'${c.id}','${aba}')" ondragend="dragEnd(event)"
+    onclick="verLead('${c.id}','${aba}')">
     <div class="kn">${c.nome||'Sem nome'}</div>
-    <div class="ks">${c.wa||'—'}${c.origem?' · '+c.origem:''}</div>
-    ${c.objetivo?`<div class="ks" style="margin-top:3px;color:var(--g500)">${c.objetivo.substring(0,50)}</div>`:''}
+    <div class="ks">${limparNumero(c.wa)||'—'}${c.origem?' · '+c.origem:''}</div>
+    ${c.ultimaMensagem?`<div class="ks" style="margin-top:3px;font-style:italic">"${c.ultimaMensagem.substring(0,40)}"</div>`:''}
     <div class="ka">
-      ${c.wa?`<button class="btn-wa btn-sm" onclick="event.stopPropagation();openWA('${c.wa}')"><i class="ti ti-brand-whatsapp"></i></button>`:''}
-      ${c.fluxos&&c.fluxos.length>1?`<span class="badge bg" style="font-size:10px">+${c.fluxos.length} fluxos</span>`:''}
-    </div></div>`;
+      ${ckBadge}
+      ${c.wa?`<button class="btn-wa btn-sm" style="padding:5px 10px;min-height:30px" onclick="event.stopPropagation();openWA('${c.wa}')"><i class="ti ti-brand-whatsapp"></i></button>`:''}
+    </div>
+  </div>`;
 }
 
-// ── EDITAR FLUXO ──
-function abrirFluxoEditor(aba){
-  const cols=aba==='atendente'?colsAt:colsV;
-  fluxoEditAba=aba; fluxoEditTemp=JSON.parse(JSON.stringify(cols));
-  document.getElementById('mf-title').textContent='Editar fluxo — '+(aba==='atendente'?'Atendente':'Vendas');
-  renderFluxoEditor();
-  openM('m-fluxo');
-}
-function renderFluxoEditor(){
-  document.getElementById('mf-body').innerHTML=`
-    <p style="font-size:13px;color:var(--g400);margin-bottom:12px">Renomeie, adicione ou remova etapas.</p>
-    ${fluxoEditTemp.map((c,i)=>`<div class="fe-item">
-      <div class="dot" style="background:${c.cor};width:12px;height:12px;border-radius:50%;flex-shrink:0"></div>
-      <input type="text" value="${c.nome}" oninput="fluxoEditTemp[${i}].nome=this.value">
-      <select onchange="fluxoEditTemp[${i}].cor=this.value" style="border:.5px solid var(--g100);border-radius:6px;padding:5px;font-size:12px;font-family:Inter,sans-serif">
-        ${[['#1D9E75','Verde'],['#378ADD','Azul'],['#BA7517','Âmbar'],['#D85A30','Coral'],['#E24B4A','Vermelho'],['#7F77DD','Roxo'],['#888780','Cinza']]
-          .map(([v,l])=>`<option value="${v}"${c.cor===v?' selected':''}>${l}</option>`).join('')}
-      </select>
-      <button onclick="rmEtapa(${i})" style="background:none;border:none;cursor:pointer;color:var(--g400);font-size:16px"><i class="ti ti-x"></i></button>
-    </div>`).join('')}
-    <button class="btn btn-ghost btn-sm" style="margin-top:8px" onclick="addEtapa()"><i class="ti ti-plus"></i> Adicionar etapa</button>`;
-}
-function rmEtapa(i){fluxoEditTemp.splice(i,1);renderFluxoEditor()}
-function addEtapa(){fluxoEditTemp.push({nome:'Nova etapa',cor:'#888780'});renderFluxoEditor()}
-async function salvarFluxo(){
-  await fbSaveCols(fluxoEditAba,fluxoEditTemp);
-  if(fluxoEditAba==='atendente')colsAt=[...fluxoEditTemp];
-  else colsV=[...fluxoEditTemp];
-  closeM('m-fluxo');toast('✅ Fluxo salvo');
-  renderKanban(fluxoEditAba);
+// ── DRAG & DROP KANBAN ──
+let _dragId=null,_dragAba=null;
+function dragStart(e,id,aba){_dragId=id;_dragAba=aba;e.currentTarget.classList.add('dragging');e.dataTransfer.effectAllowed='move'}
+function dragEnd(e){e.currentTarget.classList.remove('dragging');document.querySelectorAll('.kcards').forEach(el=>el.classList.remove('drag-over'))}
+function dragOver(e){e.preventDefault();e.dataTransfer.dropEffect='move';e.currentTarget.classList.add('drag-over')}
+function dragLeave(e){e.currentTarget.classList.remove('drag-over')}
+async function dropCard(e,novaEtapa,aba){
+  e.preventDefault();e.currentTarget.classList.remove('drag-over');
+  if(!_dragId||_dragAba!==aba)return;
+  const col=aba==='atendente'?'leads':'vendas';
+  const etapaAnterior = (aba==='atendente'?leadsCache:vendasCache).find(x=>x.id===_dragId)?.etapa||'';
+  await fbUp(col,_dragId,{etapa:novaEtapa});
+  if(etapaAnterior!==novaEtapa) toast(`→ ${novaEtapa}`);
+  _dragId=null;_dragAba=null;
 }
 
-// ── EDITAR COL ──
+// Touch drag kanban
+let _tc=null,_tclone=null,_tid=null,_taba=null;
+function initTouchKanban(){
+  document.addEventListener('touchstart',e=>{
+    const card=e.target.closest('.kcard');
+    if(!card||!card.dataset.id)return;
+    _tc=card;_tid=card.dataset.id;_taba=card.dataset.aba;
+    _tclone=card.cloneNode(true);
+    _tclone.style.cssText=`position:fixed;opacity:.7;pointer-events:none;z-index:9999;width:${card.offsetWidth}px;transform:scale(1.03);box-shadow:0 4px 16px rgba(0,0,0,.2)`;
+    document.body.appendChild(_tclone);
+  },{passive:true});
+  document.addEventListener('touchmove',e=>{
+    if(!_tclone)return;
+    const t=e.touches[0];
+    _tclone.style.left=(t.clientX-80)+'px';_tclone.style.top=(t.clientY-30)+'px';
+    document.querySelectorAll('.kcards').forEach(el=>el.classList.remove('drag-over'));
+    const el=document.elementFromPoint(t.clientX,t.clientY);
+    const kards=el?.closest('.kcards');
+    if(kards)kards.classList.add('drag-over');
+  },{passive:true});
+  document.addEventListener('touchend',async e=>{
+    if(!_tclone){return;}
+    const t=e.changedTouches[0];
+    const el=document.elementFromPoint(t.clientX,t.clientY);
+    const kards=el?.closest('.kcards');
+    document.querySelectorAll('.kcards').forEach(el=>el.classList.remove('drag-over'));
+    if(kards&&_tid&&_taba){
+      const novaEtapa=kards.dataset.etapa;
+      const col=_taba==='atendente'?'leads':'vendas';
+      if(novaEtapa)await fbUp(col,_tid,{etapa:novaEtapa});
+    }
+    _tclone.remove();_tclone=null;_tc=null;_tid=null;_taba=null;
+  });
+}
+
+// ── CHECKLIST COL EDITOR ──
+let _ckTemp=[];
 function editarCol(aba,idx){
   const cols=aba==='atendente'?colsAt:colsV;
   editColCtx={aba,idx};
+  _ckTemp=JSON.parse(JSON.stringify(cols[idx].ck||[]));
   document.getElementById('col-nome').value=cols[idx].nome;
   document.getElementById('col-cor').value=cols[idx].cor;
+  renderCkEditor();
   openM('m-col');
+}
+function renderCkEditor(){
+  document.getElementById('col-ck-list').innerHTML=_ckTemp.map((item,i)=>`
+    <div style="display:flex;gap:6px;margin-bottom:6px;align-items:center">
+      <input type="text" value="${item.label}" oninput="_ckTemp[${i}].label=this.value" style="flex:1;border:.5px solid var(--g100);border-radius:6px;padding:6px 8px;font-size:13px;font-family:Inter,sans-serif;min-height:38px;outline:none">
+      <input type="text" value="${item.campo||''}" placeholder="campo (opcional)" oninput="_ckTemp[${i}].campo=this.value" style="flex:1;border:.5px solid var(--g100);border-radius:6px;padding:6px 8px;font-size:12px;font-family:Inter,sans-serif;min-height:38px;outline:none;color:var(--g600)">
+      <button onclick="_ckTemp.splice(${i},1);renderCkEditor()" style="background:none;border:none;cursor:pointer;color:var(--r400);font-size:16px;padding:4px;min-width:32px"><i class="ti ti-x"></i></button>
+    </div>`).join('');
+}
+function addCkItem(){
+  _ckTemp.push({id:'ck_'+Date.now(),label:'',campo:''});
+  renderCkEditor();
 }
 async function salvarCol(){
   const{aba,idx}=editColCtx;const cols=aba==='atendente'?colsAt:colsV;
   cols[idx].nome=document.getElementById('col-nome').value;
   cols[idx].cor=document.getElementById('col-cor').value;
+  cols[idx].ck=_ckTemp.filter(x=>x.label.trim());
   await fbSaveCols(aba,cols);closeM('m-col');toast('✅ Etapa atualizada');renderKanban(aba);
 }
 async function deletarCol(){
   if(!confirm('Excluir etapa?'))return;
   const{aba,idx}=editColCtx;const cols=aba==='atendente'?colsAt:colsV;
-  cols.splice(idx,1);await fbSaveCols(aba,cols);closeM('m-col');toast('🗑️ Removida');renderKanban(aba);
+  cols.splice(idx,1);await fbSaveCols(aba,cols);closeM('m-col');renderKanban(aba);
 }
 async function adicionarCol(aba){
   const cols=aba==='atendente'?colsAt:colsV;
-  cols.push({nome:'Nova etapa',cor:'#888780'});
+  cols.push({nome:'Nova etapa',cor:'#888780',ck:[]});
   await fbSaveCols(aba,cols);renderKanban(aba);
+}
+
+// ── COLS FIREBASE ──
+async function fbGetCols(aba){
+  const snap=await db.collection('cfg_cols_'+aba).get();
+  if(snap.empty)return null;
+  return snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.ordem||0)-(b.ordem||0));
+}
+async function fbSaveCols(aba,cols){
+  const ref=db.collection('cfg_cols_'+aba);
+  const snap=await ref.get();
+  for(const d of snap.docs)await d.ref.delete();
+  for(let i=0;i<cols.length;i++)await ref.add({nome:cols[i].nome,cor:cols[i].cor,ordem:i,ck:cols[i].ck||[]});
+}
+
+// ── FLUXO EDITOR ──
+function abrirFluxoEditor(aba){
+  const cols=aba==='atendente'?colsAt:colsV;
+  fluxoEditAba=aba;fluxoEditTemp=JSON.parse(JSON.stringify(cols));
+  document.getElementById('mf-title').textContent='Editar fluxo';
+  renderFluxoEditor();openM('m-fluxo');
+}
+function renderFluxoEditor(){
+  document.getElementById('mf-body').innerHTML=fluxoEditTemp.map((c,i)=>`
+    <div class="fe-item">
+      <div class="dot" style="background:${c.cor};width:12px;height:12px;border-radius:50%;flex-shrink:0"></div>
+      <input type="text" value="${c.nome}" oninput="fluxoEditTemp[${i}].nome=this.value">
+      <select onchange="fluxoEditTemp[${i}].cor=this.value" style="border:.5px solid var(--g100);border-radius:6px;padding:6px;font-size:12px;font-family:Inter,sans-serif;min-height:38px">
+        ${[['#1D9E75','Verde'],['#378ADD','Azul'],['#BA7517','Âmbar'],['#D85A30','Coral'],['#E24B4A','Vermelho'],['#7F77DD','Roxo'],['#888780','Cinza']].map(([v,l])=>`<option value="${v}"${c.cor===v?' selected':''}>${l}</option>`).join('')}
+      </select>
+      <button onclick="fluxoEditTemp.splice(${i},1);renderFluxoEditor()" style="background:none;border:none;cursor:pointer;color:var(--r400);font-size:18px;padding:4px;min-width:36px"><i class="ti ti-x"></i></button>
+    </div>`).join('')+`<button class="btn btn-ghost btn-sm" style="margin-top:6px;width:100%" onclick="fluxoEditTemp.push({nome:'Nova etapa',cor:'#888780',ck:[]});renderFluxoEditor()"><i class="ti ti-plus"></i> Adicionar</button>`;
+}
+async function salvarFluxo(){
+  await fbSaveCols(fluxoEditAba,fluxoEditTemp);
+  if(fluxoEditAba==='atendente')colsAt=[...fluxoEditTemp];else colsV=[...fluxoEditTemp];
+  closeM('m-fluxo');toast('✅ Fluxo salvo');renderKanban(fluxoEditAba);
+}
+
+// ── VER LEAD (com checklist completo) ──
+function verLead(id,aba){
+  const dados=aba==='atendente'?leadsCache:vendasCache;
+  const c=dados.find(x=>x.id===id);if(!c)return;
+  const cols=aba==='atendente'?colsAt:colsV;
+  const colAtual=cols.find(col=>col.nome===c.etapa)||cols[0];
+  const ck=colAtual?.ck||[];
+  const hist=c.historico||{};
+  const checklist=c.checklist||{};
+
+  document.getElementById('mv-title').textContent=c.nome||'Lead';
+  
+  // Campos do checklist atual
+  const ckHtml=ck.length?`
+    <div class="ms">
+      <div class="ms-title"><i class="ti ti-checklist" style="font-size:13px"></i> Checklist — ${c.etapa}</div>
+      ${ck.map(item=>{
+        const ok=checklist[item.id]?.ok||false;
+        const val=checklist[item.id]?.valor||'';
+        return`<div class="ck-item${ok?' done':''}" id="ckwrap-${item.id}">
+          <input type="checkbox" id="ck-${item.id}" ${ok?'checked':''} onchange="toggleCk('${id}','${aba}','${item.id}',this.checked,'${item.campo}')">
+          <div style="flex:1">
+            <label for="ck-${item.id}">${item.label}</label>
+            ${item.campo?`<div class="ck-field"><input type="text" id="ckf-${item.id}" value="${val}" placeholder="Preencher..." onblur="salvarCkCampo('${id}','${aba}','${item.id}',this.value,'${item.campo}')" style="width:100%;border:.5px solid var(--g100);border-radius:6px;padding:6px 8px;font-size:12px;font-family:Inter,sans-serif;outline:none;min-height:36px"></div>`:''} 
+          </div>
+        </div>`;
+      }).join('')}
+    </div>`:'';
+
+  // Histórico de etapas anteriores
+  const histHtml=Object.keys(hist).length?`
+    <div class="ms">
+      <div class="ms-title"><i class="ti ti-history" style="font-size:13px"></i> Histórico de etapas</div>
+      ${Object.entries(hist).map(([etapa,data])=>`
+        <div class="hist-item done">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div class="hi-etapa">${etapa}</div>
+            <div class="hi-data">${data.data||''}</div>
+          </div>
+          ${Object.entries(data.campos||{}).map(([campo,valor])=>valor?`<div class="hist-campo"><strong>${campo}:</strong> ${valor}</div>`:'').join('')}
+        </div>`).join('')}
+    </div>`:'';
+
+  document.getElementById('mv-body').innerHTML=`
+    <div style="display:flex;gap:16px;font-size:13px;margin-bottom:12px;flex-wrap:wrap">
+      <div><span style="color:var(--g400);display:block;font-size:11px;margin-bottom:2px">WhatsApp</span><strong>${limparNumero(c.wa)||'—'}</strong></div>
+      <div><span style="color:var(--g400);display:block;font-size:11px;margin-bottom:2px">Origem</span>${c.origem||'—'}</div>
+      <div><span style="color:var(--g400);display:block;font-size:11px;margin-bottom:2px">Etapa</span><span class="badge bg">${c.etapa||'—'}</span></div>
+    </div>
+    ${c.objetivo?`<div style="padding:10px 12px;background:var(--g50);border-radius:8px;font-size:13px;margin-bottom:12px"><span style="color:var(--g400);font-size:11px;display:block;margin-bottom:3px">OBJETIVO</span>${c.objetivo}</div>`:''}
+    ${c.ultimaMensagem?`<div style="padding:10px 12px;background:var(--vl);border-radius:8px;font-size:12px;color:var(--v);margin-bottom:12px"><i class="ti ti-brand-whatsapp"></i> Última msg: "${c.ultimaMensagem.substring(0,100)}"</div>`:''}
+    <div class="fg"><label>Mover para etapa</label>
+      <select onchange="moverEtapa('${id}','${aba}',this.value)" style="width:100%;padding:10px 12px;border:.5px solid var(--g100);border-radius:8px;font-family:Inter,sans-serif;font-size:14px;min-height:44px">
+        ${cols.map(col=>`<option${c.etapa===col.nome?' selected':''}>${col.nome}</option>`).join('')}
+      </select>
+    </div>
+    ${c.wa?`<button class="btn-wa" style="width:100%;justify-content:center;margin-bottom:12px" onclick="openWA('${c.wa}')"><i class="ti ti-brand-whatsapp"></i> Abrir WhatsApp</button>`:''}
+    ${ckHtml}
+    ${histHtml}
+    ${aba==='atendente'?`
+    <div class="ms">
+      <div class="ms-title">Encaminhar para</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-a btn-sm" onclick="enviarParaVendas('${id}')"><i class="ti ti-target"></i> Vendas</button>
+        <button class="btn btn-v btn-sm" onclick="abrirEnviarConcierge('${id}','atendente')"><i class="ti ti-clipboard-heart"></i> Concierge</button>
+        <button class="btn btn-danger btn-sm" onclick="removerDoFluxo('${id}','${aba}')"><i class="ti ti-trash"></i> Remover</button>
+      </div>
+    </div>`:''}
+    ${aba==='vendas'?`
+    <div class="ms">
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-v btn-sm" onclick="abrirEnviarConcierge('${id}','vendas')"><i class="ti ti-clipboard-heart"></i> Enviar para Concierge</button>
+        <button class="btn btn-danger btn-sm" onclick="removerDoFluxo('${id}','${aba}')"><i class="ti ti-trash"></i> Remover</button>
+      </div>
+    </div>`:''}`;
+
+  document.getElementById('mv-footer').innerHTML=`<button class="btn-cancel" onclick="closeM('m-ver')">Fechar</button>`;
+  openM('m-ver');
+}
+
+async function toggleCk(id,aba,ckId,ok,campo){
+  const col=aba==='atendente'?'leads':'vendas';
+  const dados=aba==='atendente'?leadsCache:vendasCache;
+  const lead=dados.find(x=>x.id===id);if(!lead)return;
+  const checklist=lead.checklist||{};
+  if(!checklist[ckId])checklist[ckId]={ok:false,valor:''};
+  checklist[ckId].ok=ok;
+  const wrap=document.getElementById('ckwrap-'+ckId);
+  if(wrap){wrap.classList.toggle('done',ok)}
+  await fbUp(col,id,{checklist});
+}
+async function salvarCkCampo(id,aba,ckId,valor,campo){
+  const col=aba==='atendente'?'leads':'vendas';
+  const dados=aba==='atendente'?leadsCache:vendasCache;
+  const lead=dados.find(x=>x.id===id);if(!lead)return;
+  const checklist=lead.checklist||{};
+  if(!checklist[ckId])checklist[ckId]={ok:false,valor:''};
+  checklist[ckId].valor=valor;
+  await fbUp(col,id,{checklist});
+}
+async function moverEtapa(id,aba,etapa){
+  const col=aba==='atendente'?'leads':'vendas';
+  const dados=aba==='atendente'?leadsCache:vendasCache;
+  const lead=dados.find(x=>x.id===id);if(!lead)return;
+  
+  // Salvar histórico da etapa anterior com campos preenchidos
+  const hist=lead.historico||{};
+  const ck=lead.checklist||{};
+  const colsAba=aba==='atendente'?colsAt:colsV;
+  const colAnterior=colsAba.find(c=>c.nome===lead.etapa);
+  if(colAnterior&&lead.etapa!==etapa){
+    const campos={};
+    (colAnterior.ck||[]).forEach(item=>{if(ck[item.id]?.valor)campos[item.campo||item.label]=ck[item.id].valor});
+    hist[lead.etapa]={data:new Date().toLocaleDateString('pt-BR'),campos};
+  }
+  await fbUp(col,id,{etapa,historico:hist});
+  toast(`→ ${etapa}`);
 }
 
 // ── NOVO LEAD ──
@@ -552,7 +875,6 @@ function abrirNovoLead(aba){
   renderContatosModal(contatosCache);
   openM('m-lead');
 }
-
 async function salvarLead(){
   const nome=document.getElementById('ml-nome').value.trim();
   if(!nome){toast('⚠️ Informe o nome');return}
@@ -562,437 +884,323 @@ async function salvarLead(){
     origem:document.getElementById('ml-origem').value,
     objetivo:document.getElementById('ml-obj').value,
     etapa:document.getElementById('ml-etapa').value,
-    fluxos:[_novoLeadAba],
+    checklist:{},historico:{},fluxos:[_novoLeadAba],
   });
   closeM('m-lead');toast('✅ Lead salvo!');
 }
 
-// ── VER CONTATO / LEAD ──
-function verContato(id,aba){
-  const dados=aba==='atendente'?leadsCache:vendasCache;
-  const c=dados.find(x=>x.id===id);if(!c)return;
-  const cols=aba==='atendente'?colsAt:colsV;
-  const isConsultaRealizada=c.etapa==='Consulta realizada';
-  const isAcompFechado=c.etapa==='Acomp. fechado';
-
-  document.getElementById('mv-title').textContent=c.nome||'Contato';
-  document.getElementById('mv-body').innerHTML=`
-    <div style="display:flex;flex-direction:column;gap:12px">
-      <div class="fr">
-        <div><span style="font-size:11px;color:var(--g400)">WhatsApp</span><div style="font-size:13px;margin-top:2px">${c.wa||'—'}</div></div>
-        <div><span style="font-size:11px;color:var(--g400)">Origem</span><div style="font-size:13px;margin-top:2px">${c.origem||'—'}</div></div>
+// ── CONTATOS MODAL ──
+function renderContatosModal(lista){
+  const el=document.getElementById('ml-cont-list');if(!el)return;
+  if(!lista||!lista.length){el.innerHTML=`<div class="empty" style="padding:16px"><i class="ti ti-inbox"></i><p>Nenhum contato ainda.</p></div>`;return}
+  el.innerHTML=lista.slice(0,60).map(c=>`
+    <div class="cont-item" onclick="selContato('${c.id}')">
+      <div class="av">${(c.nome||c.wa||'?').charAt(0).toUpperCase()}</div>
+      <div class="ci-info">
+        <div class="cn">${c.nome||'Sem nome'}</div>
+        <div class="cw">${limparNumero(c.wa)||'—'}</div>
       </div>
-      ${c.objetivo?`<div style="padding:10px 12px;background:var(--g50);border-radius:8px;font-size:13px"><span style="color:var(--g400);font-size:11px;display:block;margin-bottom:3px">OBJETIVO</span>${c.objetivo}</div>`:''}
-      ${c.ultimaMensagem?`<div style="padding:10px 12px;background:var(--vl);border-radius:8px;font-size:12px;color:var(--v)"><i class="ti ti-brand-whatsapp"></i> Última msg: "${c.ultimaMensagem.substring(0,80)}"</div>`:''}
-      <div>
-        <label style="font-size:12px;color:var(--g400);display:block;margin-bottom:5px">Mover para etapa</label>
-        <select onchange="moverEtapa('${id}','${aba}',this.value)" style="width:100%;padding:8px 12px;border:.5px solid var(--g100);border-radius:8px;font-family:Inter,sans-serif;font-size:13px">
-          ${cols.map(col=>`<option${c.etapa===col.nome?' selected':''}>${col.nome}</option>`).join('')}
-        </select>
-      </div>
-      ${c.wa?`<button class="btn-wa" style="justify-content:center;width:100%" onclick="openWA('${c.wa}')"><i class="ti ti-brand-whatsapp"></i> Abrir WhatsApp</button>`:''}
-      ${aba==='atendente'?`
-        <div class="ms">
-          <div class="ms-title">Adicionar a outro fluxo</div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap">
-            <button class="btn btn-a btn-sm" onclick="addFluxo('${id}','atendente','vendas')"><i class="ti ti-target"></i> Também em Vendas</button>
-            <button class="btn btn-v btn-sm" onclick="addFluxoConcierge('${id}','atendente')"><i class="ti ti-clipboard-heart"></i> Também em Concierge</button>
-          </div>
-        </div>
-        ${isConsultaRealizada?`
-        <div class="ms">
-          <div class="ms-title">Encaminhar lead para</div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap">
-            <button class="btn btn-a btn-sm" onclick="enviarParaVendas('${id}')"><i class="ti ti-target"></i> Vendas</button>
-            <button class="btn btn-p btn-sm" onclick="abrirEnviarMarketing('${id}')"><i class="ti ti-speakerphone"></i> Marketing</button>
-            <button class="btn btn-v btn-sm" onclick="abrirEnviarConcierge('${id}','atendente')"><i class="ti ti-clipboard-heart"></i> Concierge</button>
-          </div>
-        </div>`:''}`:''}
-      ${aba==='vendas'?`
-        <div class="ms">
-          <div class="ms-title">Adicionar a outro fluxo</div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap">
-            <button class="btn btn-v btn-sm" onclick="abrirEnviarConcierge('${id}','vendas')"><i class="ti ti-clipboard-heart"></i> Enviar para Concierge</button>
-          </div>
-        </div>`:''}
-    </div>`;
-  document.getElementById('mv-footer').innerHTML=`
-    <button class="btn btn-danger btn-sm" onclick="removerDoFluxo('${id}','${aba}')"><i class="ti ti-trash"></i> Remover do fluxo</button>
-    <button class="btn-cancel" onclick="closeM('m-ver')">Fechar</button>`;
-  openM('m-ver');
+    </div>`).join('');
+}
+function filtrarContatosM(q){renderContatosModal(contatosCache.filter(c=>(c.nome||'').toLowerCase().includes(q.toLowerCase())||(c.wa||'').includes(q)))}
+function selContato(id){
+  const c=contatosCache.find(x=>x.id===id);if(!c)return;
+  document.getElementById('ml-nome').value=c.nome||'';
+  document.getElementById('ml-wa').value=limparNumero(c.wa)||'';
+  document.querySelectorAll('.cont-item').forEach(el=>el.classList.remove('sel'));
+  toast('✓ Contato selecionado');
 }
 
-async function removerDoFluxo(id,aba){
-  if(!confirm('Remover do fluxo? O contato continua em Contatos WA.'))return;
-  const col=aba==='atendente'?'leads':'vendas';
-  await fbDel(col,id);
-  closeM('m-ver');
-  toast('✅ Removido do fluxo');
-}
-
-async function moverEtapa(id,aba,etapa){
-  await fbUp(aba==='atendente'?'leads':'vendas',id,{etapa});toast('✅ Etapa atualizada');
-}
-
-async function addFluxo(id,abaOrigem,abaDestino){
-  const dados=abaOrigem==='atendente'?leadsCache:vendasCache;
-  const c=dados.find(x=>x.id===id);if(!c)return;
-  const colDest=abaDestino==='vendas'?'vendas':'leads';
-  const colsDest=abaDestino==='vendas'?colsV:colsAt;
-  await fbAdd(colDest,{...c,etapa:colsDest[0]?.nome,fluxos:[abaOrigem,abaDestino],originId:id});
-  toast(`✅ Também adicionado em ${abaDestino}`);closeM('m-ver');
-}
-
+// ── TRANSFERÊNCIAS ──
 async function enviarParaVendas(id){
   const c=leadsCache.find(x=>x.id===id);if(!c)return;
-  await fbAdd('vendas',{...c,etapa:colsV[0]?.nome||'Proposta enviada',fluxos:['atendente','vendas'],originId:id});
-  toast('✅ Enviado para Vendas!');closeM('m-ver');
+  await fbAdd('vendas',{...c,etapa:colsV[0]?.nome||'Proposta enviada',fluxos:['atendente','vendas'],originId:id,checklist:{},historico:{}});
+  closeM('m-ver');toast('✅ Enviado para Vendas!');
 }
-
-function abrirEnviarMarketing(id){
-  toast('📢 Lead marcado para Marketing (em breve integração)');closeM('m-ver');
-}
-
 function abrirEnviarConcierge(id,aba){
   const dados=aba==='atendente'?leadsCache:vendasCache;
   const c=dados.find(x=>x.id===id);if(!c)return;
-  document.getElementById('mv-title').textContent='Enviar para Concierge';
-  document.getElementById('mv-body').innerHTML=`
-    <div style="padding:12px;background:var(--vl);border-radius:8px;margin-bottom:16px;font-size:13px">
-      <strong>${c.nome}</strong> ${c.wa?'· '+c.wa:''}
+  document.getElementById('mg-title').textContent='Enviar para Concierge';
+  document.getElementById('mg-body').innerHTML=`
+    <div style="padding:10px 12px;background:var(--vl);border-radius:8px;margin-bottom:14px;font-size:13px"><strong>${c.nome}</strong>${c.wa?' · '+limparNumero(c.wa):''}</div>
+    <div class="fg"><label>Protocolo</label>
+      <select id="env-prot"><option value="90">90 dias</option><option value="120" selected>120 dias</option><option value="365">365 dias</option></select>
     </div>
-    <div class="fg"><label>Duração do protocolo</label>
-      <select id="env-protocolo">
-        <option value="90">90 dias</option><option value="120" selected>120 dias</option><option value="365">365 dias</option>
-      </select>
-    </div>
-    <div class="fg"><label>Objetivo / anotação inicial</label>
-      <textarea id="env-nota" rows="2" placeholder="Emagrecimento, protocolo detox...">${c.objetivo||''}</textarea>
-    </div>`;
-  document.getElementById('mv-footer').innerHTML=`
-    <button class="btn-cancel" onclick="closeM('m-ver')">Cancelar</button>
-    <button class="btn btn-v" onclick="confirmarEnviarConcierge('${id}','${aba}')"><i class="ti ti-clipboard-heart"></i> Confirmar envio</button>`;
+    <div class="fg"><label>Data de início</label><input type="date" id="env-inicio" value="${new Date().toISOString().split('T')[0]}"></div>
+    <div class="fg"><label>Objetivo</label><textarea id="env-nota" rows="2">${c.objetivo||''}</textarea></div>`;
+  document.getElementById('mg-footer').innerHTML=`
+    <button class="btn-cancel" onclick="closeM('m-gen')">Cancelar</button>
+    <button class="btn btn-v" onclick="confirmarConcierge('${id}','${aba}')"><i class="ti ti-check"></i> Confirmar</button>`;
+  closeM('m-ver');openM('m-gen');
 }
-
-async function confirmarEnviarConcierge(id,aba){
+async function confirmarConcierge(id,aba){
   const dados=aba==='atendente'?leadsCache:vendasCache;
   const c=dados.find(x=>x.id===id);if(!c)return;
-  const protocolo=parseInt(document.getElementById('env-protocolo').value)||120;
-  const nota=document.getElementById('env-nota').value;
-  const hoje=new Date().toISOString().split('T')[0];
-  await fbAdd('pacientes',{nome:c.nome,wa:c.wa,objetivo:nota||c.objetivo||'',protocolo,diaAtual:1,inicio:hoje,nota:'',originId:id});
-  const colSrc=aba==='atendente'?'leads':'vendas';
-  await fbUp(colSrc,id,{transferidoConcierge:true});
-  closeM('m-ver');toast('✅ Paciente enviado para Concierge!');
+  const protocolo=parseInt(document.getElementById('env-prot').value)||120;
+  const inicio=document.getElementById('env-inicio').value;
+  await fbAdd('pacientes',{nome:c.nome,wa:limparNumero(c.wa),objetivo:document.getElementById('env-nota').value||c.objetivo||'',protocolo,diaAtual:1,inicio,nota:''});
+  closeM('m-gen');toast('✅ Enviado para Concierge!');
 }
-
-async function addFluxoConcierge(id,aba){abrirEnviarConcierge(id,aba)}
+async function removerDoFluxo(id,aba){
+  if(!confirm('Remover do fluxo? Permanece em Contatos WA.'))return;
+  await fbDel(aba==='atendente'?'leads':'vendas',id);
+  closeM('m-ver');toast('✅ Removido');
+}
 
 // ── CONTATOS PAGE ──
 function pgContatos(){
   return`<div class="ph"><div><h2>Contatos do WhatsApp</h2><p>Todos os contatos capturados</p></div></div>
-  <div class="tc">
-    <div class="tt">
-      <input type="text" placeholder="Buscar por nome ou número..." oninput="filtrarContatos(this.value)">
-    </div>
-    <div id="cont-body"><div class="loading"><i class="ti ti-loader spin"></i></div></div>
-  </div>`;
+  <div class="tc"><div class="tt"><input type="text" placeholder="Buscar..." oninput="filtrarContatos(this.value)"></div>
+  <div id="cont-body"><div class="loading"><i class="ti ti-loader spin"></i></div></div></div>`;
 }
-
-function getFluxoContato(wa){
-  const tags=[];
-  if(leadsCache.find(l=>l.wa===wa))tags.push({label:'Atendente',cls:'bv'});
-  if(vendasCache.find(v=>v.wa===wa))tags.push({label:'Vendas',cls:'ba'});
-  if(pacientesCache.find(p=>p.wa===wa))tags.push({label:'Concierge',cls:'bb'});
-  return tags;
-}
-
 function renderTabContatos(lista){
   if(!lista)lista=contatosCache;
   const el=document.getElementById('cont-body');if(!el)return;
-  if(!lista.length){el.innerHTML=`<div class="empty"><i class="ti ti-address-book"></i><p>Nenhum contato ainda.<br><small>O conector sincroniza ao conectar.</small></p></div>`;return}
-  el.innerHTML=`<table><thead><tr><th>Nome</th><th>WhatsApp</th><th>No fluxo</th><th>Ações</th></tr></thead><tbody>
-    ${lista.map(c=>{
-      const tags=getFluxoContato(c.wa);
-      return`<tr>
-        <td><strong>${c.nome||'—'}</strong></td>
-        <td style="font-size:12px;color:var(--g600)">${c.wa||'—'}</td>
-        <td>${tags.map(t=>`<span class="badge ${t.cls}" style="margin-right:3px">${t.label}</span>`).join('')||'<span style="color:var(--g400);font-size:12px">—</span>'}</td>
-        <td><div style="display:flex;gap:6px;flex-wrap:wrap">
-          ${c.wa?`<button class="btn-wa btn-sm" onclick="openWA('${c.wa}')"><i class="ti ti-brand-whatsapp"></i></button>`:''}
-          <button class="btn btn-ghost btn-xs" onclick="adicionarContatoAoFluxo('${c.id}')"><i class="ti ti-plus"></i> Fluxo</button>
-        </div></td>
-      </tr>`;
-    }).join('')}
+  if(!lista.length){el.innerHTML=`<div class="empty"><i class="ti ti-address-book"></i><p>Nenhum contato.</p></div>`;return}
+  el.innerHTML=`<table><thead><tr><th>Nome</th><th>WhatsApp</th><th>Ações</th></tr></thead><tbody>
+    ${lista.map(c=>`<tr>
+      <td><strong>${c.nome||'—'}</strong></td>
+      <td style="font-size:12px">${limparNumero(c.wa)||'—'}</td>
+      <td><div style="display:flex;gap:6px">
+        ${c.wa?`<button class="btn-wa btn-sm" onclick="openWA('${c.wa}')"><i class="ti ti-brand-whatsapp"></i></button>`:''}
+        <button class="btn btn-ghost btn-xs" onclick="adicionarContatoFluxo('${c.id}')"><i class="ti ti-plus"></i></button>
+      </div></td>
+    </tr>`).join('')}
   </tbody></table>`;
 }
-
-function filtrarContatos(q){
-  const lista=contatosCache.filter(c=>(c.nome||'').toLowerCase().includes(q.toLowerCase())||(c.wa||'').includes(q));
-  renderTabContatos(lista);
-}
-
-function adicionarContatoAoFluxo(id){
+function filtrarContatos(q){renderTabContatos(contatosCache.filter(c=>(c.nome||'').toLowerCase().includes(q.toLowerCase())||(c.wa||'').includes(q)))}
+function adicionarContatoFluxo(id){
   const c=contatosCache.find(x=>x.id===id);if(!c)return;
-  document.getElementById('mv-title').textContent='Adicionar ao fluxo';
-  document.getElementById('mv-body').innerHTML=`
-    <div style="padding:12px;background:var(--vl);border-radius:8px;margin-bottom:16px;font-size:13px">
-      <strong>${c.nome||'—'}</strong>${c.wa?' · '+c.wa:''}
-    </div>
+  document.getElementById('mg-title').textContent='Adicionar ao fluxo';
+  document.getElementById('mg-body').innerHTML=`
+    <div style="padding:10px 12px;background:var(--vl);border-radius:8px;margin-bottom:14px;font-size:13px"><strong>${c.nome||'—'}</strong> · ${limparNumero(c.wa)||'—'}</div>
     <div class="fg"><label>Destino</label>
-      <select id="dest-fluxo">
-        <option value="atendente">Atendente — Qualificação</option>
-        <option value="vendas">Vendas — Pipeline</option>
-        <option value="concierge">Concierge — Protocolo</option>
+      <select id="dest-fluxo" onchange="atualizarEtapasDestino(this.value)">
+        <option value="atendente">Atendente</option><option value="vendas">Vendas</option><option value="concierge">Concierge</option>
       </select>
     </div>
-    <div class="fg"><label>Etapa inicial</label><select id="dest-etapa"></select></div>
-    <div class="fg"><label>Objetivo</label><input id="dest-obj" value="${c.objetivo||''}" placeholder="Emagrecimento..."></div>
-    <div class="fg"><label>Origem</label>
-      <select id="dest-origem"><option>WhatsApp direto</option><option>Instagram</option><option>Indicação</option><option>Outro</option></select>
-    </div>`;
-  document.getElementById('dest-fluxo').onchange=function(){atualizarEtapasDestino(this.value)};
-  atualizarEtapasDestino('atendente');
-  document.getElementById('mv-footer').innerHTML=`
-    <button class="btn-cancel" onclick="closeM('m-ver')">Cancelar</button>
+    <div class="fg"><label>Etapa</label><select id="dest-etapa">${colsAt.map(c=>`<option>${c.nome}</option>`).join('')}</select></div>
+    <div class="fg"><label>Objetivo</label><input id="dest-obj" value="${c.objetivo||''}" placeholder="Emagrecimento..."></div>`;
+  document.getElementById('mg-footer').innerHTML=`
+    <button class="btn-cancel" onclick="closeM('m-gen')">Cancelar</button>
     <button class="btn btn-v" onclick="confirmarAdicionarFluxo('${id}')"><i class="ti ti-check"></i> Adicionar</button>`;
-  openM('m-ver');
+  openM('m-gen');
 }
-
 function atualizarEtapasDestino(dest){
-  const cols=dest==='atendente'?colsAt:dest==='vendas'?colsV:[{nome:'Protocolo ativo',cor:'#1D9E75'}];
+  const cols=dest==='atendente'?colsAt:dest==='vendas'?colsV:[{nome:'Protocolo ativo'}];
   const sel=document.getElementById('dest-etapa');
   if(sel)sel.innerHTML=cols.map(c=>`<option>${c.nome}</option>`).join('');
 }
-
 async function confirmarAdicionarFluxo(contId){
   const c=contatosCache.find(x=>x.id===contId);if(!c)return;
   const dest=document.getElementById('dest-fluxo').value;
   const etapa=document.getElementById('dest-etapa').value;
   const obj=document.getElementById('dest-obj').value;
-  const origem=document.getElementById('dest-origem').value;
   if(dest==='concierge'){
-    const hoje=new Date().toISOString().split('T')[0];
-    await fbAdd('pacientes',{nome:c.nome,wa:c.wa,objetivo:obj,protocolo:120,diaAtual:1,inicio:hoje,nota:'',origem});
-  } else {
-    await fbAdd(dest==='atendente'?'leads':'vendas',{nome:c.nome,wa:c.wa,origem,objetivo:obj,etapa,fluxos:[dest]});
+    await fbAdd('pacientes',{nome:c.nome,wa:limparNumero(c.wa),objetivo:obj,protocolo:120,diaAtual:1,inicio:new Date().toISOString().split('T')[0],nota:''});
+  }else{
+    await fbAdd(dest==='atendente'?'leads':'vendas',{nome:c.nome,wa:limparNumero(c.wa),origem:'Contato WA',objetivo:obj,etapa,checklist:{},historico:{},fluxos:[dest]});
   }
-  closeM('m-ver');toast('✅ Adicionado ao fluxo!');
+  closeM('m-gen');toast('✅ Adicionado!');
 }
 
-// ── MODAL CONTATOS (para selecionar ao criar lead) ──
-function renderContatosModal(lista){
-  const el=document.getElementById('ml-cont-list');if(!el)return;
-  if(!lista||!lista.length){el.innerHTML=`<div class="empty" style="padding:20px"><i class="ti ti-inbox"></i><p>Nenhum contato ainda.</p></div>`;return}
-  el.innerHTML=lista.slice(0,80).map(c=>{
-    const ini=(c.nome||c.wa||'?').charAt(0).toUpperCase();
-    const tags=getFluxoContato(c.wa);
-    return`<div class="cont-item" onclick="selContato('${c.id}')">
-      <div class="av">${ini}</div>
-      <div class="ci-info">
-        <div class="cn">${c.nome||'Sem nome'}</div>
-        <div class="cw">${c.wa||'—'}</div>
-        ${tags.length?`<div class="ct">${tags.map(t=>`<span class="badge ${t.cls}" style="font-size:10px">${t.label}</span>`).join('')}</div>`:''}
+// ── OUTROS ──
+const CATS_OUTROS=['Fornecedor','Colaborador','Parceiro','Médico','Nutricionista','Outro'];
+function pgOutros(){
+  return`<div class="ph"><div><h2>Outros contatos</h2><p>Fornecedores, colaboradores, parceiros</p></div>
+    <button class="btn btn-v btn-sm" onclick="abrirNovoOutro()"><i class="ti ti-plus"></i> Novo</button></div>
+  <div class="tc"><div class="tt">
+    <input type="text" placeholder="Buscar..." oninput="filtrarOutros(this.value)">
+    <select onchange="filtrarOutrosCat(this.value)">
+      <option value="">Todas</option>${CATS_OUTROS.map(c=>`<option>${c}</option>`).join('')}
+    </select>
+  </div><div id="outros-body"><div class="loading"><i class="ti ti-loader spin"></i></div></div></div>`;
+}
+function renderOutros(lista){
+  if(!lista)lista=outrosCache;
+  const el=document.getElementById('outros-body');if(!el)return;
+  if(!lista.length){el.innerHTML=`<div class="empty"><i class="ti ti-users-group"></i><p>Nenhum contato ainda.</p></div>`;return}
+  el.innerHTML=`<table><thead><tr><th>Nome</th><th>Categoria</th><th>WhatsApp</th><th>Obs</th><th></th></tr></thead><tbody>
+    ${lista.map(o=>`<tr>
+      <td><strong>${o.nome||'—'}</strong></td>
+      <td><span class="badge bg">${o.categoria||'Outro'}</span></td>
+      <td style="font-size:12px">${limparNumero(o.wa)||'—'}</td>
+      <td style="font-size:12px;color:var(--g600);max-width:160px">${o.obs||'—'}</td>
+      <td><div style="display:flex;gap:6px">
+        ${o.wa?`<button class="btn-wa btn-sm" onclick="openWA('${o.wa}')"><i class="ti ti-brand-whatsapp"></i></button>`:''}
+        <button class="btn btn-ghost btn-xs" onclick="abrirNovoOutro('${o.id}')"><i class="ti ti-pencil"></i></button>
+        <button class="btn btn-danger btn-xs" onclick="fbDel('outros','${o.id}').then(()=>toast('🗑️ Removido'))"><i class="ti ti-trash"></i></button>
+      </div></td>
+    </tr>`).join('')}
+  </tbody></table>`;
+}
+function filtrarOutros(q){renderOutros(outrosCache.filter(o=>(o.nome||'').toLowerCase().includes(q.toLowerCase())||(o.wa||'').includes(q)))}
+function filtrarOutrosCat(cat){renderOutros(cat?outrosCache.filter(o=>o.categoria===cat):outrosCache)}
+function abrirNovoOutro(id){
+  const o=id?outrosCache.find(x=>x.id===id):null;
+  document.getElementById('mg-title').textContent=o?'Editar contato':'Novo contato';
+  document.getElementById('mg-body').innerHTML=`
+    <div class="fr">
+      <div class="fg"><label>Nome</label><input id="no-nome" value="${o?.nome||''}" placeholder="Nome"></div>
+      <div class="fg"><label>WhatsApp</label><input id="no-wa" value="${limparNumero(o?.wa)||''}" type="tel"></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>Categoria</label>
+        <select id="no-cat">${CATS_OUTROS.map(c=>`<option${(o?.categoria||'')===c?' selected':''}>${c}</option>`).join('')}</select>
       </div>
-    </div>`;
-  }).join('');
+      <div class="fg"><label>Email</label><input id="no-email" value="${o?.email||''}" type="email"></div>
+    </div>
+    <div class="fg"><label>Observação</label><textarea id="no-obs">${o?.obs||''}</textarea></div>`;
+  document.getElementById('mg-footer').innerHTML=`
+    <button class="btn-cancel" onclick="closeM('m-gen')">Cancelar</button>
+    <button class="btn btn-v" onclick="salvarOutro('${id||''}')"><i class="ti ti-check"></i> Salvar</button>`;
+  openM('m-gen');
 }
-function filtrarContatosM(q){
-  const lista=contatosCache.filter(c=>(c.nome||'').toLowerCase().includes(q.toLowerCase())||(c.wa||'').includes(q));
-  renderContatosModal(lista);
-}
-function selContato(id){
-  const c=contatosCache.find(x=>x.id===id);if(!c)return;
-  document.getElementById('ml-nome').value=c.nome||'';
-  document.getElementById('ml-wa').value=c.wa||'';
-  document.querySelectorAll('.cont-item').forEach(el=>el.classList.remove('sel'));
-  event.currentTarget.classList.add('sel');
-  toast('✓ Contato selecionado');
+async function salvarOutro(id){
+  const nome=document.getElementById('no-nome').value.trim();if(!nome){toast('⚠️ Nome obrigatório');return}
+  const data={nome,wa:document.getElementById('no-wa').value,categoria:document.getElementById('no-cat').value,email:document.getElementById('no-email').value,obs:document.getElementById('no-obs').value};
+  if(id)await fbUp('outros',id,data);else await fbAdd('outros',data);
+  closeM('m-gen');toast('✅ Salvo!');
 }
 
 // ── CONCIERGE ──
-// ── PROTOCOLOS DATA ──
-const PROTO = {
-  90: [[0,"D0 Aplicação + Consulta Nutri + Peso + Foto + Bioimpedância"],[1,"D1 Follow-up aplicação"],[4,"D4 Reforço hidratação"],[7,"D7 Reforço alimentação"],[9,"D9 Confirmação aplicação"],[10,"D10 2ª Aplicação"],[11,"D11 Follow-up aplicação"],[14,"D14 Exercício"],[17,"D17 Monitoramento sintomas"],[19,"D19 Confirmação aplicação"],[20,"D20 3ª Aplicação"],[21,"D21 Follow-up aplicação"],[24,"D24 Motivacional"],[27,"D27 Reforço hidratação"],[29,"D29 Preparação consulta"],[30,"D30 4ª Aplicação + Consulta Dr Sérgio + Peso + Foto + Bioimpedância"],[31,"D31 Follow-up consulta"],[39,"D39 Confirmação aplicação"],[40,"D40 5ª Aplicação"],[41,"D41 Follow-up aplicação"],[44,"D44 Reforço alimentação"],[47,"D47 Exercício"],[49,"D49 Confirmação aplicação"],[50,"D50 5ª Aplicação + Bioimpedância rápida"],[51,"D51 Follow-up aplicação"],[54,"D54 Monitoramento sintomas"],[57,"D57 Motivacional"],[59,"D59 Preparação consulta"],[60,"D60 6ª Aplicação + Consulta Dr Sérgio + Peso + Foto + Bioimpedância"],[61,"D61 Follow-up consulta"],[69,"D69 Confirmação aplicação"],[70,"D70 Aplicação"],[71,"D71 Follow-up aplicação"],[74,"D74 Reforço hidratação"],[77,"D77 Alimentação"],[79,"D79 Confirmação aplicação"],[80,"D80 Aplicação + Bioimpedância rápida"],[81,"D81 Follow-up aplicação"],[84,"D84 Monitoramento sintomas"],[87,"D87 Motivacional"],[89,"D89 Preparação encerramento"],[90,"D90 Consulta Dr Sérgio + Consulta Nutri + Peso + Foto + Bioimpedância + Comparativo + Planejamento"],[91,"D91 Follow-up consulta"]],
-  120: [[0,"D0 Orientação + Consulta paga"],[1,"D1 Confirmação pré-consulta"],[2,"D2 Pré-consulta"],[4,"D4 Reforço exames"],[6,"D6 Confirmação consulta"],[7,"D7 Consulta inicial + Peso + Foto + Bioimpedância"],[8,"D8 Pós-consulta"],[9,"D9 Negociação / Fechamento"],[10,"D10 Follow-up + Consulta Nutri"],[11,"D11 Monitoramento interno"],[12,"D12 Confirmação aplicação"],[13,"D13 1ª Aplicação"],[14,"D14 Follow-up aplicação"],[17,"D17 Reforço adesão alimentar"],[19,"D19 Monitoramento sintomas"],[20,"D20 2ª Aplicação"],[21,"D21 Follow-up aplicação"],[23,"D23 Hidratação + Proteína"],[26,"D26 Confirmação aplicação"],[27,"D27 3ª Aplicação"],[28,"D28 Follow-up aplicação"],[29,"D29 Confirmação D34"],[31,"D31 Reforço evolução"],[33,"D33 Confirmação aplicação"],[34,"D34 4ª Aplicação + Peso + Foto + Bioimpedância"],[37,"D37 Reforço adesão"],[40,"D40 Monitoramento sintomas"],[41,"D41 5ª Aplicação"],[42,"D42 Preparação consulta"],[43,"D43 Confirmação consulta"],[45,"D45 Consulta Ajuste Dr Sérgio + Peso + Foto + Bioimpedância"],[46,"D46 Follow-up consulta"],[47,"D47 Confirmação aplicação"],[48,"D48 6ª Aplicação + Bioimpedância rápida + Checkpoint Nutri"],[49,"D49 Follow-up aplicação"],[50,"D50 Consulta Nutri"],[51,"D51 Reforço alimentar"],[54,"D54 Monitoramento sintomas"],[55,"D55 7ª Aplicação"],[56,"D56 Follow-up aplicação"],[58,"D58 Confirmação aplicação"],[59,"D59 Hidratação"],[60,"D60 Checkpoint motivacional"],[61,"D61 Monitoramento interno"],[62,"D62 8ª Aplicação + Bioimpedância rápida"],[63,"D63 Follow-up aplicação"],[67,"D67 Reforço exames"],[69,"D69 9ª Aplicação + Reforço realização exames"],[70,"D70 Follow-up aplicação"],[71,"D71 Agendar consulta D75"],[75,"D75 Consulta robusta Dr Sérgio + Peso + Foto + Bioimpedância"],[76,"D76 10ª Aplicação + Bioimpedância rápida + Follow-up consulta"],[77,"D77 Follow-up aplicação"],[79,"D79 Conversa continuidade"],[82,"D82 Confirmação aplicação"],[83,"D83 11ª Aplicação"],[84,"D84 Follow-up aplicação"],[89,"D89 Confirmação consulta + aplicação se houver"],[90,"D90 Consulta encerramento + Peso + Foto + Bioimpedância + Comparativo + Renovação"],[91,"D91 Follow-up aplicação"],[94,"D94 Reforço Hidratação"],[96,"D96 Confirmação aplicação"],[97,"D97 13ª Aplicação"],[98,"D98 Follow-up aplicação"],[101,"D101 Reforço Alimentação"],[103,"D103 Confirmação aplicação"],[104,"D104 14ª Aplicação + Bioimpedância rápida"],[105,"D105 Follow-up aplicação"],[108,"D108 Exercício"],[110,"D110 Confirmação aplicação"],[111,"D111 15ª Aplicação"],[112,"D112 Follow-up aplicação + Monitoramento sintomas"],[115,"D115 Motivacional"],[117,"D117 Confirmação aplicação"],[118,"D118 16ª Aplicação"],[119,"D119 Consulta Dr Sérgio + Peso + Foto + Bioimpedância"],[120,"D120 Follow-up consulta"]],
-  365: [[0,"D0 Orientação + Consulta paga"],[1,"D1 Confirmação pré-consulta"],[7,"D7 Consulta inicial + Peso + Foto + Bioimpedância"],[13,"D13 1ª Aplicação"],[20,"D20 2ª Aplicação"],[27,"D27 3ª Aplicação"],[34,"D34 4ª Aplicação + Peso + Foto + Bioimpedância"],[45,"D45 Consulta Ajuste Dr Sérgio + Peso + Foto + Bioimpedância"],[55,"D55 7ª Aplicação"],[75,"D75 Consulta robusta Dr Sérgio + Peso + Foto + Bioimpedância"],[90,"D90 Consulta encerramento 1º ciclo + Renovação"],[120,"D120 Follow-up consulta"],[149,"D149 Consulta Dr Sérgio + Peso + Foto + Bioimpedância"],[179,"D179 Consulta Dr Sérgio + Revisão exames"],[209,"D209 29ª Aplicação + Consulta Dr Sérgio + Peso + Foto + Bioimpedância"],[239,"D239 Consulta Dr Sérgio + Peso + Foto + Bioimpedância"],[269,"D269 Consulta Dr Sérgio + Revisão exames"],[299,"D299 Consulta Dr Sérgio"],[329,"D329 Consulta Dr Sérgio"],[354,"D354 Consulta Dr Sérgio + Comparativo anual + Revisão exames + Planejamento"],[359,"D359 Encerramento + Comparativo D0 x D360 + Renovação + Planejamento manutenção"]]
-};
-
-function tarefaDoDia(protocolo, dia) {
-  const lista = PROTO[protocolo] || PROTO[120];
-  let ultima = lista[0];
-  for (const [d, tarefa] of lista) {
-    if (d <= dia) ultima = [d, tarefa];
-    else break;
-  }
-  const proxima = lista.find(([d]) => d > dia);
-  return { atual: ultima[1], proxDia: proxima ? proxima[0] : null };
-}
-
-function diaAtualCalculado(p) {
-  if (!p.inicio) return p.diaAtual || 1;
-  const inicio = new Date(p.inicio);
-  const hoje = new Date();
-  const diff = Math.floor((hoje - inicio) / (1000 * 60 * 60 * 24));
-  return Math.max(1, Math.min(diff + 1, p.protocolo || 120));
-}
-
 function pgConcierge(){
-  return`<div class="ph"><div><h2>Pacientes em protocolo</h2><p>Avanço automático diário — ${new Date().toLocaleDateString('pt-BR')}</p></div>
-    <button class="btn btn-v btn-sm" onclick="abrirNovoPaciente()"><i class="ti ti-plus"></i> Novo paciente</button></div>
+  return`<div class="ph"><div><h2>Pacientes em protocolo</h2><p>Avanço automático diário</p></div>
+    <button class="btn btn-v btn-sm" onclick="abrirNovoPaciente()"><i class="ti ti-plus"></i> Novo</button></div>
   <div class="stats-row" id="pac-stats"></div>
-  <div id="pac-fileiras"><div class="loading"><i class="ti ti-loader spin"></i></div></div>`
+  <div id="pac-fileiras"><div class="loading"><i class="ti ti-loader spin"></i></div></div>`;
 }
-
 function renderConcierge(lista){
   if(!lista)lista=pacientesCache;
   const stats=document.getElementById('pac-stats');
   if(stats)stats.innerHTML=`
     <div class="sc"><div class="lb">Ativos</div><div class="vl">${pacientesCache.length}</div></div>
-    <div class="sc"><div class="lb">90 dias</div><div class="vl" style="color:var(--v)">${pacientesCache.filter(p=>p.protocolo==90).length}</div></div>
-    <div class="sc"><div class="lb">120 dias</div><div class="vl" style="color:var(--b400)">${pacientesCache.filter(p=>p.protocolo==120).length}</div></div>
-    <div class="sc"><div class="lb">365 dias</div><div class="vl" style="color:var(--a400)">${pacientesCache.filter(p=>p.protocolo==365).length}</div></div>`;
-
-  const el = document.getElementById('pac-fileiras'); if(!el)return;
-
-  const grupos = {90:[], 120:[], 365:[]};
-  lista.forEach(p => {
-    const tot = parseInt(p.protocolo)||120;
-    const diaReal = diaAtualCalculado(p);
-    if(p.inicio && diaReal !== (p.diaAtual||1)) fbUp('pacientes', p.id, {diaAtual: diaReal}).catch(()=>{});
-    const d = {...p, diaReal, tot};
-    if(grupos[tot]) grupos[tot].push(d); else grupos[120].push(d);
+    <div class="sc"><div class="lb">90d</div><div class="vl" style="color:var(--v)">${pacientesCache.filter(p=>p.protocolo==90).length}</div></div>
+    <div class="sc"><div class="lb">120d</div><div class="vl" style="color:var(--b400)">${pacientesCache.filter(p=>p.protocolo==120).length}</div></div>
+    <div class="sc"><div class="lb">365d</div><div class="vl" style="color:var(--a400)">${pacientesCache.filter(p=>p.protocolo==365).length}</div></div>`;
+  const el=document.getElementById('pac-fileiras');if(!el)return;
+  const grupos={90:[],120:[],365:[]};
+  lista.forEach(p=>{
+    const tot=parseInt(p.protocolo)||120;
+    const diaReal=diaAtualCalc(p);
+    if(p.inicio&&diaReal!==(p.diaAtual||1))fbUp('pacientes',p.id,{diaAtual:diaReal}).catch(()=>{});
+    const d={...p,diaReal,tot};
+    if(grupos[tot])grupos[tot].push(d);else grupos[120].push(d);
   });
-
-  el.innerHTML = [90, 120, 365].map(tot => {
-    const pacs = grupos[tot];
-    const cor = tot===90?'var(--v)':tot===120?'var(--b400)':'var(--a400)';
-    const bg = tot===90?'var(--vl)':tot===120?'var(--b50)':'var(--a50)';
-    return `
-    <div style="margin-bottom:32px">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:10px;border-bottom:.5px solid var(--g100)">
-        <div style="width:4px;height:26px;background:${cor};border-radius:2px;flex-shrink:0"></div>
-        <h3 style="font-size:16px;font-weight:600;color:var(--g900)">Protocolo ${tot} dias</h3>
-        <span style="background:${bg};color:${cor};font-size:11px;font-weight:600;padding:3px 10px;border-radius:10px">${pacs.length} paciente${pacs.length!==1?'s':''}</span>
+  el.innerHTML=[90,120,365].map(tot=>{
+    const pacs=grupos[tot];
+    const cor=tot===90?'var(--v)':tot===120?'var(--b400)':'var(--a400)';
+    const bg=tot===90?'var(--vl)':tot===120?'var(--b50)':'var(--a50)';
+    return`<div style="margin-bottom:28px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;padding-bottom:10px;border-bottom:.5px solid var(--g100)">
+        <div style="width:4px;height:24px;background:${cor};border-radius:2px"></div>
+        <h3 style="font-size:15px;font-weight:600">Protocolo ${tot} dias</h3>
+        <span style="background:${bg};color:${cor};font-size:11px;font-weight:600;padding:2px 8px;border-radius:10px">${pacs.length} pac.</span>
       </div>
-      ${!pacs.length
-        ? `<div style="background:#fff;border:1.5px dashed var(--g100);border-radius:10px;padding:24px;text-align:center;color:var(--g400);font-size:13px">Nenhum paciente neste protocolo ainda</div>`
-        : `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px">
-          ${pacs.map(p => {
-            const pct = Math.min(100, Math.round((p.diaReal/tot)*100));
-            const tarefa = tarefaDoDia(tot, p.diaReal);
-            const diasProx = tarefa.proxDia ? tarefa.proxDia - p.diaReal : null;
-            const urgente = diasProx !== null && diasProx <= 1;
-            return `<div style="background:#fff;border:${urgente?'1.5px solid '+cor:'.5px solid var(--g100)'};border-radius:12px;padding:16px;cursor:pointer;transition:all .15s"
-              onclick="abrirPaciente('${p.id}')"
-              onmouseenter="this.style.boxShadow='0 2px 12px rgba(0,0,0,.08)'"
-              onmouseleave="this.style.boxShadow='none'">
-              <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px">
-                <div style="flex:1;min-width:0">
-                  <div style="font-size:14px;font-weight:600;color:var(--g900);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.nome}</div>
-                  <div style="font-size:11px;color:var(--g400);margin-top:2px">${p.wa||'—'}</div>
-                </div>
-                <div style="text-align:right;flex-shrink:0;margin-left:8px">
-                  <div style="font-size:24px;font-weight:700;color:${cor};line-height:1">D${p.diaReal}</div>
-                  <div style="font-size:10px;color:var(--g400)">${tot-p.diaReal}d restam</div>
-                </div>
+      ${!pacs.length?`<div style="border:1.5px dashed var(--g100);border-radius:10px;padding:20px;text-align:center;color:var(--g400);font-size:13px">Nenhum paciente neste protocolo</div>`
+      :`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px">
+        ${pacs.map(p=>{
+          const pct=Math.min(100,Math.round((p.diaReal/tot)*100));
+          const tarefa=tarefaDoDia(tot,p.diaReal);
+          const urgente=tarefa.proxDia&&(tarefa.proxDia-p.diaReal)<=1;
+          return`<div style="background:#fff;border:${urgente?'1.5px solid '+cor:'.5px solid var(--g100)'};border-radius:12px;padding:14px;cursor:pointer;transition:box-shadow .15s"
+            onclick="abrirPaciente('${p.id}')"
+            onmouseenter="this.style.boxShadow='0 2px 12px rgba(0,0,0,.08)'"
+            onmouseleave="this.style.boxShadow='none'">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px">
+              <div style="flex:1;min-width:0">
+                <div style="font-size:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.nome}</div>
+                <div style="font-size:11px;color:var(--g400);margin-top:2px">${limparNumero(p.wa)||'—'}</div>
               </div>
-              <div style="background:var(--g100);border-radius:4px;height:5px;overflow:hidden;margin-bottom:10px">
-                <div style="height:100%;border-radius:4px;background:${cor};width:${pct}%"></div>
+              <div style="text-align:right;flex-shrink:0;margin-left:8px">
+                <div style="font-size:22px;font-weight:700;color:${cor};line-height:1">D${p.diaReal}</div>
+                <div style="font-size:10px;color:var(--g400)">${tot-p.diaReal}d restam</div>
               </div>
-              <div style="background:${urgente?cor+'15':bg};border-radius:8px;padding:8px 10px;font-size:12px;color:${urgente?cor:'var(--g600)'};line-height:1.4;margin-bottom:8px">
-                <span style="font-weight:600;display:block;font-size:10px;text-transform:uppercase;letter-spacing:.4px;margin-bottom:2px;color:${cor}">Tarefa do dia</span>
-                ${tarefa.atual.replace(/^D\d+\s*/,'')}
-              </div>
-              <div style="display:flex;align-items:center;justify-content:space-between">
-                <span style="font-size:11px;color:var(--g400)">${diasProx?`Próximo: Dia ${tarefa.proxDia} (+${diasProx}d)`:''}</span>
-                ${p.wa?`<button class="btn-wa" style="padding:3px 8px;font-size:11px" onclick="event.stopPropagation();openWA('${p.wa}')"><i class="ti ti-brand-whatsapp"></i></button>`:''}
-              </div>
-            </div>`;
-          }).join('')}
-        </div>`
-      }
+            </div>
+            <div class="pb" style="margin-bottom:10px"><div class="pf" style="width:${pct}%;background:${cor}"></div></div>
+            <div style="background:${urgente?cor+'15':bg};border-radius:8px;padding:8px 10px;font-size:12px;color:${urgente?cor:'var(--g600)'};margin-bottom:8px">
+              <span style="font-weight:600;display:block;font-size:10px;text-transform:uppercase;color:${cor};margin-bottom:2px">Hoje</span>
+              ${tarefa.atual.replace(/^D\d+\s*/,'')}
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <span style="font-size:11px;color:var(--g400)">${tarefa.proxDia?`Próx: Dia ${tarefa.proxDia}`:''}</span>
+              ${p.wa?`<button class="btn-wa" style="padding:4px 10px;font-size:11px;min-height:28px" onclick="event.stopPropagation();openWA('${p.wa}')"><i class="ti ti-brand-whatsapp"></i></button>`:''}
+            </div>
+          </div>`;
+        }).join('')}
+      </div>`}
     </div>`;
   }).join('');
 }
 
-function filtrarPacientes(q){renderConcierge(pacientesCache.filter(p=>(p.nome||'').toLowerCase().includes(q.toLowerCase())))}
-
 function abrirNovoPaciente(){
-  document.getElementById('mv-title').textContent='Novo paciente';
-  renderContatosModal(contatosCache);
-  document.getElementById('mv-body').innerHTML=`
-    <div class="fg"><label>Buscar contato</label><input type="text" id="np-busca" placeholder="Nome ou número..." oninput="filtrarContatosNP(this.value)"></div>
-    <div class="cont-list" id="np-cont-list" style="margin-bottom:12px;max-height:200px;overflow-y:auto;border:.5px solid var(--g100);border-radius:8px">${contatosCache.slice(0,50).map(c=>`<div class="cont-item" onclick="selContatoNP('${c.id}')"><div class="av">${(c.nome||'?').charAt(0)}</div><div class="ci-info"><div class="cn">${c.nome||'—'}</div><div class="cw">${c.wa||'—'}</div></div></div>`).join('')}</div>
-    <div style="text-align:center;font-size:12px;color:var(--g400);margin-bottom:12px">— ou preencha manualmente —</div>
+  document.getElementById('mg-title').textContent='Novo paciente';
+  document.getElementById('mg-body').innerHTML=`
+    <div class="fg"><label>Buscar contato</label><input type="text" id="np-busca" placeholder="Nome..." oninput="filtrarContatosNP(this.value)"></div>
+    <div class="cont-list" id="np-list" style="margin-bottom:10px;max-height:180px;overflow-y:auto;border:.5px solid var(--g100);border-radius:8px">
+      ${contatosCache.slice(0,40).map(c=>`<div class="cont-item" onclick="selContatoNP('${c.id}')"><div class="av">${(c.nome||'?').charAt(0)}</div><div class="ci-info"><div class="cn">${c.nome||'—'}</div><div class="cw">${limparNumero(c.wa)||'—'}</div></div></div>`).join('')}
+    </div>
     <div class="fr">
       <div class="fg"><label>Nome</label><input id="np-nome" placeholder="Nome completo"></div>
-      <div class="fg"><label>WhatsApp</label><input id="np-wa" placeholder="51 9..."></div>
+      <div class="fg"><label>WhatsApp</label><input id="np-wa" type="tel"></div>
     </div>
     <div class="fr">
       <div class="fg"><label>Protocolo</label>
         <select id="np-prot"><option value="90">90 dias</option><option value="120" selected>120 dias</option><option value="365">365 dias</option></select>
       </div>
-      <div class="fg"><label>Dia atual</label><input id="np-dia" type="number" value="1" min="1"></div>
+      <div class="fg"><label>Início</label><input type="date" id="np-inicio" value="${new Date().toISOString().split('T')[0]}"></div>
     </div>
-    <div class="fg"><label>Objetivo</label><input id="np-obj" placeholder="Emagrecimento..."></div>
-    <div class="fg"><label>Início</label><input id="np-inicio" type="date" value="${new Date().toISOString().split('T')[0]}"></div>`;
-  document.getElementById('mv-footer').innerHTML=`
-    <button class="btn-cancel" onclick="closeM('m-ver')">Cancelar</button>
+    <div class="fg"><label>Objetivo</label><input id="np-obj" placeholder="Emagrecimento..."></div>`;
+  document.getElementById('mg-footer').innerHTML=`
+    <button class="btn-cancel" onclick="closeM('m-gen')">Cancelar</button>
     <button class="btn btn-v" onclick="salvarNovoPaciente()"><i class="ti ti-check"></i> Salvar</button>`;
-  openM('m-ver');
+  openM('m-gen');
 }
-
 function filtrarContatosNP(q){
   const lista=contatosCache.filter(c=>(c.nome||'').toLowerCase().includes(q.toLowerCase())||(c.wa||'').includes(q));
-  const el=document.getElementById('np-cont-list');
-  if(el)el.innerHTML=lista.slice(0,50).map(c=>`<div class="cont-item" onclick="selContatoNP('${c.id}')"><div class="av">${(c.nome||'?').charAt(0)}</div><div class="ci-info"><div class="cn">${c.nome||'—'}</div><div class="cw">${c.wa||'—'}</div></div></div>`).join('');
+  const el=document.getElementById('np-list');
+  if(el)el.innerHTML=lista.slice(0,40).map(c=>`<div class="cont-item" onclick="selContatoNP('${c.id}')"><div class="av">${(c.nome||'?').charAt(0)}</div><div class="ci-info"><div class="cn">${c.nome||'—'}</div><div class="cw">${limparNumero(c.wa)||'—'}</div></div></div>`).join('');
 }
 function selContatoNP(id){
   const c=contatosCache.find(x=>x.id===id);if(!c)return;
   document.getElementById('np-nome').value=c.nome||'';
-  document.getElementById('np-wa').value=c.wa||'';
+  document.getElementById('np-wa').value=limparNumero(c.wa)||'';
   toast('✓ Contato selecionado');
 }
-
 async function salvarNovoPaciente(){
-  const nome=document.getElementById('np-nome').value.trim();
-  if(!nome){toast('⚠️ Informe o nome');return}
-  await fbAdd('pacientes',{
-    nome,wa:document.getElementById('np-wa').value,
-    protocolo:parseInt(document.getElementById('np-prot').value)||120,
-    diaAtual:parseInt(document.getElementById('np-dia').value)||1,
-    objetivo:document.getElementById('np-obj').value,
-    inicio:document.getElementById('np-inicio').value,nota:''
-  });
-  closeM('m-ver');toast('✅ Paciente adicionado!');
+  const nome=document.getElementById('np-nome').value.trim();if(!nome){toast('⚠️ Informe o nome');return}
+  await fbAdd('pacientes',{nome,wa:document.getElementById('np-wa').value,protocolo:parseInt(document.getElementById('np-prot').value)||120,diaAtual:1,inicio:document.getElementById('np-inicio').value,objetivo:document.getElementById('np-obj').value,nota:''});
+  closeM('m-gen');toast('✅ Paciente adicionado!');
 }
 
-// ── PROTOCOLO ──
+// ── PROTOCOLO MODAL ──
+let pacAtivo=null;
 function abrirPaciente(id){
   const p=pacientesCache.find(x=>x.id===id);if(!p)return;
   pacAtivo=p;
   const tot=p.protocolo||120;
-  const marcos=[[1,'Início','ti-rocket'],[Math.round(tot*.25),'25%','ti-award'],[Math.round(tot*.5),'50%','ti-award'],[Math.round(tot*.75),'75%','ti-award'],[tot,'Fim','ti-flag']];
+  const diaReal=diaAtualCalc(p);
+  const tarefa=tarefaDoDia(tot,diaReal);
   document.getElementById('mpac-title').textContent=p.nome;
   document.getElementById('mpac-body').innerHTML=`
-    <div class="ph-pac"><div>
-      <div class="pn">${p.nome}</div>
-      <div class="pm">Início: ${p.inicio||'—'} · ${p.objetivo||''}</div>
-    </div><div style="text-align:right">
-      <div class="pd">Dia ${p.diaAtual}</div>
-      <div class="pdl">${tot-p.diaAtual} dias restantes</div>
-    </div></div>
-    <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
-      ${marcos.map(([dia,label,icon])=>{const done=p.diaAtual>dia,curr=Math.abs(p.diaAtual-dia)<=3&&!done;return`
-        <div style="background:${done?'var(--vl)':curr?'var(--a50)':'var(--g50)'};border:.5px solid ${done?'var(--vxl)':curr?'var(--a50)':'var(--g100)'};border-radius:8px;padding:8px 12px;text-align:center;flex:1;min-width:70px">
-          <i class="ti ${icon}" style="font-size:18px;color:${done?'var(--v)':curr?'var(--a400)':'var(--g200)'}"></i>
-          <div style="font-size:14px;font-weight:600;color:${done?'var(--v)':curr?'var(--a600)':'var(--g900)'}">${dia}</div>
-          <div style="font-size:10px;color:var(--g400)">${label}</div>
-        </div>`}).join('')}
+    <div style="background:var(--v);border-radius:12px;padding:16px;color:#fff;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div style="font-size:16px;font-weight:600">${p.nome}</div>
+        <div style="font-size:12px;color:rgba(255,255,255,.7);margin-top:2px">Protocolo ${tot}d · Início: ${p.inicio||'—'}</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:28px;font-weight:700">D${diaReal}</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.7)">${tot-diaReal}d restam</div>
+      </div>
+    </div>
+    <div class="pb" style="margin-bottom:16px"><div class="pf" style="width:${Math.round((diaReal/tot)*100)}%"></div></div>
+    <div style="background:var(--vl);border-radius:8px;padding:10px 12px;margin-bottom:16px">
+      <div style="font-size:10px;font-weight:600;color:var(--v);text-transform:uppercase;margin-bottom:4px">Tarefa do dia</div>
+      <div style="font-size:13px;color:var(--g800)">${tarefa.atual.replace(/^D\d+\s*/,'')}</div>
+      ${tarefa.proxDia?`<div style="font-size:11px;color:var(--g400);margin-top:4px">Próximo: Dia ${tarefa.proxDia}</div>`:''}
     </div>
     <div class="fr" style="margin-bottom:12px">
-      <div class="fg"><label>Dia atual</label><input type="number" id="pac-dia" value="${p.diaAtual}" min="1" max="${tot}"></div>
+      <div class="fg"><label>Dia atual</label><input type="number" id="pac-dia" value="${diaReal}" min="1" max="${tot}"></div>
       <div class="fg"><label>Protocolo</label>
         <select id="pac-prot">
           <option value="90"${p.protocolo==90?' selected':''}>90 dias</option>
@@ -1001,272 +1209,193 @@ function abrirPaciente(id){
         </select>
       </div>
     </div>
-    <div class="fg"><label>Mensagem / Anotação do dia</label>
-      <textarea id="pac-nota" rows="3" style="resize:vertical">${p.nota||''}</textarea>
-    </div>
-    ${p.wa?`<button class="btn-wa" style="width:100%;justify-content:center;margin-top:4px" onclick="openWA('${p.wa}')"><i class="ti ti-brand-whatsapp"></i> Enviar mensagem para ${p.nome.split(' ')[0]}</button>`:''}`;
+    <div class="fg"><label>Anotação do dia</label><textarea id="pac-nota" rows="3">${p.nota||''}</textarea></div>
+    ${p.wa?`<button class="btn-wa" style="width:100%;justify-content:center" onclick="openWA('${p.wa}')"><i class="ti ti-brand-whatsapp"></i> Enviar mensagem</button>`:''}`;
   openM('m-pac');
 }
-
 async function salvarProtocolo(){
   if(!pacAtivo)return;
-  await fbUp('pacientes',pacAtivo.id,{
-    diaAtual:parseInt(document.getElementById('pac-dia').value)||1,
-    protocolo:parseInt(document.getElementById('pac-prot').value)||120,
-    nota:document.getElementById('pac-nota').value,
-  });
+  await fbUp('pacientes',pacAtivo.id,{diaAtual:parseInt(document.getElementById('pac-dia').value)||1,protocolo:parseInt(document.getElementById('pac-prot').value)||120,nota:document.getElementById('pac-nota').value});
   closeM('m-pac');toast('✅ Protocolo atualizado');
 }
 
 // ── VISÃO POR DIA ──
-let diasProtocoFiltro = 120;
-let diasOffset = 0;
-const DIAS_POR_PAGINA = 30;
-
 function pgDias(){
-  return`<div class="ph">
-    <div><h2>Visão por dia</h2><p>Todos os dias do protocolo</p></div>
-  </div>
-  <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center">
-    <span style="font-size:12px;color:var(--g400);font-weight:500">Protocolo:</span>
-    <button class="btn btn-sm" id="btn-f90" onclick="setDiasFiltro(90)">90 dias</button>
-    <button class="btn btn-sm" id="btn-f120" onclick="setDiasFiltro(120)">120 dias</button>
-    <button class="btn btn-sm" id="btn-f365" onclick="setDiasFiltro(365)">365 dias</button>
+  return`<div class="ph"><div><h2>Visão por dia</h2><p>Todos os dias do protocolo</p></div></div>
+  <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center">
+    <button class="btn btn-sm" id="btn-f90" onclick="setDiasFiltro(90)">90d</button>
+    <button class="btn btn-sm" id="btn-f120" onclick="setDiasFiltro(120)">120d</button>
+    <button class="btn btn-sm" id="btn-f365" onclick="setDiasFiltro(365)">365d</button>
+    <button class="btn btn-ghost btn-sm" onclick="irParaHoje()"><i class="ti ti-calendar-event"></i> Hoje</button>
     <span id="dias-resumo" style="margin-left:auto;font-size:12px;color:var(--g400)"></span>
   </div>
-  <div style="display:flex;gap:8px;margin-bottom:12px;align-items:center">
+  <div style="display:flex;gap:8px;margin-bottom:12px;align-items:center;flex-wrap:wrap">
     <button class="btn btn-ghost btn-sm" id="btn-prev" onclick="diasNav(-1)"><i class="ti ti-chevron-left"></i> Anterior</button>
-    <span id="dias-range" style="font-size:13px;color:var(--g600)"></span>
+    <span id="dias-range" style="font-size:13px;color:var(--g600);flex:1;text-align:center"></span>
     <button class="btn btn-ghost btn-sm" id="btn-next" onclick="diasNav(1)">Próximo <i class="ti ti-chevron-right"></i></button>
-    <button class="btn btn-ghost btn-sm" onclick="irParaHoje()" style="margin-left:8px"><i class="ti ti-calendar-event"></i> Hoje</button>
   </div>
-  <div id="dias-grid-wrap" style="overflow-x:auto;padding-bottom:16px">
+  <div style="overflow-x:auto;padding-bottom:12px" id="dias-wrap">
     <div class="loading"><i class="ti ti-loader spin"></i></div>
   </div>`;
 }
-
 function setDiasFiltro(n){
-  diasProtocoFiltro=n; diasOffset=0;
+  diasFiltro=n;diasOffset=0;
   [90,120,365].forEach(x=>{
     const el=document.getElementById('btn-f'+x);if(!el)return;
-    if(x===n){el.style.cssText='background:var(--v);color:#fff;border:.5px solid var(--vm);padding:5px 10px;font-size:12px;border-radius:8px;cursor:pointer;font-weight:500'}
-    else{el.style.cssText='background:var(--g50);color:var(--g600);border:.5px solid var(--g100);padding:5px 10px;font-size:12px;border-radius:8px;cursor:pointer;font-weight:500'}
+    el.style.cssText=x===n?'background:var(--v);color:#fff;border:none;padding:6px 12px;font-size:12px;border-radius:8px;cursor:pointer;font-weight:500;min-height:36px':'background:var(--g50);color:var(--g600);border:.5px solid var(--g100);padding:6px 12px;font-size:12px;border-radius:8px;cursor:pointer;font-weight:500;min-height:36px';
   });
   renderDias();
 }
-
 function diasNav(dir){
-  const tot=diasProtocoFiltro;
-  diasOffset=Math.max(0,Math.min(diasOffset+dir*DIAS_POR_PAGINA, tot-DIAS_POR_PAGINA+1));
+  diasOffset=Math.max(0,Math.min(diasOffset+dir*DIAS_PAG,diasFiltro-DIAS_PAG+1));
   renderDias();
 }
-
 function irParaHoje(){
-  // Encontra o menor dia atual dos pacientes deste protocolo
-  const pacs=pacientesCache.filter(p=>(parseInt(p.protocolo)||120)===diasProtocoFiltro);
+  const pacs=pacientesCache.filter(p=>(parseInt(p.protocolo)||120)===diasFiltro);
   if(!pacs.length){diasOffset=0;renderDias();return;}
-  const minDia=Math.min(...pacs.map(p=>diaAtualCalculado(p)));
+  const minDia=Math.min(...pacs.map(p=>diaAtualCalc(p)));
   diasOffset=Math.max(0,minDia-3);
   renderDias();
 }
-
 function renderDias(){
-  const wrap=document.getElementById('dias-grid-wrap');if(!wrap)return;
-  const tot=diasProtocoFiltro;
+  const wrap=document.getElementById('dias-wrap');if(!wrap)return;
+  const tot=diasFiltro;
   const proto=PROTO[tot]||PROTO[120];
   const tarefaMap={};
   proto.forEach(([d,t])=>tarefaMap[d]=t);
-
   const pacs=pacientesCache.filter(p=>(parseInt(p.protocolo)||120)===tot);
   const pacPorDia={};
-  pacs.forEach(p=>{
-    const d=diaAtualCalculado(p);
-    if(!pacPorDia[d])pacPorDia[d]=[];
-    pacPorDia[d].push({...p,diaReal:d});
-  });
-
-  const resumo=document.getElementById('dias-resumo');
-  if(resumo)resumo.textContent=`${pacs.length} paciente${pacs.length!==1?'s':''} · ${tot} dias`;
-
-  const ini=diasOffset;
-  const fim=Math.min(ini+DIAS_POR_PAGINA-1,tot);
-  const range=document.getElementById('dias-range');
-  if(range)range.textContent=`Dia ${ini} — Dia ${fim} de ${tot}`;
-
-  const prev=document.getElementById('btn-prev');
-  const next=document.getElementById('btn-next');
-  if(prev)prev.disabled=ini===0;
-  if(next)next.disabled=fim>=tot;
-
+  pacs.forEach(p=>{const d=diaAtualCalc(p);if(!pacPorDia[d])pacPorDia[d]=[];pacPorDia[d].push({...p,diaReal:d})});
+  const ini=diasOffset,fim=Math.min(ini+DIAS_PAG-1,tot);
+  const resumo=document.getElementById('dias-resumo');if(resumo)resumo.textContent=`${pacs.length} pac. · ${tot}d`;
+  const range=document.getElementById('dias-range');if(range)range.textContent=`Dia ${ini} — Dia ${fim}`;
+  const prev=document.getElementById('btn-prev');if(prev)prev.disabled=ini===0;
+  const next=document.getElementById('btn-next');if(next)next.disabled=fim>=tot;
   const cor=tot===90?'var(--v)':tot===120?'var(--b400)':'var(--a400)';
   const bg=tot===90?'var(--vl)':tot===120?'var(--b50)':'var(--a50)';
-
-  const dias=[];
-  for(let d=ini;d<=fim;d++)dias.push(d);
-
-  wrap.innerHTML=`<div style="display:flex;gap:8px;min-width:max-content;padding:4px 2px">
+  const dias=[];for(let d=ini;d<=fim;d++)dias.push(d);
+  wrap.innerHTML=`<div style="display:flex;gap:8px;min-width:max-content;padding:2px">
     ${dias.map(d=>{
       const temPac=pacPorDia[d]&&pacPorDia[d].length>0;
-      const tarefaOriginal=tarefaMap[d]||'';
-      const tarefaCustom=getTarefaCustom(tot,d);
-      const tarefaExibida=tarefaCustom||(tarefaOriginal.replace(/^D\d+\s*/,''));
-      const temTarefa=!!tarefaOriginal;
+      const tarefaOrig=tarefaMap[d]||'';
+      const tarefaExib=tarefaCustomCache[tot+'_'+d]||(tarefaOrig.replace(/^D\d+\s*/,''));
+      const temTarefa=!!tarefaOrig;
       const vazio=!temPac&&!temTarefa;
-      return`<div style="flex-shrink:0;width:${temPac||temTarefa?'200px':'52px'};min-height:${temPac||temTarefa?'200px':'70px'};background:${vazio?'var(--g50)':'#fff'};border:.5px solid ${temPac?cor:'var(--g100)'};border-radius:10px;overflow:hidden;${vazio?'opacity:.35':''}">
-        <div style="padding:8px 10px;background:${temPac?cor:temTarefa?bg:'var(--g50)'};border-bottom:.5px solid ${temPac?cor+'55':'var(--g100)'};position:relative">
-          <div style="font-size:13px;font-weight:700;color:${temPac?'#fff':temTarefa?cor:'var(--g400)'}">D${d}</div>
-          ${temTarefa?`<div
-            contenteditable="true"
-            id="tarefa-${tot}-${d}"
-            style="font-size:10px;color:${temPac?'rgba(255,255,255,.85)':cor};margin-top:2px;line-height:1.3;outline:none;cursor:text;min-height:14px;max-width:180px"
+      return`<div style="flex-shrink:0;width:${temPac||temTarefa?'185px':'50px'};min-height:${temPac||temTarefa?'200px':'60px'};background:${vazio?'var(--g50)':'#fff'};border:.5px solid ${temPac?cor:'var(--g100)'};border-radius:10px;overflow:hidden;${vazio?'opacity:.3':''}"
+        data-dia="${d}" data-tot="${tot}"
+        ondragover="event.preventDefault();this.style.outline='2px dashed '+('${cor}')" 
+        ondragleave="this.style.outline=''"
+        ondrop="dropDia(event,${d},${tot})">
+        <div style="padding:6px 10px;background:${temPac?cor:temTarefa?bg:'var(--g50)'};border-bottom:.5px solid ${temPac?cor+'44':'var(--g100)'}">
+          <div style="font-size:12px;font-weight:700;color:${temPac?'#fff':temTarefa?cor:'var(--g400)'}">D${d}</div>
+          ${temTarefa?`<div contenteditable="true" id="tarefa-${tot}-${d}"
+            style="font-size:10px;color:${temPac?'rgba(255,255,255,.85)':cor};margin-top:2px;line-height:1.3;outline:none;cursor:text;max-width:165px"
             onblur="salvarTarefaCustom(${tot},${d},this.innerText)"
-            title="Clique para editar"
-          >${tarefaExibida}</div>`:''}
+            title="Clique para editar">${tarefaExib}</div>`:''}
         </div>
-        ${temPac||temTarefa?`<div style="padding:8px 10px">
+        ${temPac||temTarefa?`<div style="padding:8px">
           ${temPac?pacPorDia[d].map(p=>`
-            <div style="display:flex;align-items:center;gap:6px;padding:5px 0;border-bottom:.5px solid var(--g50);cursor:pointer" onclick="abrirPaciente('${p.id}')">
+            <div draggable="true" ondragstart="dragStartDia(event,'${p.id}',${d},${tot})" 
+              style="display:flex;align-items:center;gap:6px;padding:5px 0;border-bottom:.5px solid var(--g50);cursor:grab">
               <div style="width:24px;height:24px;border-radius:50%;background:${bg};color:${cor};display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0">${(p.nome||'?').charAt(0)}</div>
-              <div style="flex:1;min-width:0;font-size:11px;font-weight:500;color:var(--g900);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.nome.split(' ')[0]}</div>
-              ${p.wa?`<button class="btn-wa" style="padding:2px 6px;font-size:10px;flex-shrink:0" onclick="event.stopPropagation();openWA('${p.wa}')"><i class="ti ti-brand-whatsapp"></i></button>`:''}
+              <div style="flex:1;min-width:0;font-size:11px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer" onclick="abrirPaciente('${p.id}')">${p.nome.split(' ')[0]}</div>
+              ${p.wa?`<button class="btn-wa" style="padding:2px 6px;font-size:10px;min-height:24px;flex-shrink:0" onclick="openWA('${p.wa}')"><i class="ti ti-brand-whatsapp"></i></button>`:''}
             </div>`).join(''):''}
-          ${temTarefa?`<div style="margin-top:${temPac?'8px':'0'}">
-            <div style="font-size:10px;font-weight:600;color:var(--g400);text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px">Mensagem</div>
-            <textarea id="msg-${tot}-${d}" rows="3"
-              placeholder="Mensagem do dia ${d}..."
-              style="width:100%;border:.5px solid var(--g100);border-radius:6px;padding:5px 7px;font-size:11px;font-family:Inter,sans-serif;resize:vertical;outline:none;color:var(--g800);background:#fff;box-sizing:border-box"
+          ${temTarefa?`<div style="margin-top:6px">
+            <div style="font-size:10px;font-weight:600;color:var(--g400);text-transform:uppercase;margin-bottom:4px">Mensagem</div>
+            <textarea id="msg-${tot}-${d}" rows="3" placeholder="Mensagem do dia ${d}..."
+              style="width:100%;border:.5px solid var(--g100);border-radius:6px;padding:5px 7px;font-size:11px;font-family:Inter,sans-serif;resize:vertical;outline:none"
               onfocus="this.style.borderColor='${cor}'"
-              onblur="this.style.borderColor='var(--g100)';salvarMsgDia(${tot},${d},this.value)"
-            >${getMsgDia(tot,d)}</textarea>
+              onblur="this.style.borderColor='var(--g100)';salvarMsgDia(${tot},${d},this.value)">${getMsgDia(tot,d)}</textarea>
           </div>`:''}
         </div>`:''}
       </div>`;
     }).join('')}
   </div>`;
+  // Touch drag dias
+  initTouchDias();
 }
 
-// Cache de mensagens e tarefas customizadas
-const msgDiaCache={};
-const tarefaCustomCache={};
+// Drag dias
+let _dragDiaPacId=null,_dragDiaDia=null,_dragDiaTot=null;
+function dragStartDia(e,pacId,dia,tot){
+  _dragDiaPacId=pacId;_dragDiaDia=dia;_dragDiaTot=tot;
+  e.dataTransfer.effectAllowed='move';
+}
+async function dropDia(e,novoDia,tot){
+  e.preventDefault();
+  e.currentTarget.style.outline='';
+  if(!_dragDiaPacId)return;
+  const p=pacientesCache.find(x=>x.id===_dragDiaPacId);if(!p)return;
+  await fbUp('pacientes',_dragDiaPacId,{diaAtual:novoDia,inicio:calcNovaData(novoDia)});
+  toast(`→ Dia ${novoDia}`);
+  _dragDiaPacId=null;
+}
+function calcNovaData(dia){
+  const hoje=new Date();
+  hoje.setDate(hoje.getDate()-(dia-1));
+  return hoje.toISOString().split('T')[0];
+}
 
+// Touch dias
+let _tdPacId=null,_tdClone=null;
+function initTouchDias(){
+  const pacs=document.querySelectorAll('[draggable=true][ondragstart*="dragStartDia"]');
+  pacs.forEach(el=>{
+    el.addEventListener('touchstart',e=>{
+      const m=el.getAttribute('ondragstart').match(/'([^']+)',(\d+),(\d+)/);
+      if(!m)return;
+      _tdPacId=m[1];
+      _tdClone=el.cloneNode(true);
+      _tdClone.style.cssText=`position:fixed;opacity:.7;pointer-events:none;z-index:9999;width:160px;background:#fff;border-radius:8px;padding:6px;box-shadow:0 4px 16px rgba(0,0,0,.2)`;
+      document.body.appendChild(_tdClone);
+    },{passive:true});
+    el.addEventListener('touchmove',e=>{
+      if(!_tdClone)return;
+      const t=e.touches[0];
+      _tdClone.style.left=(t.clientX-80)+'px';_tdClone.style.top=(t.clientY-20)+'px';
+    },{passive:true});
+    el.addEventListener('touchend',async e=>{
+      if(!_tdClone){return;}
+      const t=e.changedTouches[0];
+      const target=document.elementFromPoint(t.clientX,t.clientY);
+      const diaEl=target?.closest('[data-dia]');
+      if(diaEl&&_tdPacId){
+        const novoDia=parseInt(diaEl.dataset.dia);
+        await fbUp('pacientes',_tdPacId,{diaAtual:novoDia,inicio:calcNovaData(novoDia)});
+        toast(`→ Dia ${novoDia}`);
+      }
+      _tdClone.remove();_tdClone=null;_tdPacId=null;
+    });
+  });
+}
+
+// Msgs dias
 function getMsgDia(proto,dia){return msgDiaCache[proto+'_'+dia]||''}
 function getTarefaCustom(proto,dia){return tarefaCustomCache[proto+'_'+dia]||''}
-
 async function salvarMsgDia(proto,dia,valor){
   msgDiaCache[proto+'_'+dia]=valor;
-  try{await window.db.collection('msgs_dia').doc(proto+'_'+dia).set({protocolo:proto,dia,mensagem:valor,atualizado:firebase.firestore.FieldValue.serverTimestamp()});}catch(e){}
+  try{await db.collection('msgs_dia').doc(proto+'_'+dia).set({protocolo:proto,dia,mensagem:valor,atualizado:firebase.firestore.FieldValue.serverTimestamp()});}catch(e){}
 }
-
 async function salvarTarefaCustom(proto,dia,valor){
   tarefaCustomCache[proto+'_'+dia]=valor.trim();
-  try{await window.db.collection('tarefas_custom').doc(proto+'_'+dia).set({protocolo:proto,dia,texto:valor.trim(),atualizado:firebase.firestore.FieldValue.serverTimestamp()});}catch(e){}
+  try{await db.collection('tarefas_custom').doc(proto+'_'+dia).set({protocolo:proto,dia,texto:valor.trim(),atualizado:firebase.firestore.FieldValue.serverTimestamp()});}catch(e){}
 }
-
 async function carregarMsgsDia(){
   try{
-    const [msgs,tarefas]=await Promise.all([
-      window.db.collection('msgs_dia').get(),
-      window.db.collection('tarefas_custom').get()
-    ]);
+    const[msgs,tarefas]=await Promise.all([db.collection('msgs_dia').get(),db.collection('tarefas_custom').get()]);
     msgs.docs.forEach(d=>{const x=d.data();msgDiaCache[x.protocolo+'_'+x.dia]=x.mensagem||''});
     tarefas.docs.forEach(d=>{const x=d.data();tarefaCustomCache[x.protocolo+'_'+x.dia]=x.texto||''});
   }catch(e){}
 }
 
-
-// ── DRAG AND DROP ──
-let _dragId=null, _dragAba=null;
-
-function dragStart(e,id,aba){
-  _dragId=id; _dragAba=aba;
-  e.currentTarget.classList.add('dragging');
-  e.dataTransfer.effectAllowed='move';
-}
-function dragEnd(e){
-  e.currentTarget.classList.remove('dragging');
-  document.querySelectorAll('.kards').forEach(el=>el.classList.remove('drag-over'));
-}
-function dragOver(e){
-  e.preventDefault();
-  e.dataTransfer.dropEffect='move';
-  e.currentTarget.classList.add('drag-over');
-}
-function dragLeave(e){
-  e.currentTarget.classList.remove('drag-over');
-}
-async function dropCard(e,novaEtapa,aba){
-  e.preventDefault();
-  e.currentTarget.classList.remove('drag-over');
-  if(!_dragId||!_dragAba)return;
-  if(_dragAba!==aba)return;
-  await moverEtapa(_dragId,aba,novaEtapa);
-  _dragId=null; _dragAba=null;
-}
-
-// Touch drag support (mobile)
-let _touchCard=null,_touchClone=null,_touchAba=null,_touchId=null;
-function initTouchDrag(){
-  document.addEventListener('touchstart',e=>{
-    const card=e.target.closest('.kcard');
-    if(!card)return;
-    _touchCard=card;
-    _touchId=card.dataset.id;
-    _touchAba=card.dataset.aba;
-    _touchClone=card.cloneNode(true);
-    _touchClone.style.cssText='position:fixed;opacity:.7;pointer-events:none;z-index:9999;width:'+card.offsetWidth+'px;transform:scale(1.05)';
-    document.body.appendChild(_touchClone);
-  },{passive:true});
-  document.addEventListener('touchmove',e=>{
-    if(!_touchClone)return;
-    const t=e.touches[0];
-    _touchClone.style.left=(t.clientX-80)+'px';
-    _touchClone.style.top=(t.clientY-30)+'px';
-    document.querySelectorAll('.kards').forEach(el=>el.classList.remove('drag-over'));
-    const el=document.elementFromPoint(t.clientX,t.clientY);
-    const kards=el?.closest('.kards');
-    if(kards)kards.classList.add('drag-over');
-  },{passive:true});
-  document.addEventListener('touchend',async e=>{
-    if(!_touchClone)return;
-    const t=e.changedTouches[0];
-    const el=document.elementFromPoint(t.clientX,t.clientY);
-    const kards=el?.closest('.kards');
-    document.querySelectorAll('.kards').forEach(el=>el.classList.remove('drag-over'));
-    if(kards&&_touchId&&_touchAba){
-      const novaEtapa=kards.dataset.etapa;
-      if(novaEtapa)await moverEtapa(_touchId,_touchAba,novaEtapa);
-    }
-    _touchClone.remove();
-    _touchClone=null;_touchCard=null;_touchId=null;_touchAba=null;
-  });
-}
-
 // ── UTILS ──
 function openM(id){document.getElementById(id).classList.add('open')}
 function closeM(id){document.getElementById(id).classList.remove('open')}
-function openWA(n){if(!n)return;const clean=(n||'').replace(/@.*$/,'').replace(/\D/g,'');if(!clean||clean.length<8)return;window.open('https://wa.me/'+(clean.startsWith('55')?clean:'55'+clean),'_blank')}
 document.querySelectorAll('.mo').forEach(el=>el.addEventListener('click',e=>{if(e.target===el)el.classList.remove('open')}));
-window.addEventListener('firebase-ready',()=>{console.log('✅ Instituto Müller Firebase OK');initTouchDrag();});
 
-window.login=login; window.logout=logout; window.nav=nav;
-window.abrirNovoLead=abrirNovoLead; window.salvarLead=salvarLead;
-window.filtrarContatosM=filtrarContatosM; window.selContato=selContato;
-window.abrirFluxoEditor=abrirFluxoEditor; window.salvarFluxo=salvarFluxo;
-window.rmEtapa=rmEtapa; window.addEtapa=addEtapa;
-window.editarCol=editarCol; window.salvarCol=salvarCol; window.deletarCol=deletarCol; window.adicionarCol=adicionarCol;
-window.verContato=verContato; window.moverEtapa=moverEtapa;
-window.pgOutros=pgOutros; window.renderOutros=renderOutros; window.abrirNovoOutro=abrirNovoOutro; window.editarOutro=editarOutro; window.salvarOutro=salvarOutro; window.deletarOutro=deletarOutro; window.filtrarOutros=filtrarOutros; window.filtrarOutrosCat=filtrarOutrosCat;
-window.removerDoFluxo=removerDoFluxo;
-window.enviarParaVendas=enviarParaVendas; window.abrirEnviarMarketing=abrirEnviarMarketing;
-window.abrirEnviarConcierge=abrirEnviarConcierge; window.confirmarEnviarConcierge=confirmarEnviarConcierge;
-window.addFluxo=addFluxo; window.addFluxoConcierge=addFluxoConcierge;
-window.adicionarContatoAoFluxo=adicionarContatoAoFluxo; window.atualizarEtapasDestino=atualizarEtapasDestino;
-window.confirmarAdicionarFluxo=confirmarAdicionarFluxo; window.filtrarContatos=filtrarContatos;
-window.abrirNovoPaciente=abrirNovoPaciente; window.salvarNovoPaciente=salvarNovoPaciente;
-window.filtrarContatosNP=filtrarContatosNP; window.selContatoNP=selContatoNP;
-window.abrirPaciente=abrirPaciente; window.salvarProtocolo=salvarProtocolo;
-window.filtrarPacientes=filtrarPacientes; window.openWA=openWA;
-window.openM=openM; window.closeM=closeM; window.dragStart=dragStart; window.dragEnd=dragEnd; window.dragOver=dragOver; window.dragLeave=dragLeave; window.dropCard=dropCard; window.tarefaDoDia=tarefaDoDia; window.pgOutros=pgOutros; window.renderOutros=renderOutros; window.abrirNovoOutro=abrirNovoOutro; window.editarOutro=editarOutro; window.salvarOutro=salvarOutro; window.deletarOutro=deletarOutro; window.filtrarOutros=filtrarOutros; window.filtrarOutrosCat=filtrarOutrosCat; window.removerDoFluxo=removerDoFluxo; window.diaAtualCalculado=diaAtualCalculado; window.filtrarPacientes=filtrarPacientes; window.setDiasFiltro=setDiasFiltro; window.salvarMsgDia=salvarMsgDia; window.salvarTarefaCustom=salvarTarefaCustom; window.carregarMsgsDia=carregarMsgsDia; window.diasNav=diasNav; window.irParaHoje=irParaHoje;
+// Init touch após DOM pronto
+document.addEventListener('DOMContentLoaded',()=>initTouchKanban());
 </script>
 </body>
 </html>
