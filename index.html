@@ -384,11 +384,14 @@ const fbGetAll = col => db.collection(col).get().then(s=>s.docs.map(d=>({id:d.id
 // ── UTILS NÚMERO WA ──
 function limparNumero(n){
   if(!n) return '';
+  let s = String(n);
+  // Remove sufixos @lid @c.us etc ANTES de limpar
+  s = s.replace(/@.*$/, '');
   // Remove tudo que não é dígito
-  let d = String(n).replace(/\D/g,'');
-  // Remove sufixos de ID interno do WA
-  d = d.replace(/^(\d+)(lid|c\.us|s\.whatsapp\.net).*$/i,'$1');
+  let d = s.replace(/\D/g,'');
   if(!d || d.length < 8) return '';
+  // Números com mais de 13 dígitos são IDs internos do WA (LID) - descartar
+  if(d.length > 13) return '';
   // Garante DDI 55 (Brasil)
   if(d.length === 11 && !d.startsWith('55')) d = '55' + d;
   if(d.length === 10 && !d.startsWith('55')) d = '55' + d;
@@ -615,15 +618,18 @@ function mkCard(c,aba,col){
   const total = ck.length;
   const feitos = ck.filter(item=>dados[item.id]?.ok).length;
   const ckBadge = total>0 ? `<span class="ck-badge ${feitos===total?'ck-ok':'ck-pend'}"><i class="ti ti-${feitos===total?'check':'list-check'}" style="font-size:10px"></i>${feitos}/${total}</span>` : '';
+  const numLimpo = limparNumero(c.wa);
+  const ultimaMsg = c.ultimaMensagem||c.ultimaMensagemEnviada||'';
+  const direcao = c.ultimaMensagemDirecao||'recebida';
   return`<div class="kcard" draggable="true" data-id="${c.id}" data-aba="${aba}"
     ondragstart="dragStart(event,'${c.id}','${aba}')" ondragend="dragEnd(event)"
     onclick="verLead('${c.id}','${aba}')">
     <div class="kn">${c.nome||'Sem nome'}</div>
-    <div class="ks">${limparNumero(c.wa)||'—'}${c.origem?' · '+c.origem:''}</div>
-    ${c.ultimaMensagem?`<div class="ks" style="margin-top:3px;font-style:italic">"${c.ultimaMensagem.substring(0,40)}"</div>`:''}
+    <div class="ks">${numLimpo||c.wa||'—'}${c.origem?' · '+c.origem:''}</div>
+    ${ultimaMsg?`<div class="ks" style="margin-top:3px;font-style:italic;color:var(--g500)">${direcao==='enviada'?'<i class="ti ti-arrow-up-right" style="font-size:10px"></i>':'<i class="ti ti-arrow-down-left" style="font-size:10px"></i>'} "${ultimaMsg.substring(0,45)}"</div>`:''}
     <div class="ka">
       ${ckBadge}
-      ${c.wa?`<button class="btn-wa btn-sm" style="padding:5px 10px;min-height:30px" onclick="event.stopPropagation();openWA('${c.wa}')"><i class="ti ti-brand-whatsapp"></i></button>`:''}
+      ${numLimpo?`<button class="btn-wa btn-sm" style="padding:5px 10px;min-height:30px" onclick="event.stopPropagation();openWA('${c.wa}')"><i class="ti ti-brand-whatsapp"></i></button>`:''}
     </div>
   </div>`;
 }
