@@ -739,21 +739,17 @@ async function excluirSelecionados(aba) {
 async function moverSelecionados(aba) {
   if (!_selecao.size) return;
   const cols = aba==='atendente' ? colsAt : colsV;
-  const etapa = prompt('Mover para qual etapa?
-
-' + cols.map((c,i)=>`${i+1}. ${c.nome}`).join('
-') + '
-
-Digite o número:');
+  const lista = cols.map(function(c,i){ return (i+1)+'. '+c.nome; }).join('\n');
+  const etapa = prompt('Mover para qual etapa?\n\n' + lista + '\n\nDigite o numero:');
   if (!etapa) return;
   const idx = parseInt(etapa) - 1;
-  if (isNaN(idx) || !cols[idx]) { toast('Etapa inválida'); return; }
+  if (isNaN(idx) || !cols[idx]) { toast('Etapa invalida'); return; }
   const col = aba==='atendente' ? 'leads' : 'vendas';
   const ids = [..._selecao];
   for (const id of ids) {
     await db.collection(col).doc(id).update({ etapa: cols[idx].nome });
   }
-  toast(`✅ ${ids.length} lead(s) movido(s) para ${cols[idx].nome}`);
+  toast('Movido: ' + ids.length + ' lead(s) para ' + cols[idx].nome);
   cancelarSelecao(aba);
 }
 
