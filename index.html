@@ -1366,68 +1366,94 @@ async function confirmarMoverOutros(id,aba){
 // ── CONTATOS PAGE ──
 // ── PLANILHA HOJE ──
 const SHEET_ID = '1ZEVjXmlFZXhsZ_uAp2Y7IX7J10eSBBafl7cSNzEIdZ8';
+let _planilhaCache = null; // cache em memória
+let _assocCache = {}; // nome planilha -> wa
 
 function pgPlanilha(){
   return`<div class="ph">
     <div><h2>Tarefas de hoje</h2><p>Sincronizado da planilha</p></div>
-    <button class="btn btn-ghost btn-sm" onclick="carregarHoje()"><i class="ti ti-refresh"></i> Atualizar</button>
+    <button class="btn btn-ghost btn-sm" onclick="carregarHoje(true)"><i class="ti ti-refresh"></i> Atualizar</button>
   </div>
-  <div id="hoje-wrap"><div class="loading"><i class="ti ti-loader spin"></i> Carregando planilha...</div></div>`;
+  <div id="hoje-wrap"><div class="loading"><i class="ti ti-loader spin"></i> Carregando...</div></div>`;
 }
 
-async function carregarHoje(){
+async function carregarAssociacoes(){
+  const snap = await db.collection('_planilha_assoc').get();
+  _assocCache = {};
+  snap.docs.forEach(d => { _assocCache[d.id] = d.data().wa || ''; });
+}
+
+async function associarPaciente(nomePlanilha){
+  // abre modal de busca nos contatos WA
+  const q = prompt('Digite parte do nome ou número do contato do WhatsApp para associar a "' + nomePlanilha + '":');
+  if(!q) return;
+  const matches = contatosCache.filter(c =>
+    (c.nome||'').toLowerCase().includes(q.toLowerCase()) || (c.wa||'').includes(q)
+  );
+  if(!matches.length){ toast('Nenhum contato encontrado'); return; }
+  let escolha;
+  if(matches.length === 1){
+    escolha = matches[0];
+  } else {
+    const idx = parseInt(prompt('Encontrados:\n' + matches.map((m,i) => (i+1)+'. '+m.nome+' ('+exibirNumero(m.wa)+')').join('\n') + '\nDigite o número:')) - 1;
+    if(isNaN(idx) || !matches[idx]){ toast('Cancelado'); return; }
+    escolha = matches[idx];
+  }
+  // Salva associação no Firebase
+  await db.collection('_planilha_assoc').doc(nomePlanilha).set({ wa: escolha.wa, nome: escolha.nome });
+  _assocCache[nomePlanilha] = escolha.wa;
+  toast('✅ Associado: ' + nomePlanilha + ' → ' + escolha.nome);
+  renderHoje();
+}
+
+function renderHoje(){
+  const wrap = document.getElementById('hoje-wrap');
+  if(!wrap || !_planilhaCache) return;
+  const tarefas = _planilhaCache;
+  if(!tarefas.length){ wrap.innerHTML='<div style="text-align:center;padding:40px;color:var(--g400)">Nenhuma tarefa para hoje</div>'; return; }
+
+  wrap.innerHTML = `
+    <div style="margin-bottom:10px;font-size:12px;color:var(--g400)">${tarefas.length} tarefa(s) para hoje</div>
+    ${tarefas.map(t => {
+      const wa = _assocCache[t.paciente] || '';
+      const waLink = wa ? 'https://wa.me/' + wa.replace(/\D/g,'') : '';
+      const temAssoc = !!wa;
+      const nomePlanilhaEsc = t.paciente.replace(/'/g,"\\'");
+      return '<div style="padding:12px 14px;background:#fff;border-radius:10px;margin-bottom:8px;border:.5px solid var(--g100);display:flex;align-items:center;gap:10px">' +
+        '<div style="flex:1">' +
+          '<div style="font-size:14px;font-weight:600;color:var(--g900)">' + t.paciente + (t.origem!=='Linha do Tempo'?' <span style=\"font-size:10px;color:var(--g400);font-weight:400\">('+t.origem+')</span>':'') + '</div>' +
+          '<div style="font-size:12px;color:var(--v);margin:2px 0">' + t.d + '</div>' +
+        '</div>' +
+        (!temAssoc ? '<button onclick="associarPaciente(\'' + nomePlanilhaEsc + '\')" style="padding:6px 12px;background:var(--g100);border:none;border-radius:8px;font-size:12px;cursor:pointer;color:var(--g700);white-space:nowrap"><i class="ti ti-link"></i> Associar</button>' : '') +
+        (waLink ? '<a href="' + waLink + '" target="_blank" style="padding:8px 14px;background:#25D366;color:#fff;border-radius:8px;font-size:12px;text-decoration:none;white-space:nowrap;flex-shrink:0"><i class="ti ti-brand-whatsapp"></i> Abrir</a>' : '') +
+      '</div>';
+    }).join('')}
+  `;
+}
+
+async function carregarHoje(forcar){
   const wrap = document.getElementById('hoje-wrap');
   if(!wrap) return;
+
+  // Usa cache se disponível e não forçar
+  if(_planilhaCache && !forcar){ renderHoje(); return; }
+
   wrap.innerHTML = '<div class="loading"><i class="ti ti-loader spin"></i> Carregando...</div>';
   try {
-    // Busca aba HOJE via API pública do Google Sheets
-    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=HOJE`;
-    const res = await fetch(url);
+    const [res] = await Promise.all([
+      fetch('https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?tqx=out:csv&sheet=HOJE'),
+      carregarAssociacoes()
+    ]);
     const csv = await res.text();
     const linhas = csv.split('\n').slice(1).filter(l => l.trim() && !l.startsWith('"Paciente"'));
-    
-    if(!linhas.length){ wrap.innerHTML='<div style="text-align:center;padding:40px;color:var(--g400)">Nenhuma tarefa para hoje</div>'; return; }
-
-    // Agrupa por origem (qual planilha)
-    const tarefas = linhas.map(l => {
+    const limpar = s => (s||'').replace(/^"|"$/g,'').trim();
+    _planilhaCache = linhas.map(l => {
       const cols = l.match(/(".*?"|[^,]+)/g)||[];
-      const limpar = s => (s||'').replace(/^"|"$/g,'').trim();
-      return {
-        paciente: limpar(cols[0]),
-        data: limpar(cols[1]),
-        d: limpar(cols[2]),
-        enviado: limpar(cols[3]),
-        origem: limpar(cols[4])
-      };
+      return { paciente: limpar(cols[0]), d: limpar(cols[2]), enviado: limpar(cols[3]), origem: limpar(cols[4]) };
     }).filter(t => t.paciente && t.paciente !== 'Paciente');
-
-    // Busca números no Firebase para abrir WhatsApp
-    const nomesUnicos = [...new Set(tarefas.map(t => t.paciente))];
-    const mapaNumeros = {};
-    for(const nome of nomesUnicos){
-      const snap = await db.collection('pacientes').where('nome','==',nome).limit(1).get();
-      if(!snap.empty) mapaNumeros[nome] = snap.docs[0].data().wa || '';
-    }
-
-    wrap.innerHTML = `
-      <div style="margin-bottom:10px;font-size:12px;color:var(--g400)">${tarefas.length} tarefa(s) para hoje</div>
-      ${tarefas.map(t => {
-        const num = mapaNumeros[t.paciente] || '';
-        const waLink = num ? `https://wa.me/${num.replace(/\D/g,'')}` : '';
-        const enviado = t.enviado === 'SIM';
-        return `<div style="padding:12px 14px;background:#fff;border-radius:10px;margin-bottom:8px;border:.5px solid var(--g100);display:flex;align-items:center;gap:12px">
-          <div style="flex:1">
-            <div style="font-size:14px;font-weight:600;color:var(--g900)">${t.paciente}</div>
-            <div style="font-size:12px;color:var(--v);margin:2px 0">${t.d}</div>
-            <div style="font-size:11px;color:var(--g400)">${t.origem}</div>
-          </div>
-          ${enviado?'<span style="padding:4px 10px;background:#e6f9f0;color:#1a7a4a;border-radius:20px;font-size:11px;font-weight:600">✓ Enviado</span>':''}
-          ${waLink?`<a href="${waLink}" target="_blank" style="padding:8px 14px;background:#25D366;color:#fff;border-radius:8px;font-size:12px;text-decoration:none;white-space:nowrap"><i class="ti ti-brand-whatsapp"></i> Abrir</a>`:''}
-        </div>`;
-      }).join('')}
-    `;
+    renderHoje();
   } catch(e) {
-    wrap.innerHTML = `<div style="text-align:center;padding:40px;color:var(--r400)">Erro ao carregar planilha: ${e.message}</div>`;
+    wrap.innerHTML = '<div style="text-align:center;padding:40px;color:var(--r400)">Erro: ' + e.message + '</div>';
   }
 }
 
@@ -1992,7 +2018,7 @@ async function limparDuplicatas(aba){
   toast(`✅ ${paraRemover.length} duplicado(s) removido(s)!`);
 }
 
-window.exibirNumero=exibirNumero; window.verLead=verLead; window.abrirEditorFicha=abrirEditorFicha; window.renderFichaEditor=renderFichaEditor; window.salvarFicha=salvarFicha; window.confirmarDeletarCol=confirmarDeletarCol; window.moverParaOutros=moverParaOutros; window.confirmarMoverOutros=confirmarMoverOutros; window.limparDuplicatas=limparDuplicatas; window.toggleCk=toggleCk; window.salvarCkCampo=salvarCkCampo; window.moverEtapa=moverEtapa; window.salvarNotaAba=salvarNotaAba; window.abrirNovoLead=abrirNovoLead; window.salvarLead=salvarLead; window.filtrarContatosM=filtrarContatosM; window.selContato=selContato; window.login=login; window.logout=logout; window.nav=nav; window.abrirFluxoEditor=abrirFluxoEditor; window.salvarFluxo=salvarFluxo; window.renderFluxoEditor=renderFluxoEditor; window.editarCol=editarCol; window.salvarCol=salvarCol; window.deletarCol=deletarCol; window.adicionarCol=adicionarCol; window.addCkItem=addCkItem; window.enviarParaVendas=enviarParaVendas; window.abrirEnviarConcierge=abrirEnviarConcierge; window.confirmarConcierge=confirmarConcierge; window.removerDoFluxo=removerDoFluxo; window.filtrarContatos=filtrarContatos; window.adicionarContatoFluxo=adicionarContatoFluxo; window.atualizarEtapasDestino=atualizarEtapasDestino; window.confirmarAdicionarFluxo=confirmarAdicionarFluxo; window.filtrarOutros=filtrarOutros; window.filtrarOutrosCat=filtrarOutrosCat; window.abrirNovoOutro=abrirNovoOutro; window.salvarOutro=salvarOutro; window.abrirNovoPaciente=abrirNovoPaciente; window.filtrarContatosNP=filtrarContatosNP; window.selContatoNP=selContatoNP; window.salvarNovoPaciente=salvarNovoPaciente; window.abrirPaciente=abrirPaciente; window.adicionarCampoFicha=adicionarCampoFicha; window.editarCampoFicha=editarCampoFicha; window.deletarCampoFicha=deletarCampoFicha; window.moverCampoFicha=moverCampoFicha; window.salvarProtocolo=salvarProtocolo; window.setDiasFiltro=setDiasFiltro; window.carregarHoje=carregarHoje; window.setFiltroPaciente=setFiltroPaciente; window.diasNav=diasNav; window.irParaHoje=irParaHoje; window.salvarMsgDia=salvarMsgDia; window.salvarTarefaCustom=salvarTarefaCustom; window.dragStart=dragStart; window.dragEnd=dragEnd; window.dragOver=dragOver; window.dragLeave=dragLeave; window.dropCard=dropCard; window.dragStartDia=dragStartDia; window.dropDia=dropDia; window.initKanbanScroll=initKanbanScroll;
+window.exibirNumero=exibirNumero; window.verLead=verLead; window.abrirEditorFicha=abrirEditorFicha; window.renderFichaEditor=renderFichaEditor; window.salvarFicha=salvarFicha; window.confirmarDeletarCol=confirmarDeletarCol; window.moverParaOutros=moverParaOutros; window.confirmarMoverOutros=confirmarMoverOutros; window.limparDuplicatas=limparDuplicatas; window.toggleCk=toggleCk; window.salvarCkCampo=salvarCkCampo; window.moverEtapa=moverEtapa; window.salvarNotaAba=salvarNotaAba; window.abrirNovoLead=abrirNovoLead; window.salvarLead=salvarLead; window.filtrarContatosM=filtrarContatosM; window.selContato=selContato; window.login=login; window.logout=logout; window.nav=nav; window.abrirFluxoEditor=abrirFluxoEditor; window.salvarFluxo=salvarFluxo; window.renderFluxoEditor=renderFluxoEditor; window.editarCol=editarCol; window.salvarCol=salvarCol; window.deletarCol=deletarCol; window.adicionarCol=adicionarCol; window.addCkItem=addCkItem; window.enviarParaVendas=enviarParaVendas; window.abrirEnviarConcierge=abrirEnviarConcierge; window.confirmarConcierge=confirmarConcierge; window.removerDoFluxo=removerDoFluxo; window.filtrarContatos=filtrarContatos; window.adicionarContatoFluxo=adicionarContatoFluxo; window.atualizarEtapasDestino=atualizarEtapasDestino; window.confirmarAdicionarFluxo=confirmarAdicionarFluxo; window.filtrarOutros=filtrarOutros; window.filtrarOutrosCat=filtrarOutrosCat; window.abrirNovoOutro=abrirNovoOutro; window.salvarOutro=salvarOutro; window.abrirNovoPaciente=abrirNovoPaciente; window.filtrarContatosNP=filtrarContatosNP; window.selContatoNP=selContatoNP; window.salvarNovoPaciente=salvarNovoPaciente; window.abrirPaciente=abrirPaciente; window.adicionarCampoFicha=adicionarCampoFicha; window.editarCampoFicha=editarCampoFicha; window.deletarCampoFicha=deletarCampoFicha; window.moverCampoFicha=moverCampoFicha; window.salvarProtocolo=salvarProtocolo; window.setDiasFiltro=setDiasFiltro; window.carregarHoje=carregarHoje; window.associarPaciente=associarPaciente; window.setFiltroPaciente=setFiltroPaciente; window.diasNav=diasNav; window.irParaHoje=irParaHoje; window.salvarMsgDia=salvarMsgDia; window.salvarTarefaCustom=salvarTarefaCustom; window.dragStart=dragStart; window.dragEnd=dragEnd; window.dragOver=dragOver; window.dragLeave=dragLeave; window.dropCard=dropCard; window.dragStartDia=dragStartDia; window.dropDia=dropDia; window.initKanbanScroll=initKanbanScroll;
 </script>
 </body>
 </html>
