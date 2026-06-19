@@ -1050,18 +1050,51 @@ async function salvarNomeLead(id, aba) {
 function renderFichaLivre(campos){
   if(!campos||!campos.length) return '<div style="font-size:12px;color:var(--g400);font-style:italic;padding:6px 0">Nenhuma informação adicionada ainda. Clique em + para adicionar.</div>';
   return campos.map((f,i)=>`
-    <div style="display:flex;align-items:flex-start;gap:8px;padding:8px 10px;background:var(--g50);border-radius:8px;margin-bottom:5px">
+    <div style="display:flex;align-items:flex-start;gap:6px;padding:8px 10px;background:var(--g50);border-radius:8px;margin-bottom:5px" id="ficha-item-${i}">
       <div style="flex:1">
         <div style="font-size:11px;font-weight:600;color:var(--g500);margin-bottom:3px">${f.label||'Info '+(i+1)}</div>
         <div style="font-size:13px;color:var(--g900)">${f.valor||'—'}</div>
       </div>
-      <button onclick="editarCampoFicha('${i}')" style="padding:3px 7px;background:transparent;border:.5px solid var(--g200);border-radius:6px;font-size:11px;cursor:pointer;color:var(--g500);flex-shrink:0">
-        <i class="ti ti-pencil"></i>
-      </button>
+      <div style="display:flex;flex-direction:column;gap:3px;flex-shrink:0">
+        ${i>0?`<button onclick="moverCampoFicha(${i},-1)" title="Subir" style="padding:2px 6px;background:transparent;border:.5px solid var(--g200);border-radius:5px;font-size:10px;cursor:pointer;color:var(--g500)"><i class="ti ti-arrow-up"></i></button>`:'<div style="height:22px"></div>'}
+        ${i<campos.length-1?`<button onclick="moverCampoFicha(${i},1)" title="Descer" style="padding:2px 6px;background:transparent;border:.5px solid var(--g200);border-radius:5px;font-size:10px;cursor:pointer;color:var(--g500)"><i class="ti ti-arrow-down"></i></button>`:'<div style="height:22px"></div>'}
+      </div>
+      <div style="display:flex;flex-direction:column;gap:3px;flex-shrink:0">
+        <button onclick="editarCampoFicha(${i})" title="Editar" style="padding:2px 6px;background:transparent;border:.5px solid var(--g200);border-radius:5px;font-size:10px;cursor:pointer;color:var(--g500)"><i class="ti ti-pencil"></i></button>
+        <button onclick="deletarCampoFicha(${i})" title="Deletar" style="padding:2px 6px;background:transparent;border:.5px solid var(--r200,#fca5a5);border-radius:5px;font-size:10px;cursor:pointer;color:var(--r400,#ef4444)"><i class="ti ti-trash"></i></button>
+      </div>
     </div>`).join('');
 }
 
 let _fichaLeadId=null, _fichaLeadAba=null;
+
+async function moverCampoFicha(idx, dir){
+  const id=_fichaLeadId, aba=_fichaLeadAba;
+  const dados=aba==='atendente'?leadsCache:vendasCache;
+  const lead=dados.find(x=>x.id===id);if(!lead)return;
+  const fichaLivre=JSON.parse(JSON.stringify(lead.fichaLivre||[]));
+  const novoIdx=idx+dir;
+  if(novoIdx<0||novoIdx>=fichaLivre.length)return;
+  [fichaLivre[idx],fichaLivre[novoIdx]]=[fichaLivre[novoIdx],fichaLivre[idx]];
+  const col=aba==='atendente'?'leads':'vendas';
+  await fbUp(col,id,{fichaLivre});
+  const wrap=document.getElementById('ficha-livre-wrap');
+  if(wrap) wrap.innerHTML=renderFichaLivre(fichaLivre);
+}
+
+async function deletarCampoFicha(idx){
+  if(!confirm('Remover este campo da ficha?')) return;
+  const id=_fichaLeadId, aba=_fichaLeadAba;
+  const dados=aba==='atendente'?leadsCache:vendasCache;
+  const lead=dados.find(x=>x.id===id);if(!lead)return;
+  const fichaLivre=JSON.parse(JSON.stringify(lead.fichaLivre||[]));
+  fichaLivre.splice(idx,1);
+  const col=aba==='atendente'?'leads':'vendas';
+  await fbUp(col,id,{fichaLivre});
+  const wrap=document.getElementById('ficha-livre-wrap');
+  if(wrap) wrap.innerHTML=renderFichaLivre(fichaLivre);
+  toast('Campo removido');
+}
 
 async function adicionarCampoFicha(id,aba){
   _fichaLeadId=id; _fichaLeadAba=aba;
@@ -1085,10 +1118,13 @@ async function editarCampoFicha(idx){
   if(!id) return;
   const dados=aba==='atendente'?leadsCache:vendasCache;
   const lead=dados.find(x=>x.id===id);if(!lead)return;
-  const fichaLivre=[...(lead.fichaLivre||[])];
+  const fichaLivre=JSON.parse(JSON.stringify(lead.fichaLivre||[]));
   const campo=fichaLivre[idx];if(!campo)return;
-  const novoValor=prompt('Editar "'+campo.label+'":',campo.valor||'');
+  const novoLabel=prompt('Nome do campo:', campo.label||'');
+  if(novoLabel===null) return;
+  const novoValor=prompt('Valor:', campo.valor||'');
   if(novoValor===null) return;
+  fichaLivre[idx].label=novoLabel.trim()||campo.label;
   fichaLivre[idx].valor=novoValor.trim();
   const col=aba==='atendente'?'leads':'vendas';
   await fbUp(col,id,{fichaLivre});
@@ -1880,7 +1916,7 @@ async function limparDuplicatas(aba){
   toast(`✅ ${paraRemover.length} duplicado(s) removido(s)!`);
 }
 
-window.exibirNumero=exibirNumero; window.verLead=verLead; window.abrirEditorFicha=abrirEditorFicha; window.renderFichaEditor=renderFichaEditor; window.salvarFicha=salvarFicha; window.confirmarDeletarCol=confirmarDeletarCol; window.moverParaOutros=moverParaOutros; window.confirmarMoverOutros=confirmarMoverOutros; window.limparDuplicatas=limparDuplicatas; window.toggleCk=toggleCk; window.salvarCkCampo=salvarCkCampo; window.moverEtapa=moverEtapa; window.salvarNotaAba=salvarNotaAba; window.abrirNovoLead=abrirNovoLead; window.salvarLead=salvarLead; window.filtrarContatosM=filtrarContatosM; window.selContato=selContato; window.login=login; window.logout=logout; window.nav=nav; window.abrirFluxoEditor=abrirFluxoEditor; window.salvarFluxo=salvarFluxo; window.renderFluxoEditor=renderFluxoEditor; window.editarCol=editarCol; window.salvarCol=salvarCol; window.deletarCol=deletarCol; window.adicionarCol=adicionarCol; window.addCkItem=addCkItem; window.enviarParaVendas=enviarParaVendas; window.abrirEnviarConcierge=abrirEnviarConcierge; window.confirmarConcierge=confirmarConcierge; window.removerDoFluxo=removerDoFluxo; window.filtrarContatos=filtrarContatos; window.adicionarContatoFluxo=adicionarContatoFluxo; window.atualizarEtapasDestino=atualizarEtapasDestino; window.confirmarAdicionarFluxo=confirmarAdicionarFluxo; window.filtrarOutros=filtrarOutros; window.filtrarOutrosCat=filtrarOutrosCat; window.abrirNovoOutro=abrirNovoOutro; window.salvarOutro=salvarOutro; window.abrirNovoPaciente=abrirNovoPaciente; window.filtrarContatosNP=filtrarContatosNP; window.selContatoNP=selContatoNP; window.salvarNovoPaciente=salvarNovoPaciente; window.abrirPaciente=abrirPaciente; window.adicionarCampoFicha=adicionarCampoFicha; window.editarCampoFicha=editarCampoFicha; window.salvarProtocolo=salvarProtocolo; window.setDiasFiltro=setDiasFiltro; window.setFiltroPaciente=setFiltroPaciente; window.diasNav=diasNav; window.irParaHoje=irParaHoje; window.salvarMsgDia=salvarMsgDia; window.salvarTarefaCustom=salvarTarefaCustom; window.dragStart=dragStart; window.dragEnd=dragEnd; window.dragOver=dragOver; window.dragLeave=dragLeave; window.dropCard=dropCard; window.dragStartDia=dragStartDia; window.dropDia=dropDia; window.initKanbanScroll=initKanbanScroll;
+window.exibirNumero=exibirNumero; window.verLead=verLead; window.abrirEditorFicha=abrirEditorFicha; window.renderFichaEditor=renderFichaEditor; window.salvarFicha=salvarFicha; window.confirmarDeletarCol=confirmarDeletarCol; window.moverParaOutros=moverParaOutros; window.confirmarMoverOutros=confirmarMoverOutros; window.limparDuplicatas=limparDuplicatas; window.toggleCk=toggleCk; window.salvarCkCampo=salvarCkCampo; window.moverEtapa=moverEtapa; window.salvarNotaAba=salvarNotaAba; window.abrirNovoLead=abrirNovoLead; window.salvarLead=salvarLead; window.filtrarContatosM=filtrarContatosM; window.selContato=selContato; window.login=login; window.logout=logout; window.nav=nav; window.abrirFluxoEditor=abrirFluxoEditor; window.salvarFluxo=salvarFluxo; window.renderFluxoEditor=renderFluxoEditor; window.editarCol=editarCol; window.salvarCol=salvarCol; window.deletarCol=deletarCol; window.adicionarCol=adicionarCol; window.addCkItem=addCkItem; window.enviarParaVendas=enviarParaVendas; window.abrirEnviarConcierge=abrirEnviarConcierge; window.confirmarConcierge=confirmarConcierge; window.removerDoFluxo=removerDoFluxo; window.filtrarContatos=filtrarContatos; window.adicionarContatoFluxo=adicionarContatoFluxo; window.atualizarEtapasDestino=atualizarEtapasDestino; window.confirmarAdicionarFluxo=confirmarAdicionarFluxo; window.filtrarOutros=filtrarOutros; window.filtrarOutrosCat=filtrarOutrosCat; window.abrirNovoOutro=abrirNovoOutro; window.salvarOutro=salvarOutro; window.abrirNovoPaciente=abrirNovoPaciente; window.filtrarContatosNP=filtrarContatosNP; window.selContatoNP=selContatoNP; window.salvarNovoPaciente=salvarNovoPaciente; window.abrirPaciente=abrirPaciente; window.adicionarCampoFicha=adicionarCampoFicha; window.editarCampoFicha=editarCampoFicha; window.deletarCampoFicha=deletarCampoFicha; window.moverCampoFicha=moverCampoFicha; window.salvarProtocolo=salvarProtocolo; window.setDiasFiltro=setDiasFiltro; window.setFiltroPaciente=setFiltroPaciente; window.diasNav=diasNav; window.irParaHoje=irParaHoje; window.salvarMsgDia=salvarMsgDia; window.salvarTarefaCustom=salvarTarefaCustom; window.dragStart=dragStart; window.dragEnd=dragEnd; window.dragOver=dragOver; window.dragLeave=dragLeave; window.dropCard=dropCard; window.dragStartDia=dragStartDia; window.dropDia=dropDia; window.initKanbanScroll=initKanbanScroll;
 </script>
 </body>
 </html>
