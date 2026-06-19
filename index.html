@@ -408,9 +408,17 @@ function limparNumero(n){
 
 // Mostra número formatado para exibição
 function exibirNumero(n){
-  const num = limparNumero(n);
-  if(!num) return n||'—'; // Mostra o original se não conseguir limpar
-  // Formata: 55 11 9 1234-5678
+  if(!n) return '—';
+  const s = String(n).replace(/@.*$/, '');
+  const d = s.replace(/\D/g,'');
+  // Se for LID (número muito longo > 13 dígitos), não tenta formatar
+  if(d.length > 13) return '—';
+  // Normaliza com DDI 55
+  let num = d;
+  if(num.length === 11 && !num.startsWith('55')) num = '55' + num;
+  if(num.length === 10 && !num.startsWith('55')) num = '55' + num;
+  if(!num.startsWith('55')) return num;
+  // Formata: +55 (DD) 9 1234-5678
   if(num.length === 13) return `+${num.slice(0,2)} (${num.slice(2,4)}) ${num.slice(4,5)} ${num.slice(5,9)}-${num.slice(9)}`;
   if(num.length === 12) return `+${num.slice(0,2)} (${num.slice(2,4)}) ${num.slice(4,8)}-${num.slice(8)}`;
   return num;
@@ -530,7 +538,7 @@ function logout(){
 const navMap={
   atendente:[{id:'atendente',icon:'ti-users',label:'Leads',badge:true},{id:'outros',icon:'ti-users-group',label:'Outros'},{id:'contatos',icon:'ti-address-book',label:'Contatos'}],
   vendas:[{id:'vendas',icon:'ti-target',label:'Pipeline'},{id:'contatos',icon:'ti-address-book',label:'Contatos'}],
-  concierge:[{id:'concierge',icon:'ti-clipboard-heart',label:'Pacientes'},{id:'dias',icon:'ti-calendar-stats',label:'Por dia'},{id:'contatos',icon:'ti-address-book',label:'Contatos'}]
+  concierge:[{id:'concierge',icon:'ti-clipboard-heart',label:'Pacientes'},{id:'dias',icon:'ti-calendar-stats',label:'Por dia'},{id:'planilha',icon:'ti-table',label:'Hoje'},{id:'contatos',icon:'ti-address-book',label:'Contatos'}]
 };
 function renderSidebar(){
   const items=navMap[role];
@@ -565,6 +573,7 @@ function nav(id){
   else if(id==='vendas'){c.innerHTML=pgKanban('vendas');renderKanban('vendas');initKanbanScroll('vendas')}
   else if(id==='concierge'){c.innerHTML=pgConcierge();renderConcierge()}
   else if(id==='dias'){c.innerHTML=pgDias();setTimeout(()=>{setDiasFiltro(120)},50)}
+  else if(id==='planilha'){c.innerHTML=pgPlanilha();carregarHoje()}
   else if(id==='contatos'){c.innerHTML=pgContatos();renderTabContatos()}
   else if(id==='outros'){c.innerHTML=pgOutros();renderOutros()}
 }
@@ -1355,6 +1364,73 @@ async function confirmarMoverOutros(id,aba){
 }
 
 // ── CONTATOS PAGE ──
+// ── PLANILHA HOJE ──
+const SHEET_ID = '1ZEVjXmlFZXhsZ_uAp2Y7IX7J10eSBBafl7cSNzEIdZ8';
+
+function pgPlanilha(){
+  return`<div class="ph">
+    <div><h2>Tarefas de hoje</h2><p>Sincronizado da planilha</p></div>
+    <button class="btn btn-ghost btn-sm" onclick="carregarHoje()"><i class="ti ti-refresh"></i> Atualizar</button>
+  </div>
+  <div id="hoje-wrap"><div class="loading"><i class="ti ti-loader spin"></i> Carregando planilha...</div></div>`;
+}
+
+async function carregarHoje(){
+  const wrap = document.getElementById('hoje-wrap');
+  if(!wrap) return;
+  wrap.innerHTML = '<div class="loading"><i class="ti ti-loader spin"></i> Carregando...</div>';
+  try {
+    // Busca aba HOJE via API pública do Google Sheets
+    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=HOJE`;
+    const res = await fetch(url);
+    const csv = await res.text();
+    const linhas = csv.split('\n').slice(1).filter(l => l.trim() && !l.startsWith('"Paciente"'));
+    
+    if(!linhas.length){ wrap.innerHTML='<div style="text-align:center;padding:40px;color:var(--g400)">Nenhuma tarefa para hoje</div>'; return; }
+
+    // Agrupa por origem (qual planilha)
+    const tarefas = linhas.map(l => {
+      const cols = l.match(/(".*?"|[^,]+)/g)||[];
+      const limpar = s => (s||'').replace(/^"|"$/g,'').trim();
+      return {
+        paciente: limpar(cols[0]),
+        data: limpar(cols[1]),
+        d: limpar(cols[2]),
+        enviado: limpar(cols[3]),
+        origem: limpar(cols[4])
+      };
+    }).filter(t => t.paciente && t.paciente !== 'Paciente');
+
+    // Busca números no Firebase para abrir WhatsApp
+    const nomesUnicos = [...new Set(tarefas.map(t => t.paciente))];
+    const mapaNumeros = {};
+    for(const nome of nomesUnicos){
+      const snap = await db.collection('pacientes').where('nome','==',nome).limit(1).get();
+      if(!snap.empty) mapaNumeros[nome] = snap.docs[0].data().wa || '';
+    }
+
+    wrap.innerHTML = `
+      <div style="margin-bottom:10px;font-size:12px;color:var(--g400)">${tarefas.length} tarefa(s) para hoje</div>
+      ${tarefas.map(t => {
+        const num = mapaNumeros[t.paciente] || '';
+        const waLink = num ? `https://wa.me/${num.replace(/\D/g,'')}` : '';
+        const enviado = t.enviado === 'SIM';
+        return `<div style="padding:12px 14px;background:#fff;border-radius:10px;margin-bottom:8px;border:.5px solid var(--g100);display:flex;align-items:center;gap:12px">
+          <div style="flex:1">
+            <div style="font-size:14px;font-weight:600;color:var(--g900)">${t.paciente}</div>
+            <div style="font-size:12px;color:var(--v);margin:2px 0">${t.d}</div>
+            <div style="font-size:11px;color:var(--g400)">${t.origem}</div>
+          </div>
+          ${enviado?'<span style="padding:4px 10px;background:#e6f9f0;color:#1a7a4a;border-radius:20px;font-size:11px;font-weight:600">✓ Enviado</span>':''}
+          ${waLink?`<a href="${waLink}" target="_blank" style="padding:8px 14px;background:#25D366;color:#fff;border-radius:8px;font-size:12px;text-decoration:none;white-space:nowrap"><i class="ti ti-brand-whatsapp"></i> Abrir</a>`:''}
+        </div>`;
+      }).join('')}
+    `;
+  } catch(e) {
+    wrap.innerHTML = `<div style="text-align:center;padding:40px;color:var(--r400)">Erro ao carregar planilha: ${e.message}</div>`;
+  }
+}
+
 function pgContatos(){
   return`<div class="ph"><div><h2>Contatos do WhatsApp</h2><p>Todos os contatos capturados</p></div></div>
   <div class="tc"><div class="tt"><input type="text" placeholder="Buscar..." oninput="filtrarContatos(this.value)"></div>
@@ -1916,7 +1992,7 @@ async function limparDuplicatas(aba){
   toast(`✅ ${paraRemover.length} duplicado(s) removido(s)!`);
 }
 
-window.exibirNumero=exibirNumero; window.verLead=verLead; window.abrirEditorFicha=abrirEditorFicha; window.renderFichaEditor=renderFichaEditor; window.salvarFicha=salvarFicha; window.confirmarDeletarCol=confirmarDeletarCol; window.moverParaOutros=moverParaOutros; window.confirmarMoverOutros=confirmarMoverOutros; window.limparDuplicatas=limparDuplicatas; window.toggleCk=toggleCk; window.salvarCkCampo=salvarCkCampo; window.moverEtapa=moverEtapa; window.salvarNotaAba=salvarNotaAba; window.abrirNovoLead=abrirNovoLead; window.salvarLead=salvarLead; window.filtrarContatosM=filtrarContatosM; window.selContato=selContato; window.login=login; window.logout=logout; window.nav=nav; window.abrirFluxoEditor=abrirFluxoEditor; window.salvarFluxo=salvarFluxo; window.renderFluxoEditor=renderFluxoEditor; window.editarCol=editarCol; window.salvarCol=salvarCol; window.deletarCol=deletarCol; window.adicionarCol=adicionarCol; window.addCkItem=addCkItem; window.enviarParaVendas=enviarParaVendas; window.abrirEnviarConcierge=abrirEnviarConcierge; window.confirmarConcierge=confirmarConcierge; window.removerDoFluxo=removerDoFluxo; window.filtrarContatos=filtrarContatos; window.adicionarContatoFluxo=adicionarContatoFluxo; window.atualizarEtapasDestino=atualizarEtapasDestino; window.confirmarAdicionarFluxo=confirmarAdicionarFluxo; window.filtrarOutros=filtrarOutros; window.filtrarOutrosCat=filtrarOutrosCat; window.abrirNovoOutro=abrirNovoOutro; window.salvarOutro=salvarOutro; window.abrirNovoPaciente=abrirNovoPaciente; window.filtrarContatosNP=filtrarContatosNP; window.selContatoNP=selContatoNP; window.salvarNovoPaciente=salvarNovoPaciente; window.abrirPaciente=abrirPaciente; window.adicionarCampoFicha=adicionarCampoFicha; window.editarCampoFicha=editarCampoFicha; window.deletarCampoFicha=deletarCampoFicha; window.moverCampoFicha=moverCampoFicha; window.salvarProtocolo=salvarProtocolo; window.setDiasFiltro=setDiasFiltro; window.setFiltroPaciente=setFiltroPaciente; window.diasNav=diasNav; window.irParaHoje=irParaHoje; window.salvarMsgDia=salvarMsgDia; window.salvarTarefaCustom=salvarTarefaCustom; window.dragStart=dragStart; window.dragEnd=dragEnd; window.dragOver=dragOver; window.dragLeave=dragLeave; window.dropCard=dropCard; window.dragStartDia=dragStartDia; window.dropDia=dropDia; window.initKanbanScroll=initKanbanScroll;
+window.exibirNumero=exibirNumero; window.verLead=verLead; window.abrirEditorFicha=abrirEditorFicha; window.renderFichaEditor=renderFichaEditor; window.salvarFicha=salvarFicha; window.confirmarDeletarCol=confirmarDeletarCol; window.moverParaOutros=moverParaOutros; window.confirmarMoverOutros=confirmarMoverOutros; window.limparDuplicatas=limparDuplicatas; window.toggleCk=toggleCk; window.salvarCkCampo=salvarCkCampo; window.moverEtapa=moverEtapa; window.salvarNotaAba=salvarNotaAba; window.abrirNovoLead=abrirNovoLead; window.salvarLead=salvarLead; window.filtrarContatosM=filtrarContatosM; window.selContato=selContato; window.login=login; window.logout=logout; window.nav=nav; window.abrirFluxoEditor=abrirFluxoEditor; window.salvarFluxo=salvarFluxo; window.renderFluxoEditor=renderFluxoEditor; window.editarCol=editarCol; window.salvarCol=salvarCol; window.deletarCol=deletarCol; window.adicionarCol=adicionarCol; window.addCkItem=addCkItem; window.enviarParaVendas=enviarParaVendas; window.abrirEnviarConcierge=abrirEnviarConcierge; window.confirmarConcierge=confirmarConcierge; window.removerDoFluxo=removerDoFluxo; window.filtrarContatos=filtrarContatos; window.adicionarContatoFluxo=adicionarContatoFluxo; window.atualizarEtapasDestino=atualizarEtapasDestino; window.confirmarAdicionarFluxo=confirmarAdicionarFluxo; window.filtrarOutros=filtrarOutros; window.filtrarOutrosCat=filtrarOutrosCat; window.abrirNovoOutro=abrirNovoOutro; window.salvarOutro=salvarOutro; window.abrirNovoPaciente=abrirNovoPaciente; window.filtrarContatosNP=filtrarContatosNP; window.selContatoNP=selContatoNP; window.salvarNovoPaciente=salvarNovoPaciente; window.abrirPaciente=abrirPaciente; window.adicionarCampoFicha=adicionarCampoFicha; window.editarCampoFicha=editarCampoFicha; window.deletarCampoFicha=deletarCampoFicha; window.moverCampoFicha=moverCampoFicha; window.salvarProtocolo=salvarProtocolo; window.setDiasFiltro=setDiasFiltro; window.carregarHoje=carregarHoje; window.setFiltroPaciente=setFiltroPaciente; window.diasNav=diasNav; window.irParaHoje=irParaHoje; window.salvarMsgDia=salvarMsgDia; window.salvarTarefaCustom=salvarTarefaCustom; window.dragStart=dragStart; window.dragEnd=dragEnd; window.dragOver=dragOver; window.dragLeave=dragLeave; window.dropCard=dropCard; window.dragStartDia=dragStartDia; window.dropDia=dropDia; window.initKanbanScroll=initKanbanScroll;
 </script>
 </body>
 </html>
