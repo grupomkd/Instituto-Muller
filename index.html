@@ -510,10 +510,10 @@ async function login(r){
   colsAt = await fbGetCols('atendente') || ETAPAS_AT_DEF;
   colsV  = await fbGetCols('vendas') || ETAPAS_V_DEF;
   
-  db.collection('leads').orderBy('criadoEm','desc').onSnapshot(s=>{leadsCache=s.docs.map(d=>({id:d.id,...d.data()}));atualizarBadges();if(paginaAtual==='atendente')renderKanban('atendente')});
-  db.collection('vendas').orderBy('criadoEm','desc').onSnapshot(s=>{vendasCache=s.docs.map(d=>({id:d.id,...d.data()}));if(paginaAtual==='vendas')renderKanban('vendas')});
+  db.collection('leads').orderBy('atualizadoEm','desc').onSnapshot(s=>{leadsCache=s.docs.map(d=>({id:d.id,...d.data()}));atualizarBadges();if(paginaAtual==='atendente')renderKanban('atendente')});
+  db.collection('vendas').orderBy('atualizadoEm','desc').onSnapshot(s=>{vendasCache=s.docs.map(d=>({id:d.id,...d.data()}));if(paginaAtual==='vendas')renderKanban('vendas')});
   db.collection('pacientes').orderBy('criadoEm','desc').onSnapshot(s=>{pacientesCache=s.docs.map(d=>({id:d.id,...d.data()}));if(paginaAtual==='concierge')renderConcierge();if(paginaAtual==='dias')renderDias()});
-  db.collection('contatos_wa').orderBy('criadoEm','desc').onSnapshot(s=>{contatosCache=s.docs.map(d=>({id:d.id,...d.data()}));if(paginaAtual==='contatos')renderTabContatos()});
+  db.collection('contatos_wa').orderBy('atualizadoEm','desc').onSnapshot(s=>{contatosCache=s.docs.map(d=>({id:d.id,...d.data()}));if(paginaAtual==='contatos')renderTabContatos()});
   db.collection('outros').orderBy('criadoEm','desc').onSnapshot(s=>{outrosCache=s.docs.map(d=>({id:d.id,...d.data()}));if(paginaAtual==='outros')renderOutros()});
   carregarMsgsDia();
   renderSidebar();
