@@ -444,8 +444,8 @@ let editColCtx={aba:null,idx:null};
 let pacAtivo=null;
 let _novoLeadAba='atendente';
 let fluxoEditTemp=[], fluxoEditAba='';
-let diasFiltro=120, diasOffset=0, diasPacFiltro=null;
-const DIAS_PAG=25;
+let diasFiltro=365, diasOffset=0, diasPacFiltro=null;
+const DIAS_PAG=30;
 const msgDiaCache={}, tarefaCustomCache={};
 
 const ETAPAS_AT_DEF=[
@@ -613,7 +613,7 @@ function nav(id){
   if(id==='atendente'){c.innerHTML=pgKanban('atendente');renderKanban('atendente');initKanbanScroll('atendente')}
   else if(id==='vendas'){c.innerHTML=pgKanban('vendas');renderKanban('vendas');initKanbanScroll('vendas')}
   else if(id==='concierge'){c.innerHTML=pgConcierge();renderConcierge()}
-  else if(id==='dias'){c.innerHTML=pgDias();carregarProtosPlanilha().then(()=>setDiasFiltro(120))}
+  else if(id==='dias'){c.innerHTML=pgDias();carregarProtosPlanilha().then(()=>{diasFiltro=365;diasOffset=0;renderDias();irParaHoje();})}
   else if(id==='planilha'){c.innerHTML=pgPlanilha();carregarHoje()}
   else if(id==='contatos'){c.innerHTML=pgContatos();renderTabContatos()}
   else if(id==='outros'){c.innerHTML=pgOutros();renderOutros()}
@@ -1850,11 +1850,8 @@ function calcInicioParaDia(dia){
 
 // ── VISÃO POR DIA ──
 function pgDias(){
-  return`<div class="ph"><div><h2>Visão por dia</h2><p>Todos os dias do protocolo</p></div></div>
-  <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center">
-    <button class="btn btn-sm" id="btn-f120" onclick="setDiasFiltro(120)" style="display:none">120d</button>
+  return`<div class="ph"><div><h2>Visão por dia</h2><p>Todos os dias do protocolo</p></div>
     <button class="btn btn-ghost btn-sm" onclick="irParaHoje()"><i class="ti ti-calendar-event"></i> Hoje</button>
-    <span id="dias-resumo" style="margin-left:auto;font-size:12px;color:var(--g400)"></span>
   </div>
   <div style="display:flex;gap:8px;margin-bottom:12px;align-items:center">
     <i class="ti ti-user-search" style="color:var(--g400);font-size:15px"></i>
@@ -1865,8 +1862,9 @@ function pgDias(){
     <button id="btn-limpar-pac" onclick="setFiltroPaciente('')" style="display:none;padding:6px 10px;background:var(--g100);border:none;border-radius:8px;font-size:12px;cursor:pointer;color:var(--g600)">
       <i class="ti ti-x"></i> Limpar
     </button>
+    <span id="dias-resumo" style="font-size:12px;color:var(--g400);white-space:nowrap"></span>
   </div>
-  <div style="display:flex;gap:8px;margin-bottom:12px;align-items:center;flex-wrap:wrap">
+  <div style="display:flex;gap:8px;margin-bottom:12px;align-items:center">
     <button class="btn btn-ghost btn-sm" id="btn-prev" onclick="diasNav(-1)"><i class="ti ti-chevron-left"></i> Anterior</button>
     <span id="dias-range" style="font-size:13px;color:var(--g600);flex:1;text-align:center"></span>
     <button class="btn btn-ghost btn-sm" id="btn-next" onclick="diasNav(1)">Próximo <i class="ti ti-chevron-right"></i></button>
@@ -1882,13 +1880,24 @@ function setFiltroPaciente(id){
   renderDias();
 }
 
+function _getNomePlanilhaFiltro(){
+  if(!diasPacFiltro || !diasPacFiltro.startsWith('_plani_')) return null;
+  return diasPacFiltro.replace('_plani_','');
+}
+
 function popularSelectPaciente(){
   const sel = document.getElementById('filtro-pac');
   if(!sel) return;
-  const pacs = pacientesCache.filter(p=>(parseInt(p.protocolo)||120)===diasFiltro);
-  const atual = sel.value;
+  // Todos do Firebase
+  const pacsFirebase = pacientesCache.map(p=>({id:p.id, nome:p.nome, src:'firebase'}));
+  // Pacientes da planilha que ainda não estão no Firebase
+  const nomesFirebase = new Set(pacientesCache.map(p=>(p.nome||'').toLowerCase().trim()));
+  const pacsPlani = _planilhaCache ? [...new Set(_planilhaCache.map(t=>t.paciente))]
+    .filter(n=>n && !nomesFirebase.has(n.toLowerCase().trim()))
+    .map(n=>({id:'_plani_'+n, nome:n+' (Planilha)', src:'planilha'})) : [];
+  const todos = [...pacsFirebase, ...pacsPlani].sort((a,b)=>a.nome.localeCompare(b.nome));
   sel.innerHTML = '<option value="">Ver datas de uma paciente...</option>' +
-    pacs.map(p=>`<option value="${p.id}"${p.id===diasPacFiltro?' selected':''}>${p.nome}</option>`).join('');
+    todos.map(p=>`<option value="${p.id}"${p.id===diasPacFiltro?' selected':''}>${p.nome}</option>`).join('');
 }
 
 function setDiasFiltro(n){
@@ -1900,7 +1909,8 @@ function setDiasFiltro(n){
   renderDias();
 }
 function diasNav(dir){
-  diasOffset=Math.max(0,Math.min(diasOffset+dir*DIAS_PAG,diasFiltro-DIAS_PAG+1));
+  const _maxTot=Math.max(365,...Object.keys(tarefaMap||{}).map(Number),1);
+  diasOffset=Math.max(0,Math.min(diasOffset+dir*DIAS_PAG,_maxTot-DIAS_PAG+1));
   renderDias();
 }
 function irParaHoje(){
@@ -1922,11 +1932,14 @@ function irParaHoje(){
 function renderDias(){
   const wrap=document.getElementById('dias-wrap');if(!wrap)return;
   popularSelectPaciente();
-  const tot=diasFiltro;
-  const proto=PROTO[tot]||PROTO[120];
+  // Junta todos os protocolos em um mapa de D → tarefa
   const tarefaMap={};
-  proto.forEach(([d,t])=>tarefaMap[d]=t);
-  const pacs=pacientesCache.filter(p=>(parseInt(p.protocolo)||120)===tot);
+  [120,1010,1515].forEach(k=>{(PROTO[k]||[]).forEach(([d,t])=>{if(!tarefaMap[d])tarefaMap[d]=t;})});
+  // Tamanho máximo de todos os protocolos
+  const maxD = Math.max(365, ...Object.keys(tarefaMap).map(Number));
+  const tot = maxD;
+  // Todos os pacientes do Firebase (sem filtrar por protocolo)
+  const pacs=pacientesCache;
   const pacPorDia={};
   pacs.forEach(p=>{const d=diaAtualCalc(p);if(!pacPorDia[d])pacPorDia[d]=[];pacPorDia[d].push({...p,diaReal:d})});
 
@@ -1954,10 +1967,10 @@ function renderDias(){
     });
   }
   const ini=diasOffset,fim=Math.min(ini+DIAS_PAG-1,tot);
-  const resumo=document.getElementById('dias-resumo');if(resumo)resumo.textContent=`${pacs.length} pac. · ${tot}d`;
+  const resumo=document.getElementById('dias-resumo');if(resumo)resumo.textContent=`${pacs.length} pac.`;
   const range=document.getElementById('dias-range');if(range)range.textContent=`Dia ${ini} — Dia ${fim}`;
   const prev=document.getElementById('btn-prev');if(prev)prev.disabled=ini===0;
-  const next=document.getElementById('btn-next');if(next)next.disabled=fim>=tot;
+  const next=document.getElementById('btn-next');if(next)next.disabled=fim>=tot-1;
   const cor=tot===90?'var(--v)':tot===120?'var(--b400)':'var(--a400)';
   const bg=tot===90?'var(--vl)':tot===120?'var(--b50)':'var(--a50)';
   const dias=[];for(let d=ini;d<=fim;d++)dias.push(d);
@@ -1975,7 +1988,11 @@ function renderDias(){
         ondrop="dropDia(event,${d},${tot})">
         <div style="padding:6px 10px;background:${temPac?cor:temTarefa?bg:'var(--g50)'};border-bottom:.5px solid ${temPac?cor+'44':'var(--g100)'}">
           <div style="font-size:12px;font-weight:700;color:${temPac?'#fff':temTarefa?cor:'var(--g400)'}">D${d}</div>
-          ${(()=>{if(diasPacFiltro){const ref=pacientesCache.find(p=>p.id===diasPacFiltro);if(ref&&ref.inicio){const ini2=new Date(ref.inicio+'T12:00:00');ini2.setDate(ini2.getDate()+d);return'<div style="font-size:9px;color:'+(temPac?'rgba(255,255,255,.6)':cor+'99')+';font-weight:500">'+ ini2.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})+'</div>';}}return '';})()}
+          ${(()=>{if(diasPacFiltro){
+            const nomePlani=_getNomePlanilhaFiltro();
+            const ref=nomePlani?null:pacientesCache.find(p=>p.id===diasPacFiltro);
+            if(ref&&ref.inicio){const ini2=new Date(ref.inicio+'T12:00:00');ini2.setDate(ini2.getDate()+d);return'<div style="font-size:9px;color:'+(temPac?'rgba(255,255,255,.6)':cor+'99')+';font-weight:500">'+ini2.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})+'</div>';}
+          }return '';})()}
           ${temTarefa?`<div contenteditable="true" id="tarefa-${tot}-${d}"
             style="font-size:10px;color:${temPac?'rgba(255,255,255,.85)':cor};margin-top:2px;line-height:1.3;outline:none;cursor:text;max-width:165px"
             onblur="salvarTarefaCustom(${tot},${d},this.innerText)"
