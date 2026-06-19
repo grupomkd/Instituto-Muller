@@ -487,11 +487,40 @@ const ETAPAS_V_DEF=[
   {nome:'Perdido',cor:'#E24B4A',ck:[{id:'vck4',label:'Motivo do não fechamento',campo:'motivo_perda'}]},
 ];
 
-const PROTO = {
-  90:[[0,"D0 Aplicação + Consulta Nutri + Peso + Foto + Bioimpedância"],[1,"D1 Follow-up aplicação"],[4,"D4 Reforço hidratação"],[7,"D7 Reforço alimentação"],[9,"D9 Confirmação aplicação"],[10,"D10 2ª Aplicação"],[11,"D11 Follow-up aplicação"],[14,"D14 Exercício"],[17,"D17 Monitoramento sintomas"],[19,"D19 Confirmação aplicação"],[20,"D20 3ª Aplicação"],[21,"D21 Follow-up aplicação"],[24,"D24 Motivacional"],[27,"D27 Reforço hidratação"],[29,"D29 Preparação consulta"],[30,"D30 4ª Aplicação + Consulta Dr Sérgio + Peso + Foto + Bioimpedância"],[31,"D31 Follow-up consulta"],[39,"D39 Confirmação aplicação"],[40,"D40 5ª Aplicação"],[41,"D41 Follow-up aplicação"],[44,"D44 Reforço alimentação"],[47,"D47 Exercício"],[49,"D49 Confirmação aplicação"],[50,"D50 5ª Aplicação + Bioimpedância rápida"],[51,"D51 Follow-up aplicação"],[54,"D54 Monitoramento sintomas"],[57,"D57 Motivacional"],[59,"D59 Preparação consulta"],[60,"D60 6ª Aplicação + Consulta Dr Sérgio + Peso + Foto + Bioimpedância"],[61,"D61 Follow-up consulta"],[69,"D69 Confirmação aplicação"],[70,"D70 Aplicação"],[71,"D71 Follow-up aplicação"],[74,"D74 Reforço hidratação"],[77,"D77 Alimentação"],[79,"D79 Confirmação aplicação"],[80,"D80 Aplicação + Bioimpedância rápida"],[81,"D81 Follow-up aplicação"],[84,"D84 Monitoramento sintomas"],[87,"D87 Motivacional"],[89,"D89 Preparação encerramento"],[90,"D90 Consulta Dr Sérgio + Consulta Nutri + Peso + Foto + Bioimpedância + Comparativo + Planejamento"],[91,"D91 Follow-up consulta"]],
-  120:[[0,"D0 Orientação + Consulta paga"],[1,"D1 Confirmação pré-consulta"],[2,"D2 Pré-consulta"],[4,"D4 Reforço exames"],[6,"D6 Confirmação consulta"],[7,"D7 Consulta inicial + Peso + Foto + Bioimpedância"],[8,"D8 Pós-consulta"],[9,"D9 Negociação / Fechamento"],[10,"D10 Follow-up + Consulta Nutri"],[11,"D11 Monitoramento interno"],[12,"D12 Confirmação aplicação"],[13,"D13 1ª Aplicação"],[14,"D14 Follow-up aplicação"],[17,"D17 Reforço adesão alimentar"],[19,"D19 Monitoramento sintomas"],[20,"D20 2ª Aplicação"],[21,"D21 Follow-up aplicação"],[23,"D23 Hidratação + Proteína"],[26,"D26 Confirmação aplicação"],[27,"D27 3ª Aplicação"],[28,"D28 Follow-up aplicação"],[29,"D29 Confirmação D34"],[31,"D31 Reforço evolução"],[33,"D33 Confirmação aplicação"],[34,"D34 4ª Aplicação + Peso + Foto + Bioimpedância"],[37,"D37 Reforço adesão"],[40,"D40 Monitoramento sintomas"],[41,"D41 5ª Aplicação"],[42,"D42 Preparação consulta"],[43,"D43 Confirmação consulta"],[45,"D45 Consulta Ajuste Dr Sérgio + Peso + Foto + Bioimpedância"],[46,"D46 Follow-up consulta"],[47,"D47 Confirmação aplicação"],[48,"D48 6ª Aplicação + Bioimpedância rápida + Checkpoint Nutri"],[49,"D49 Follow-up aplicação"],[50,"D50 Consulta Nutri"],[51,"D51 Reforço alimentar"],[54,"D54 Monitoramento sintomas"],[55,"D55 7ª Aplicação"],[56,"D56 Follow-up aplicação"],[58,"D58 Confirmação aplicação"],[59,"D59 Hidratação"],[60,"D60 Checkpoint motivacional"],[61,"D61 Monitoramento interno"],[62,"D62 8ª Aplicação + Bioimpedância rápida"],[63,"D63 Follow-up aplicação"],[67,"D67 Reforço exames"],[69,"D69 9ª Aplicação + Reforço realização exames"],[70,"D70 Follow-up aplicação"],[71,"D71 Agendar consulta D75"],[75,"D75 Consulta robusta Dr Sérgio + Peso + Foto + Bioimpedância"],[76,"D76 10ª Aplicação + Bioimpedância rápida + Follow-up consulta"],[77,"D77 Follow-up aplicação"],[79,"D79 Conversa continuidade"],[82,"D82 Confirmação aplicação"],[83,"D83 11ª Aplicação"],[84,"D84 Follow-up aplicação"],[89,"D89 Confirmação consulta + aplicação se houver"],[90,"D90 Consulta encerramento + Peso + Foto + Bioimpedância + Comparativo + Renovação"],[91,"D91 Follow-up aplicação"],[94,"D94 Reforço Hidratação"],[96,"D96 Confirmação aplicação"],[97,"D97 13ª Aplicação"],[98,"D98 Follow-up aplicação"],[101,"D101 Reforço Alimentação"],[103,"D103 Confirmação aplicação"],[104,"D104 14ª Aplicação + Bioimpedância rápida"],[105,"D105 Follow-up aplicação"],[108,"D108 Exercício"],[110,"D110 Confirmação aplicação"],[111,"D111 15ª Aplicação"],[112,"D112 Follow-up aplicação + Monitoramento sintomas"],[115,"D115 Motivacional"],[117,"D117 Confirmação aplicação"],[118,"D118 16ª Aplicação"],[119,"D119 Consulta Dr Sérgio + Peso + Foto + Bioimpedância"],[120,"D120 Follow-up consulta"]],
-  365:[[0,"D0 Orientação + Consulta paga"],[1,"D1 Confirmação pré-consulta"],[7,"D7 Consulta inicial + Peso + Foto + Bioimpedância"],[13,"D13 1ª Aplicação"],[20,"D20 2ª Aplicação"],[27,"D27 3ª Aplicação"],[34,"D34 4ª Aplicação + Peso + Foto + Bioimpedância"],[45,"D45 Consulta Ajuste Dr Sérgio + Peso + Foto + Bioimpedância"],[55,"D55 7ª Aplicação"],[75,"D75 Consulta robusta Dr Sérgio + Peso + Foto + Bioimpedância"],[90,"D90 Consulta encerramento 1º ciclo + Renovação"],[120,"D120 Follow-up consulta"],[149,"D149 Consulta Dr Sérgio + Peso + Foto + Bioimpedância"],[179,"D179 Consulta Dr Sérgio + Revisão exames"],[209,"D209 29ª Aplicação + Consulta Dr Sérgio + Peso + Foto + Bioimpedância"],[239,"D239 Consulta Dr Sérgio + Peso + Foto + Bioimpedância"],[269,"D269 Consulta Dr Sérgio + Revisão exames"],[299,"D299 Consulta Dr Sérgio"],[329,"D329 Consulta Dr Sérgio"],[354,"D354 Consulta Dr Sérgio + Comparativo anual + Revisão exames + Planejamento"],[359,"D359 Encerramento + Comparativo D0 x D360 + Renovação + Planejamento manutenção"]]
-};
+let PROTO = { 120: [], 1010: [], 1515: [] };
+let _protoCarregado = false;
+
+async function carregarProtosPlanilha(){
+  if(_protoCarregado) return;
+  try {
+    // Carrega Página6 (protocolo 120d)
+    const [r120, r1010, r1515] = await Promise.all([
+      fetch('https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/gviz/tq?tqx=out:csv&sheet=P%C3%A1gina6'),
+      fetch('https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/gviz/tq?tqx=out:csv&sheet=Linha+do+Tempo+10%2F10'),
+      fetch('https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/gviz/tq?tqx=out:csv&sheet=Linha+do+Tempo+15%2F15')
+    ]);
+    const [csv120, csv1010, csv1515] = await Promise.all([r120.text(), r1010.text(), r1515.text()]);
+    
+    const parsearProto = (csv) => {
+      const linhas = csv.split('\n').slice(1).filter(l=>l.trim());
+      return linhas.map(l => {
+        const cols = l.match(/(".*?"|[^,]+|(?<=,)(?=,)|^(?=,)|(?<=,)$)/g)||[];
+        const limpar = s => (s||'').replace(/^"|"$/g,'').trim();
+        const celA = limpar(cols[0]);
+        const numD = celA.match(/D(\d+)/);
+        if(!numD) return null;
+        const tarefa = celA.replace(/^D\d+\s*/,'').replace(/\n/g,' ').trim();
+        return [parseInt(numD[1]), tarefa];
+      }).filter(Boolean);
+    };
+    
+    PROTO[120] = parsearProto(csv120);
+    PROTO[1010] = parsearProto(csv1010);
+    PROTO[1515] = parsearProto(csv1515);
+    _protoCarregado = true;
+    if(paginaAtual==='dias') renderDias();
+  } catch(e) { console.error('Erro carregando protocolos:', e); }
+}
 
 function tarefaDoDia(protocolo,dia){
   const lista=PROTO[protocolo]||PROTO[120];
@@ -523,6 +552,7 @@ async function login(r){
   db.collection('pacientes').orderBy('criadoEm','desc').onSnapshot(s=>{pacientesCache=s.docs.map(d=>({id:d.id,...d.data()}));if(paginaAtual==='concierge')renderConcierge();if(paginaAtual==='dias')renderDias()});
   // Carrega planilha e associações em background ao iniciar
   carregarAssociacoes().then(()=>{
+    carregarProtosPlanilha();
     fetch('https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/gviz/tq?tqx=out:csv&sheet=HOJE')
       .then(r=>r.text()).then(csv=>{
         const linhas=csv.split('\n').slice(1).filter(l=>l.trim()&&!l.startsWith('"Paciente"'));
@@ -583,7 +613,7 @@ function nav(id){
   if(id==='atendente'){c.innerHTML=pgKanban('atendente');renderKanban('atendente');initKanbanScroll('atendente')}
   else if(id==='vendas'){c.innerHTML=pgKanban('vendas');renderKanban('vendas');initKanbanScroll('vendas')}
   else if(id==='concierge'){c.innerHTML=pgConcierge();renderConcierge()}
-  else if(id==='dias'){c.innerHTML=pgDias();setTimeout(()=>{setDiasFiltro(120)},50)}
+  else if(id==='dias'){c.innerHTML=pgDias();carregarProtosPlanilha().then(()=>setDiasFiltro(120))}
   else if(id==='planilha'){c.innerHTML=pgPlanilha();carregarHoje()}
   else if(id==='contatos'){c.innerHTML=pgContatos();renderTabContatos()}
   else if(id==='outros'){c.innerHTML=pgOutros();renderOutros()}
@@ -1822,9 +1852,7 @@ function calcInicioParaDia(dia){
 function pgDias(){
   return`<div class="ph"><div><h2>Visão por dia</h2><p>Todos os dias do protocolo</p></div></div>
   <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center">
-    <button class="btn btn-sm" id="btn-f90" onclick="setDiasFiltro(90)">90d</button>
-    <button class="btn btn-sm" id="btn-f120" onclick="setDiasFiltro(120)">120d</button>
-    <button class="btn btn-sm" id="btn-f365" onclick="setDiasFiltro(365)">365d</button>
+    <button class="btn btn-sm" id="btn-f120" onclick="setDiasFiltro(120)" style="display:none">120d</button>
     <button class="btn btn-ghost btn-sm" onclick="irParaHoje()"><i class="ti ti-calendar-event"></i> Hoje</button>
     <span id="dias-resumo" style="margin-left:auto;font-size:12px;color:var(--g400)"></span>
   </div>
@@ -2084,7 +2112,7 @@ async function limparDuplicatas(aba){
   toast(`✅ ${paraRemover.length} duplicado(s) removido(s)!`);
 }
 
-window.exibirNumero=exibirNumero; window.verLead=verLead; window.abrirEditorFicha=abrirEditorFicha; window.renderFichaEditor=renderFichaEditor; window.salvarFicha=salvarFicha; window.confirmarDeletarCol=confirmarDeletarCol; window.moverParaOutros=moverParaOutros; window.confirmarMoverOutros=confirmarMoverOutros; window.limparDuplicatas=limparDuplicatas; window.toggleCk=toggleCk; window.salvarCkCampo=salvarCkCampo; window.moverEtapa=moverEtapa; window.salvarNotaAba=salvarNotaAba; window.abrirNovoLead=abrirNovoLead; window.salvarLead=salvarLead; window.filtrarContatosM=filtrarContatosM; window.selContato=selContato; window.login=login; window.logout=logout; window.nav=nav; window.abrirFluxoEditor=abrirFluxoEditor; window.salvarFluxo=salvarFluxo; window.renderFluxoEditor=renderFluxoEditor; window.editarCol=editarCol; window.salvarCol=salvarCol; window.deletarCol=deletarCol; window.adicionarCol=adicionarCol; window.addCkItem=addCkItem; window.enviarParaVendas=enviarParaVendas; window.abrirEnviarConcierge=abrirEnviarConcierge; window.confirmarConcierge=confirmarConcierge; window.removerDoFluxo=removerDoFluxo; window.filtrarContatos=filtrarContatos; window.adicionarContatoFluxo=adicionarContatoFluxo; window.atualizarEtapasDestino=atualizarEtapasDestino; window.confirmarAdicionarFluxo=confirmarAdicionarFluxo; window.filtrarOutros=filtrarOutros; window.filtrarOutrosCat=filtrarOutrosCat; window.abrirNovoOutro=abrirNovoOutro; window.salvarOutro=salvarOutro; window.abrirNovoPaciente=abrirNovoPaciente; window.filtrarContatosNP=filtrarContatosNP; window.selContatoNP=selContatoNP; window.salvarNovoPaciente=salvarNovoPaciente; window.abrirPaciente=abrirPaciente; window.adicionarCampoFicha=adicionarCampoFicha; window.editarCampoFicha=editarCampoFicha; window.deletarCampoFicha=deletarCampoFicha; window.moverCampoFicha=moverCampoFicha; window.salvarProtocolo=salvarProtocolo; window.setDiasFiltro=setDiasFiltro; window.carregarHoje=carregarHoje; window.associarPaciente=associarPaciente; window.associarNoDia=associarNoDia; window.associarNoDia=associarNoDia; window.setFiltroPaciente=setFiltroPaciente; window.diasNav=diasNav; window.irParaHoje=irParaHoje; window.salvarMsgDia=salvarMsgDia; window.salvarTarefaCustom=salvarTarefaCustom; window.dragStart=dragStart; window.dragEnd=dragEnd; window.dragOver=dragOver; window.dragLeave=dragLeave; window.dropCard=dropCard; window.dragStartDia=dragStartDia; window.dropDia=dropDia; window.initKanbanScroll=initKanbanScroll;
+window.exibirNumero=exibirNumero; window.verLead=verLead; window.abrirEditorFicha=abrirEditorFicha; window.renderFichaEditor=renderFichaEditor; window.salvarFicha=salvarFicha; window.confirmarDeletarCol=confirmarDeletarCol; window.moverParaOutros=moverParaOutros; window.confirmarMoverOutros=confirmarMoverOutros; window.limparDuplicatas=limparDuplicatas; window.toggleCk=toggleCk; window.salvarCkCampo=salvarCkCampo; window.moverEtapa=moverEtapa; window.salvarNotaAba=salvarNotaAba; window.abrirNovoLead=abrirNovoLead; window.salvarLead=salvarLead; window.filtrarContatosM=filtrarContatosM; window.selContato=selContato; window.login=login; window.logout=logout; window.nav=nav; window.abrirFluxoEditor=abrirFluxoEditor; window.salvarFluxo=salvarFluxo; window.renderFluxoEditor=renderFluxoEditor; window.editarCol=editarCol; window.salvarCol=salvarCol; window.deletarCol=deletarCol; window.adicionarCol=adicionarCol; window.addCkItem=addCkItem; window.enviarParaVendas=enviarParaVendas; window.abrirEnviarConcierge=abrirEnviarConcierge; window.confirmarConcierge=confirmarConcierge; window.removerDoFluxo=removerDoFluxo; window.filtrarContatos=filtrarContatos; window.adicionarContatoFluxo=adicionarContatoFluxo; window.atualizarEtapasDestino=atualizarEtapasDestino; window.confirmarAdicionarFluxo=confirmarAdicionarFluxo; window.filtrarOutros=filtrarOutros; window.filtrarOutrosCat=filtrarOutrosCat; window.abrirNovoOutro=abrirNovoOutro; window.salvarOutro=salvarOutro; window.abrirNovoPaciente=abrirNovoPaciente; window.filtrarContatosNP=filtrarContatosNP; window.selContatoNP=selContatoNP; window.salvarNovoPaciente=salvarNovoPaciente; window.abrirPaciente=abrirPaciente; window.adicionarCampoFicha=adicionarCampoFicha; window.editarCampoFicha=editarCampoFicha; window.deletarCampoFicha=deletarCampoFicha; window.moverCampoFicha=moverCampoFicha; window.salvarProtocolo=salvarProtocolo; window.setDiasFiltro=setDiasFiltro; window.carregarProtosPlanilha=carregarProtosPlanilha; window.carregarHoje=carregarHoje; window.associarPaciente=associarPaciente; window.associarNoDia=associarNoDia; window.associarNoDia=associarNoDia; window.setFiltroPaciente=setFiltroPaciente; window.diasNav=diasNav; window.irParaHoje=irParaHoje; window.salvarMsgDia=salvarMsgDia; window.salvarTarefaCustom=salvarTarefaCustom; window.dragStart=dragStart; window.dragEnd=dragEnd; window.dragOver=dragOver; window.dragLeave=dragLeave; window.dropCard=dropCard; window.dragStartDia=dragStartDia; window.dropDia=dropDia; window.initKanbanScroll=initKanbanScroll;
 </script>
 </body>
 </html>
