@@ -1360,16 +1360,22 @@ function moverParaOutros(id,aba){
 async function confirmarMoverOutros(id,aba){
   const dados=aba==='atendente'?leadsCache:vendasCache;
   const c=dados.find(x=>x.id===id);if(!c)return;
+  const wa=limparNumero(c.wa)||c.wa||'';
   // Adiciona em Outros
   await fbAdd('outros',{
     nome:c.nome||'',
-    wa:limparNumero(c.wa)||'',
+    wa,
     categoria:document.getElementById('mv-cat').value,
     obs:document.getElementById('mv-obs').value,
     email:'',
   });
-  // Remove do fluxo atual
+  // Remove do fluxo atual (leads ou vendas)
   await fbDel(aba==='atendente'?'leads':'vendas',id);
+  // Remove de contatos_wa se existir (pelo número)
+  if(wa){
+    const snap=await db.collection('contatos_wa').where('wa','==',wa).get();
+    for(const d of snap.docs) await d.ref.delete();
+  }
   closeM('m-gen');
   toast('✅ Movido para Outros!');
 }
